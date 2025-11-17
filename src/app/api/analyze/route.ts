@@ -5,7 +5,17 @@ import { processFile, scrapeURL } from '@/app/lib/fileProcessor'
 import { analyzeInsurancePlans } from '@/app/lib/anthropicClient'
 import { getCostControlLimits } from '@/app/lib/costControl'
 
+// Add GET method for testing
+export async function GET() {
+  return NextResponse.json({ 
+    message: 'Analysis API is working',
+    timestamp: new Date().toISOString()
+  })
+}
+
 export async function POST(request: NextRequest) {
+  console.log('Analyze API called:', request.method)
+  
   try {
     // Get client identifier for rate limiting
     const clientId = request.headers.get('x-forwarded-for') || 
