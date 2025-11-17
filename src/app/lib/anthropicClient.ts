@@ -13,7 +13,17 @@ export interface AnalysisRequest {
 
 export interface AnalysisResponse {
   summary: string
-  keyPoints: {
+  simpleBullets?: {
+    whatItCovers: string[]
+    whatYouPay: string[]
+    importantRules: string[]
+  }
+  bottomLine?: string
+  nextSteps?: string[]
+  redFlags?: string[]
+  planType?: string
+  // Legacy format support
+  keyPoints?: {
     covered: string[]
     limitations: string[]
     costs: {
@@ -23,7 +33,7 @@ export interface AnalysisResponse {
       copays?: string[]
     }
   }
-  recommendations: string[]
+  recommendations?: string[]
   comparison?: string
   warnings: string[]
   metadata: {
@@ -119,7 +129,7 @@ function createAnalysisPrompt(content: { files: any[], urls: any[], warnings: st
   ).join('\n')
 
   return `
-You are an expert insurance analyst. Please analyze the following insurance plan documents and provide a clear, comprehensive summary in plain language that anyone can understand.
+You are helping someone understand their insurance plan in the SIMPLEST possible way. Pretend you're explaining this to a friend who knows nothing about insurance.
 
 ${filesContent}
 ${urlsContent}
@@ -127,29 +137,26 @@ ${urlsContent}
 Please provide your analysis in the following JSON format:
 
 {
-  "summary": "A 2-3 sentence overview of the insurance plan(s) in simple terms",
-  "keyPoints": {
-    "covered": ["List of what's covered - be specific"],
-    "limitations": ["List of important limitations, exclusions, or requirements"],
-    "costs": {
-      "monthlyPremium": "Amount if mentioned",
-      "deductible": "Amount if mentioned", 
-      "outOfPocketMax": "Amount if mentioned",
-      "copays": ["List specific copay amounts mentioned"]
-    }
+  "summary": "A simple 2-3 sentence explanation of what this insurance plan does, using everyday language a teenager could understand",
+  "simpleBullets": {
+    "whatItCovers": ["List 3-5 main things this plan pays for, in simple terms like 'Doctor visits' or 'Emergency room'"],
+    "whatYouPay": ["List the main costs you'll pay, like '$50 each time you see a specialist' or '$2,000 deductible before insurance kicks in'"],
+    "importantRules": ["List 2-3 key rules or limitations, like 'Must use doctors in network' or 'Need referral to see specialists'"]
   },
-  "recommendations": ["Actionable advice for the plan holder"],
-  "comparison": "If multiple plans provided, compare them briefly",
+  "bottomLine": "One sentence summary of whether this is a good deal and what to watch out for",
+  "nextSteps": ["2-3 simple actions the person should take, like 'Find out which doctors are in-network' or 'Set aside money for deductible'"],
+  "redFlags": ["Any major concerns or gotchas to watch out for"],
   "planType": "Type of insurance (health, dental, vision, etc.)"
 }
 
-Guidelines:
-- Use simple, everyday language - avoid insurance jargon
-- Focus on what matters most to consumers: costs, coverage, and limitations
-- Be specific about dollar amounts when provided
-- If information is missing or unclear, say so
-- Prioritize practical, actionable insights
-- If you detect any personal information that shouldn't be there, note it as a concern
+CRITICAL INSTRUCTIONS:
+- Write like you're texting a friend - use simple words
+- NO insurance jargon (deductible is ok, but explain it simply)
+- Focus on what actually matters day-to-day
+- Be specific about dollar amounts when available
+- If something is confusing or missing, say "This document doesn't clearly explain [X]"
+- Think: "What would I want to know if this was MY insurance?"
+- Use concrete examples: instead of "preventive care" say "yearly checkups and vaccines"
 `.trim()
 }
 
@@ -162,12 +169,18 @@ function parseAnalysisResponse(analysisText: string, originalRequest: AnalysisRe
       
       return {
         summary: parsed.summary || 'Analysis completed',
-        keyPoints: {
-          covered: parsed.keyPoints?.covered || [],
-          limitations: parsed.keyPoints?.limitations || [],
-          costs: parsed.keyPoints?.costs || {}
+        simpleBullets: parsed.simpleBullets || undefined,
+        bottomLine: parsed.bottomLine || undefined,
+        nextSteps: parsed.nextSteps || [],
+        redFlags: parsed.redFlags || [],
+        planType: parsed.planType || undefined,
+        // Legacy support
+        keyPoints: parsed.keyPoints || {
+          covered: parsed.simpleBullets?.whatItCovers || [],
+          limitations: parsed.simpleBullets?.importantRules || [],
+          costs: {}
         },
-        recommendations: parsed.recommendations || [],
+        recommendations: parsed.recommendations || parsed.nextSteps || [],
         comparison: parsed.comparison || (originalRequest.files.length + originalRequest.urls.length > 1 ? 'Multiple plans were analyzed' : undefined),
         warnings: [],
         metadata: {
