@@ -1,6 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 
+async function extractPDFText(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  
+  // Method 1: Try pdf-parse first (good for most PDFs)
+  try {
+    const pdfParse = await import('pdf-parse')
+    const parseFn = (pdfParse as any).default || pdfParse
+    const pdfData = await parseFn(buffer)
+    if (pdfData.text && pdfData.text.trim().length > 50) {
+      return pdfData.text
+    }
+  } catch (error) {
+    console.log('pdf-parse failed, trying PDF.js...')
+  }
+
+  // Method 2: Try PDF.js for more complex PDFs
+  try {
+    const pdfjsLib = await import('pdfjs-dist')
+    // Set up PDF.js worker
+    if (typeof window === 'undefined') {
+      const { readFileSync } = await import('fs')
+      const workerPath = require.resolve('pdfjs-dist/build/pdf.worker.mjs')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath
+    }
+
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+    let fullText = ''
+    
+    for (let pageNum = 1; pageNum <= Math.min(pdf.numPages, 10); pageNum++) {
+      const page = await pdf.getPage(pageNum)
+      const textContent = await page.getTextContent()
+      const pageText = textContent.items
+        .map((item: any) => item.str)
+        .join(' ')
+      fullText += pageText + '\n'
+    }
+
+    if (fullText.trim().length > 50) {
+      return fullText
+    }
+  } catch (error) {
+    console.log('PDF.js failed, trying basic buffer read...')
+  }
+
+  // Method 3: Try basic text extraction as last resort
+  try {
+    const text = buffer.toString('utf8')
+    if (text.length > 50) {
+      return text
+    }
+  } catch (error) {
+    // Final fallback
+  }
+
+  throw new Error('Could not extract text from PDF')
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check if API key exists
@@ -47,17 +105,12 @@ export async function POST(request: NextRequest) {
       let content = ''
 
       if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        // Handle PDF files
+        // Handle PDF files with multiple fallback methods
         try {
-          const pdfParse = await import('pdf-parse')
-          const arrayBuffer = await file.arrayBuffer()
-          const buffer = Buffer.from(arrayBuffer)
-          const parseFn = (pdfParse as any).default || pdfParse
-          const pdfData = await parseFn(buffer)
-          content = pdfData.text
+          content = await extractPDFText(file)
         } catch (pdfError) {
           return NextResponse.json(
-            { error: `Could not read PDF ${file.name}. Please try a text-based PDF or convert to a text document.` },
+            { error: `Could not read PDF ${file.name}. The PDF might be image-based or corrupted. Please try a text-based PDF or convert to a text document.` },
             { status: 400 }
           )
         }
