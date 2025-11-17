@@ -1,43 +1,129 @@
+'use client'
+
+import { useState } from 'react'
+import FileUpload from './components/FileUpload'
+import URLInput from './components/URLInput'
+import AnalysisResults from './components/AnalysisResults'
+
 export default function Home() {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [urls, setUrls] = useState<string[]>([])
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResults, setAnalysisResults] = useState<any>(null)
+
+  const handleFileUpload = (files: File[]) => {
+    setUploadedFiles(prev => [...prev, ...files])
+  }
+
+  const handleUrlAdd = (url: string) => {
+    setUrls(prev => [...prev, url])
+  }
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true)
+    // TODO: Implement AI analysis
+    setTimeout(() => {
+      setAnalysisResults({
+        summary: "This is a placeholder for AI analysis results.",
+        plans: uploadedFiles.length + urls.length
+      })
+      setIsAnalyzing(false)
+    }, 2000)
+  }
+
+  const canAnalyze = uploadedFiles.length > 0 || urls.length > 0
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Understand My Insurance
+    <div className="min-h-screen bg-beige-100">
+      <div className="container mx-auto px-4 py-8 md:py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl md:text-7xl font-black font-display text-black mb-6 tracking-tight">
+            UNDERSTAND<br />MY INSURANCE
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Making insurance simple and understandable for everyone. 
-            Get clarity on your coverage and make informed decisions.
+          <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Upload your insurance plan documents or links and get a clear, 
+            plain-language summary of what you're covered for and what you need to know.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors">
-              Get Started
-            </button>
-            <button className="border border-gray-300 hover:border-gray-400 text-gray-700 font-semibold px-8 py-3 rounded-lg transition-colors">
-              Learn More
-            </button>
+        </div>
+
+        {/* Upload Section */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-black mb-6">Add Your Insurance Plans</h2>
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <FileUpload onFileUpload={handleFileUpload} />
+              <URLInput onUrlAdd={handleUrlAdd} />
+            </div>
+
+            {/* Uploaded Items Summary */}
+            {(uploadedFiles.length > 0 || urls.length > 0) && (
+              <div className="mb-6 p-4 bg-beige-50 rounded-lg">
+                <h3 className="font-semibold text-black mb-2">Ready to Analyze:</h3>
+                <div className="space-y-1 text-sm text-gray-700">
+                  {uploadedFiles.map((file, index) => (
+                    <div key={index}>📄 {file.name}</div>
+                  ))}
+                  {urls.map((url, index) => (
+                    <div key={index}>🔗 {url}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Analyze Button */}
+            <div className="text-center">
+              <button
+                onClick={handleAnalyze}
+                disabled={!canAnalyze || isAnalyzing}
+                className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isAnalyzing ? 'Analyzing...' : 'Analyze My Plans'}
+              </button>
+            </div>
           </div>
         </div>
-        
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Simple Explanations</h3>
-            <p className="text-gray-600">
-              We break down complex insurance terms into plain English that everyone can understand.
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Coverage Analysis</h3>
-            <p className="text-gray-600">
-              Get insights into your current coverage and identify potential gaps in protection.
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Smart Decisions</h3>
-            <p className="text-gray-600">
-              Make informed choices about your insurance with our expert guidance and tools.
-            </p>
+
+        {/* Results Section */}
+        {analysisResults && (
+          <AnalysisResults results={analysisResults} />
+        )}
+
+        {/* How It Works */}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-black text-center mb-12">How It Works</h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white text-2xl font-bold">1</span>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-3">Upload Your Plans</h3>
+              <p className="text-gray-700">
+                Upload PDFs, documents, or paste links to your insurance plan details.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white text-2xl font-bold">2</span>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-3">AI Analysis</h3>
+              <p className="text-gray-700">
+                Our AI reads through the complex language and extracts the key information.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white text-2xl font-bold">3</span>
+              </div>
+              <h3 className="text-xl font-bold text-black mb-3">Clear Summary</h3>
+              <p className="text-gray-700">
+                Get a plain-language summary of your coverage, costs, and important details.
+              </p>
+            </div>
           </div>
         </div>
       </div>
