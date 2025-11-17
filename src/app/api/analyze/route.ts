@@ -62,15 +62,31 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Read file content
-        const arrayBuffer = await file.arrayBuffer()
-        const content = new TextDecoder().decode(arrayBuffer)
+        let content = ''
         
-        console.log(`File content length: ${content.length}`)
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+          // Handle PDF files
+          try {
+            const pdfParse = (await import('pdf-parse')).default
+            const arrayBuffer = await file.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            const pdfData = await pdfParse(buffer)
+            content = pdfData.text
+            console.log(`Extracted PDF text length: ${content.length}`)
+          } catch (pdfError) {
+            console.error(`PDF parsing failed for ${file.name}:`, pdfError)
+            content = `PDF file: ${file.name} - Unable to extract text content. Please try uploading a text-based PDF or convert to a text document.`
+          }
+        } else {
+          // Handle text files
+          const arrayBuffer = await file.arrayBuffer()
+          content = new TextDecoder().decode(arrayBuffer)
+          console.log(`Text file content length: ${content.length}`)
+        }
         
         processedFiles.push({
           filename: file.name,
-          content: content.substring(0, 20000), // Smaller limit for testing
+          content: content.substring(0, 15000), // Limit for token management
           type: file.type
         })
       } catch (fileError) {
