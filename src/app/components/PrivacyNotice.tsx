@@ -29,7 +29,8 @@ export default function PrivacyNotice() {
               <li>• Coverage details and copay schedules</li>
               <li>• Formularies (prescription drug lists)</li>
               <li>• Provider directories and networks</li>
-              <li>• Generic plan documents without personal info</li>
+              <li>• Plan documents with customer service contact info</li>
+              <li>• Generic plan documents and member handbooks</li>
             </ul>
           </div>
           

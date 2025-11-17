@@ -24,9 +24,9 @@ const PHI_PATTERNS = [
   /\bpatient\s+responsibility[:\s]*\$[\d,]+\.?\d*/gi,
   /\bdeductible\s+remaining[:\s]*\$[\d,]+\.?\d*/gi,
   
-  // Phone numbers
-  /\b\(\d{3}\)\s*\d{3}-\d{4}\b/g,
-  /\b\d{3}-\d{3}-\d{4}\b/g,
+  // Phone numbers (but exclude customer service context)
+  /(?<!customer\s+service[:\s]*)\b\(\d{3}\)\s*\d{3}-\d{4}\b/gi,
+  /(?<!customer\s+service[:\s]*)\b\d{3}-\d{3}-\d{4}\b/gi,
 ]
 
 // Keywords that indicate EOB or personal medical documents
@@ -68,6 +68,26 @@ const PLAN_DOCUMENT_KEYWORDS = [
   'plan year',
   'enrollment guide',
   'member handbook',
+  'customer service',
+  'contact information',
+  'plan administration',
+]
+
+// Acceptable business/administrative elements that are OK in plan documents
+const ACCEPTABLE_BUSINESS_ELEMENTS = [
+  'customer service',
+  'member services',
+  'plan administrator',
+  'insurance company',
+  'provider directory',
+  'formulary',
+  'annual deductible',
+  'copay',
+  'coinsurance',
+  'out-of-pocket maximum',
+  'network',
+  'covered benefit',
+  'plan year',
 ]
 
 export interface ContentValidation {
@@ -105,12 +125,21 @@ export function validateContent(content: string, filename?: string): ContentVali
     return count + (matches?.length || 0)
   }, 0)
 
-  if (phiMatches > 5) {
+  // Check if document has business/administrative context
+  const businessMatches = ACCEPTABLE_BUSINESS_ELEMENTS.filter(element => 
+    lowerContent.includes(element.toLowerCase())
+  )
+
+  // Adjust PHI thresholds based on business context
+  const highThreshold = businessMatches.length > 2 ? 8 : 5
+  const mediumThreshold = businessMatches.length > 2 ? 5 : 2
+
+  if (phiMatches > highThreshold) {
     riskLevel = 'high'
     issues.push('Document contains multiple personal identifiers')
-  } else if (phiMatches > 2) {
+  } else if (phiMatches > mediumThreshold) {
     if (riskLevel === 'low') riskLevel = 'medium'
-    issues.push('Document may contain personal information')
+    issues.push('Document may contain some personal information')
   }
 
   // Check filename for clues
