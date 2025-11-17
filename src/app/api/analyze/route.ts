@@ -21,17 +21,77 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Very basic test without any dependencies
-    return NextResponse.json({
-      success: true,
-      message: 'Basic POST endpoint working',
-      timestamp: new Date().toISOString()
-    })
+    // Check if API key exists first
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      )
+    }
+
+    // Import dependencies
+    const { analyzeInsurancePlans } = await import('@/app/lib/anthropicClient')
+    
+    // Parse request
+    const formData = await request.formData()
+    const files = formData.getAll('files') as File[]
+    const urls = JSON.parse(formData.get('urls') as string || '[]') as string[]
+
+    // Basic validation
+    if (files.length + urls.length === 0) {
+      return NextResponse.json(
+        { error: 'No files or URLs provided' },
+        { status: 400 }
+      )
+    }
+
+    // Process files
+    const processedFiles = []
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        return NextResponse.json(
+          { error: `File ${file.name} is too large. Maximum 5MB allowed.` },
+          { status: 400 }
+        )
+      }
+
+      // Read file content
+      const arrayBuffer = await file.arrayBuffer()
+      const content = new TextDecoder().decode(arrayBuffer)
+      
+      processedFiles.push({
+        filename: file.name,
+        content: content.substring(0, 50000), // Truncate to prevent token overflow
+        type: file.type
+      })
+    }
+
+    // Process URLs (simplified for now)
+    const processedUrls = urls.map(url => ({
+      url,
+      content: `Please analyze the insurance plan at: ${url}`
+    }))
+
+    // Analyze with Claude
+    const analysisRequest = {
+      files: processedFiles,
+      urls: processedUrls
+    }
+
+    const analysis = await analyzeInsurancePlans(analysisRequest)
+    
+    return NextResponse.json(analysis)
+
   } catch (error) {
-    return NextResponse.json({
-      error: 'POST method failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    console.error('Analysis error:', error)
+    
+    return NextResponse.json(
+      { 
+        error: 'Analysis failed. Please try again or contact support if the problem persists.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }
 
