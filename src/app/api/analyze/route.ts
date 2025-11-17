@@ -27,9 +27,16 @@ export async function POST(request: NextRequest) {
       message: 'Basic POST endpoint working',
       timestamp: new Date().toISOString()
     })
+  } catch (error) {
+    return NextResponse.json({
+      error: 'POST method failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
+}
 
-    // TODO: Re-enable full analysis after confirming POST works
-    /*
+// TODO: Re-enable full analysis after confirming POST works
+/*
     // Import dependencies inside function to avoid build issues
     const { checkRateLimit } = await import('@/app/lib/rateLimiter')
     const { getCached, setCached, generateCacheKey } = await import('@/app/lib/cache')
@@ -175,6 +182,7 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+*/
 
 // Add OPTIONS method for CORS
 export async function OPTIONS() {
