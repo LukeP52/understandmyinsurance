@@ -4,6 +4,9 @@ import { truncateText } from './costControl'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
+  defaultHeaders: {
+    'anthropic-version': '2023-06-01'
+  }
 })
 
 export interface AnalysisRequest {
@@ -53,7 +56,7 @@ export async function analyzeInsurancePlans(request: AnalysisRequest): Promise<A
   
   // Call Claude API
   const response = await anthropic.messages.create({
-    model: 'claude-3-sonnet-20240229',
+    model: 'claude-sonnet-4-20250514',
     max_tokens: 4000,
     temperature: 0.1,
     messages: [{
