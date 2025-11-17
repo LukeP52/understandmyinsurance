@@ -33,7 +33,22 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
         'image/jpeg',
         'image/png'
       ]
-      return validTypes.includes(file.type)
+      
+      // File type validation
+      if (!validTypes.includes(file.type)) {
+        alert(`File type not supported: ${file.name}`)
+        return false
+      }
+      
+      // File size validation (5MB limit)
+      const maxSizeMB = 5
+      const maxSizeBytes = maxSizeMB * 1024 * 1024
+      if (file.size > maxSizeBytes) {
+        alert(`File too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum ${maxSizeMB}MB allowed.`)
+        return false
+      }
+      
+      return true
     })
     
     if (files.length > 0) {
@@ -87,8 +102,13 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
         onChange={handleFileSelect}
       />
 
-      <div className="text-xs text-gray-500">
-        <strong>Accepted formats:</strong> PDF, Word (.doc/.docx), Text (.txt), Images (.jpg/.png)
+      <div className="space-y-2">
+        <div className="text-xs text-gray-500">
+          <strong>Accepted formats:</strong> PDF, Word (.doc/.docx), Text (.txt), Images (.jpg/.png)
+        </div>
+        <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+          <strong>Privacy reminder:</strong> Only upload generic plan documents. No EOBs, bills, or personal medical records.
+        </div>
       </div>
     </div>
   )

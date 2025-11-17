@@ -4,6 +4,7 @@ import { useState } from 'react'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
 import AnalysisResults from './components/AnalysisResults'
+import PrivacyNotice from './components/PrivacyNotice'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -20,12 +21,35 @@ export default function Home() {
   }
 
   const handleAnalyze = async () => {
+    // Validate file count before processing
+    const totalItems = uploadedFiles.length + urls.length
+    if (totalItems > 3) {
+      alert(`Too many items (${totalItems}). Maximum 3 files/URLs per analysis to control costs.`)
+      return
+    }
+    
+    // Validate individual file sizes
+    for (const file of uploadedFiles) {
+      const maxSizeMB = 5
+      const maxSizeBytes = maxSizeMB * 1024 * 1024
+      if (file.size > maxSizeBytes) {
+        alert(`File too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum ${maxSizeMB}MB allowed.`)
+        return
+      }
+    }
+    
     setIsAnalyzing(true)
-    // TODO: Implement AI analysis
+    // TODO: Implement AI analysis with rate limiting and caching
     setTimeout(() => {
       setAnalysisResults({
         summary: "This is a placeholder for AI analysis results.",
-        plans: uploadedFiles.length + urls.length
+        plans: uploadedFiles.length + urls.length,
+        costInfo: {
+          filesProcessed: uploadedFiles.length,
+          urlsProcessed: urls.length,
+          estimatedTokens: 1500,
+          estimatedCost: 0.005
+        }
       })
       setIsAnalyzing(false)
     }, 2000)
@@ -51,6 +75,8 @@ export default function Home() {
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Add Your Insurance Plans</h2>
+            
+            <PrivacyNotice />
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               <FileUpload onFileUpload={handleFileUpload} />

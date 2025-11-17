@@ -80,8 +80,13 @@ export default function URLInput({ onUrlAdd }: URLInputProps) {
         </div>
       </div>
 
-      <div className="text-xs text-gray-500">
-        <strong>Examples:</strong> Plan summary pages, benefits documents, or coverage details from your insurance provider's website
+      <div className="space-y-2">
+        <div className="text-xs text-gray-500">
+          <strong>Examples:</strong> Plan summary pages, benefits documents, or coverage details from your insurance provider's website
+        </div>
+        <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+          <strong>Privacy reminder:</strong> Only add links to generic plan information, not personal account pages or EOB portals.
+        </div>
       </div>
     </div>
   )
