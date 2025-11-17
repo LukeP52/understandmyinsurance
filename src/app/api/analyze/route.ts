@@ -67,10 +67,12 @@ export async function POST(request: NextRequest) {
         if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
           // Handle PDF files
           try {
-            const pdfParse = (await import('pdf-parse')).default
+            const pdfParse = await import('pdf-parse')
             const arrayBuffer = await file.arrayBuffer()
             const buffer = Buffer.from(arrayBuffer)
-            const pdfData = await pdfParse(buffer)
+            // Handle different export styles
+            const parseFn = (pdfParse as any).default || pdfParse
+            const pdfData = await parseFn(buffer)
             content = pdfData.text
             console.log(`Extracted PDF text length: ${content.length}`)
           } catch (pdfError) {
