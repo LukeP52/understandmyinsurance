@@ -21,6 +21,15 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Very basic test without any dependencies
+    return NextResponse.json({
+      success: true,
+      message: 'Basic POST endpoint working',
+      timestamp: new Date().toISOString()
+    })
+
+    // TODO: Re-enable full analysis after confirming POST works
+    /*
     // Import dependencies inside function to avoid build issues
     const { checkRateLimit } = await import('@/app/lib/rateLimiter')
     const { getCached, setCached, generateCacheKey } = await import('@/app/lib/cache')
