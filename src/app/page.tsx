@@ -39,20 +39,39 @@ export default function Home() {
     }
     
     setIsAnalyzing(true)
-    // TODO: Implement AI analysis with rate limiting and caching
-    setTimeout(() => {
-      setAnalysisResults({
-        summary: "This is a placeholder for AI analysis results.",
-        plans: uploadedFiles.length + urls.length,
-        costInfo: {
-          filesProcessed: uploadedFiles.length,
-          urlsProcessed: urls.length,
-          estimatedTokens: 1500,
-          estimatedCost: 0.005
-        }
+    
+    try {
+      // Prepare form data
+      const formData = new FormData()
+      
+      // Add files
+      uploadedFiles.forEach(file => {
+        formData.append('files', file)
       })
+      
+      // Add URLs
+      formData.append('urls', JSON.stringify(urls))
+      
+      // Call analysis API
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Server error: ${response.status}`)
+      }
+      
+      const analysis = await response.json()
+      setAnalysisResults(analysis)
+      
+    } catch (error) {
+      console.error('Analysis failed:', error)
+      alert(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
       setIsAnalyzing(false)
-    }, 2000)
+    }
   }
 
   const canAnalyze = uploadedFiles.length > 0 || urls.length > 0
