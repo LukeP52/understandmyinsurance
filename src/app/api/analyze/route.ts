@@ -1,20 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { checkRateLimit } from '@/app/lib/rateLimiter'
-import { getCached, setCached, generateCacheKey } from '@/app/lib/cache'
-import { processFile, scrapeURL } from '@/app/lib/fileProcessor'
-import { analyzeInsurancePlans } from '@/app/lib/anthropicClient'
-import { getCostControlLimits } from '@/app/lib/costControl'
 
 // Add GET method for testing
 export async function GET() {
-  return NextResponse.json({ 
-    message: 'Analysis API is working',
-    timestamp: new Date().toISOString()
-  })
+  try {
+    return NextResponse.json({ 
+      message: 'Analysis API is working',
+      timestamp: new Date().toISOString(),
+      env: {
+        hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
+        nodeEnv: process.env.NODE_ENV
+      }
+    })
+  } catch (error) {
+    return NextResponse.json({ 
+      error: 'GET method failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    // Import dependencies inside function to avoid build issues
+    const { checkRateLimit } = await import('@/app/lib/rateLimiter')
+    const { getCached, setCached, generateCacheKey } = await import('@/app/lib/cache')
+    const { processFile, scrapeURL } = await import('@/app/lib/fileProcessor')
+    const { analyzeInsurancePlans } = await import('@/app/lib/anthropicClient')
+    const { getCostControlLimits } = await import('@/app/lib/costControl')
+    
     // Get client identifier for rate limiting
     const clientId = request.headers.get('x-forwarded-for') || 
                      request.headers.get('x-real-ip') || 
@@ -146,9 +159,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Analysis failed. Please try again or contact support if the problem persists.',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
       },
       { status: 500 }
     )
   }
+}
+
+// Add OPTIONS method for CORS
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
 }
