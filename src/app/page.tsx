@@ -53,15 +53,10 @@ export default function Home() {
       formData.append('urls', JSON.stringify(urls))
       
       // Call analysis API
-      console.log('Calling analysis API with:', uploadedFiles.length, 'files and', urls.length, 'URLs')
-      
       const response = await fetch('/api/analyze', {
         method: 'POST',
         body: formData
       })
-      
-      console.log('API response status:', response.status)
-      console.log('API response headers:', Object.fromEntries(response.headers.entries()))
       
       if (!response.ok) {
         let errorMessage = `Server error: ${response.status}`
@@ -69,23 +64,12 @@ export default function Home() {
           const errorData = await response.json()
           errorMessage = errorData.error || errorMessage
         } catch (e) {
-          console.error('Failed to parse error response:', e)
           errorMessage = `Server error: ${response.status} - ${response.statusText}`
         }
         throw new Error(errorMessage)
       }
       
-      const responseText = await response.text()
-      console.log('Raw API response:', responseText.substring(0, 500))
-      
-      let analysis
-      try {
-        analysis = JSON.parse(responseText)
-      } catch (e) {
-        console.error('Failed to parse JSON response:', e)
-        throw new Error('Invalid response from server')
-      }
-      
+      const analysis = await response.json()
       setAnalysisResults(analysis)
       
     } catch (error) {

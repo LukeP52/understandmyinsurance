@@ -14,8 +14,6 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('Analyze API called:', request.method)
-  
   try {
     // Get client identifier for rate limiting
     const clientId = request.headers.get('x-forwarded-for') || 
