@@ -52,7 +52,7 @@ export default function Home() {
       formData.append('urls', JSON.stringify(urls))
       
       // Call upload API
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })

@@ -13,7 +13,7 @@ export default function PrivacyNotice() {
       >
         <div className="flex items-center space-x-2">
           <span className="text-amber-600 text-lg">🛡️</span>
-          <h3 className="font-semibold text-amber-800">Privacy Protection Notice</h3>
+          <h3 className="font-semibold text-amber-800">Upload Guidelines</h3>
         </div>
         <button className="text-amber-600 hover:text-amber-800">
           {isExpanded ? '▲' : '▼'}
@@ -23,7 +23,7 @@ export default function PrivacyNotice() {
       {isExpanded && (
         <div className="mt-4 space-y-3 text-sm">
           <div>
-            <h4 className="font-semibold text-green-700 mb-1">✅ SAFE to Upload:</h4>
+            <h4 className="font-semibold text-green-700 mb-1">✅ Recommended Documents:</h4>
             <ul className="text-green-600 space-y-1 ml-4">
               <li>• Plan summaries and benefit overviews</li>
               <li>• Coverage details and copay schedules</li>
@@ -47,9 +47,9 @@ export default function PrivacyNotice() {
           
           <div className="bg-blue-50 border border-blue-200 rounded p-3 mt-4">
             <p className="text-blue-800 text-xs">
-              <strong>Why this matters:</strong> We want to help you understand your insurance plan 
-              while keeping your personal health information (PHI) completely private. Generic plan 
-              documents give us everything needed for analysis without any privacy risks.
+              <strong>Why this matters:</strong> Keep your personal health information (PHI) completely 
+              private by only uploading generic plan documents. This ensures your personal data stays secure 
+              while you organize your insurance information.
             </p>
           </div>
         </div>
