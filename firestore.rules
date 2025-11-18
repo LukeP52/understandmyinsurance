@@ -1,0 +1,11 @@
+// Firestore Security Rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read and write documents
+    // TODO: Add user authentication later for better security
+    match /documents/{document} {
+      allow read, write: if true;
+    }
+  }
+}

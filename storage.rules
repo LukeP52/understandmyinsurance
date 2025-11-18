@@ -1,0 +1,11 @@
+// Firebase Storage Security Rules
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow anyone to read and write files in the documents folder
+    // TODO: Add user authentication later for better security
+    match /documents/{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
