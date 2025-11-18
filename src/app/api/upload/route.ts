@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { uploadDocuments } from '@/lib/uploadService'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,9 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Process files (basic validation only)
-    const processedFiles = []
-    
+    // Validate file sizes
     for (const file of files) {
       // Size limit: 5MB
       if (file.size > 5 * 1024 * 1024) {
@@ -34,21 +33,23 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-
-      processedFiles.push({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: file.lastModified
-      })
     }
 
-    // Return success response with file info
+    // Upload to Firebase
+    const result = await uploadDocuments(files, urls)
+
+    // Return success response
     return NextResponse.json({
       success: true,
-      message: 'Files and URLs uploaded successfully',
+      message: 'Files and URLs uploaded successfully to Firebase',
       data: {
-        files: processedFiles,
+        id: result.id,
+        files: files.map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          uploadedUrl: result.fileUrl // Firebase Storage URL
+        })),
         urls: urls,
         totalItems: files.length + urls.length,
         timestamp: new Date().toISOString()

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
+import UploadHistory from './components/UploadHistory'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -177,6 +178,9 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* Upload History */}
+        <UploadHistory />
 
         {/* How It Works */}
         <div className="max-w-4xl mx-auto">
