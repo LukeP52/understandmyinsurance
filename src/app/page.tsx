@@ -3,14 +3,13 @@
 import { useState } from 'react'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
-import AnalysisResults from './components/AnalysisResults'
 import PrivacyNotice from './components/PrivacyNotice'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [urls, setUrls] = useState<string[]>([])
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisResults, setAnalysisResults] = useState<any>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadResults, setUploadResults] = useState<any>(null)
 
   const handleFileUpload = (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files])
@@ -20,11 +19,11 @@ export default function Home() {
     setUrls(prev => [...prev, url])
   }
 
-  const handleAnalyze = async () => {
+  const handleUpload = async () => {
     // Validate file count before processing
     const totalItems = uploadedFiles.length + urls.length
     if (totalItems > 3) {
-      alert(`Too many items (${totalItems}). Maximum 3 files/URLs per analysis to control costs.`)
+      alert(`Too many items (${totalItems}). Maximum 3 files/URLs per upload.`)
       return
     }
     
@@ -38,7 +37,7 @@ export default function Home() {
       }
     }
     
-    setIsAnalyzing(true)
+    setIsUploading(true)
     
     try {
       // Prepare form data
@@ -52,7 +51,7 @@ export default function Home() {
       // Add URLs
       formData.append('urls', JSON.stringify(urls))
       
-      // Call analysis API
+      // Call upload API
       const response = await fetch('/api/analyze', {
         method: 'POST',
         body: formData
@@ -69,18 +68,18 @@ export default function Home() {
         throw new Error(errorMessage)
       }
       
-      const analysis = await response.json()
-      setAnalysisResults(analysis)
+      const result = await response.json()
+      setUploadResults(result)
       
     } catch (error) {
-      console.error('Analysis failed:', error)
-      alert(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('Upload failed:', error)
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
-      setIsAnalyzing(false)
+      setIsUploading(false)
     }
   }
 
-  const canAnalyze = uploadedFiles.length > 0 || urls.length > 0
+  const canUpload = uploadedFiles.length > 0 || urls.length > 0
 
   return (
     <div className="min-h-screen bg-beige-100">
@@ -91,15 +90,14 @@ export default function Home() {
             UNDERSTAND<br />MY INSURANCE
           </h1>
           <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Upload your insurance plan documents or links and get a clear, 
-            plain-language summary of what you're covered for and what you need to know.
+            Upload your insurance plan documents and links to organize and store them in one place.
           </p>
         </div>
 
         {/* Upload Section */}
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-black mb-6">Add Your Insurance Plans</h2>
+            <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
             
             <PrivacyNotice />
             
@@ -111,7 +109,7 @@ export default function Home() {
             {/* Uploaded Items Summary */}
             {(uploadedFiles.length > 0 || urls.length > 0) && (
               <div className="mb-6 p-4 bg-beige-50 rounded-lg">
-                <h3 className="font-semibold text-black mb-2">Ready to Analyze:</h3>
+                <h3 className="font-semibold text-black mb-2">Ready to Upload:</h3>
                 <div className="space-y-1 text-sm text-gray-700">
                   {uploadedFiles.map((file, index) => (
                     <div key={index}>📄 {file.name}</div>
@@ -123,22 +121,61 @@ export default function Home() {
               </div>
             )}
 
-            {/* Analyze Button */}
+            {/* Upload Button */}
             <div className="text-center">
               <button
-                onClick={handleAnalyze}
-                disabled={!canAnalyze || isAnalyzing}
+                onClick={handleUpload}
+                disabled={!canUpload || isUploading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isAnalyzing ? 'Analyzing...' : 'Analyze My Plans'}
+                {isUploading ? 'Uploading...' : 'Upload Documents'}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Results Section */}
-        {analysisResults && (
-          <AnalysisResults results={analysisResults} />
+        {/* Upload Results Section */}
+        {uploadResults && (
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h2 className="text-3xl font-bold text-black mb-6">Upload Successful ✅</h2>
+              
+              <div className="space-y-6">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <h3 className="font-semibold text-green-800 mb-4">Files and URLs processed successfully</h3>
+                  
+                  {uploadResults.data.files.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium text-green-700 mb-2">Files uploaded:</h4>
+                      <ul className="text-green-600 space-y-1">
+                        {uploadResults.data.files.map((file: any, index: number) => (
+                          <li key={index}>
+                            📄 {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {uploadResults.data.urls.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium text-green-700 mb-2">URLs added:</h4>
+                      <ul className="text-green-600 space-y-1">
+                        {uploadResults.data.urls.map((url: string, index: number) => (
+                          <li key={index}>🔗 {url}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  <div className="text-sm text-green-600 mt-4">
+                    Total items: {uploadResults.data.totalItems} • 
+                    Uploaded: {uploadResults.data.timestamp ? new Date(uploadResults.data.timestamp).toLocaleString() : 'now'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* How It Works */}
@@ -150,7 +187,7 @@ export default function Home() {
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">1</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Upload Your Plans</h3>
+              <h3 className="text-xl font-bold text-black mb-3">Upload Documents</h3>
               <p className="text-gray-700">
                 Upload PDFs, documents, or paste links to your insurance plan details.
               </p>
@@ -160,9 +197,9 @@ export default function Home() {
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">2</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">AI Analysis</h3>
+              <h3 className="text-xl font-bold text-black mb-3">Secure Processing</h3>
               <p className="text-gray-700">
-                Our AI reads through the complex language and extracts the key information.
+                Your documents are validated and processed securely in our system.
               </p>
             </div>
             
@@ -170,9 +207,9 @@ export default function Home() {
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">3</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Clear Summary</h3>
+              <h3 className="text-xl font-bold text-black mb-3">Organized Storage</h3>
               <p className="text-gray-700">
-                Get a plain-language summary of your coverage, costs, and important details.
+                Keep all your insurance documents organized and accessible in one place.
               </p>
             </div>
           </div>
