@@ -3,17 +3,18 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
-import Link from 'next/link'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
 import UploadHistory from './components/UploadHistory'
+import AuthModal from './components/Auth/AuthModal'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [urls, setUrls] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
@@ -26,7 +27,7 @@ export default function Home() {
 
   const handleUpload = async () => {
     if (!user) {
-      alert('Please sign in to upload documents')
+      setShowAuthModal(true)
       return
     }
 
@@ -100,12 +101,18 @@ export default function Home() {
               </>
             ) : (
               <div className="space-x-4">
-                <Link href="/login" className="text-sm text-blue-600 hover:text-blue-800">
+                <button 
+                  onClick={() => setShowAuthModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
                   Sign In
-                </Link>
-                <Link href="/signup" className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                </button>
+                <button 
+                  onClick={() => setShowAuthModal(true)}
+                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                >
                   Sign Up
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -247,6 +254,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   )
 }
