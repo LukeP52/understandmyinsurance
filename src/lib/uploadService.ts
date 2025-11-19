@@ -1,6 +1,6 @@
 import { storage, db } from './firebase'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore'
 
 interface UploadResult {
   id: string
@@ -14,11 +14,13 @@ interface UploadResult {
 
 export async function uploadDocuments(
   files: File[], 
-  urls: string[]
+  urls: string[],
+  userId: string
 ): Promise<UploadResult> {
   
   // Create a document record first
   const docData = {
+    userId: userId,
     urls: urls,
     fileCount: files.length,
     urlCount: urls.length,
@@ -35,7 +37,7 @@ export async function uploadDocuments(
   if (files.length > 0) {
     const file = files[0] // For now, handle single file
     const fileName = `${docRef.id}_${file.name}`
-    const storageRef = ref(storage, `documents/${fileName}`)
+    const storageRef = ref(storage, `users/${userId}/${fileName}`)
     
     // Upload file
     const snapshot = await uploadBytes(storageRef, file)
@@ -68,7 +70,24 @@ export async function uploadDocuments(
   }
 }
 
-export async function getUploadHistory() {
-  // TODO: Implement fetching user's upload history
-  // This would require authentication to be set up first
+export async function getUploadHistory(userId: string) {
+  try {
+    const q = query(
+      collection(db, 'documents'),
+      where('userId', '==', userId),
+      where('status', '==', 'completed'),
+      orderBy('uploadedAt', 'desc')
+    )
+    
+    const querySnapshot = await getDocs(q)
+    const documents = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    
+    return documents
+  } catch (error) {
+    console.error('Error fetching upload history:', error)
+    return []
+  }
 }

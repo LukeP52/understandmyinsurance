@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore'
+import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Document {
   id: string
@@ -21,11 +22,19 @@ interface Document {
 export default function UploadHistory() {
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
 
   useEffect(() => {
-    // Real-time listener for documents
+    if (!user) {
+      setLoading(false)
+      setDocuments([])
+      return
+    }
+
+    // Real-time listener for user's documents
     const q = query(
       collection(db, 'documents'), 
+      where('userId', '==', user.uid),
       orderBy('uploadedAt', 'desc'), 
       limit(10)
     )
@@ -40,7 +49,7 @@ export default function UploadHistory() {
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [user])
 
   if (loading) {
     return (
@@ -61,7 +70,11 @@ export default function UploadHistory() {
       <div className="bg-white rounded-2xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-black mb-6">Upload History</h2>
         
-        {documents.length === 0 ? (
+        {!user ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Please sign in to view your upload history.</p>
+          </div>
+        ) : documents.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-600">No documents uploaded yet.</p>
           </div>

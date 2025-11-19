@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { uploadDocuments } from '@/lib/uploadService'
+import Link from 'next/link'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
@@ -11,6 +14,7 @@ export default function Home() {
   const [urls, setUrls] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
+  const { user, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files])
@@ -21,6 +25,11 @@ export default function Home() {
   }
 
   const handleUpload = async () => {
+    if (!user) {
+      alert('Please sign in to upload documents')
+      return
+    }
+
     // Validate file count before processing
     const totalItems = uploadedFiles.length + urls.length
     if (totalItems > 3) {
@@ -41,36 +50,26 @@ export default function Home() {
     setIsUploading(true)
     
     try {
-      // Prepare form data
-      const formData = new FormData()
+      const result = await uploadDocuments(uploadedFiles, urls, user.uid)
       
-      // Add files
-      uploadedFiles.forEach(file => {
-        formData.append('files', file)
-      })
-      
-      // Add URLs
-      formData.append('urls', JSON.stringify(urls))
-      
-      // Call upload API
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      })
-      
-      if (!response.ok) {
-        let errorMessage = `Server error: ${response.status}`
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.error || errorMessage
-        } catch (e) {
-          errorMessage = `Server error: ${response.status} - ${response.statusText}`
+      setUploadResults({
+        success: true,
+        data: {
+          id: result.id,
+          files: uploadedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+          })),
+          urls: urls,
+          totalItems: uploadedFiles.length + urls.length,
+          timestamp: new Date().toISOString()
         }
-        throw new Error(errorMessage)
-      }
-      
-      const result = await response.json()
-      setUploadResults(result)
+      })
+
+      // Clear the form
+      setUploadedFiles([])
+      setUrls([])
       
     } catch (error) {
       console.error('Upload failed:', error)
@@ -84,6 +83,35 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-beige-100">
+      {/* Navigation */}
+      <nav className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold">Understand My Insurance</h1>
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <span className="text-sm text-gray-600">Welcome, {user.email}</span>
+                <button 
+                  onClick={signOut}
+                  className="text-sm text-red-600 hover:text-red-800"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className="space-x-4">
+                <Link href="/login" className="text-sm text-blue-600 hover:text-blue-800">
+                  Sign In
+                </Link>
+                <Link href="/signup" className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
       <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">
