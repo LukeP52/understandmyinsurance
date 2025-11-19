@@ -25,7 +25,7 @@ export default function UploadHistory() {
   const { user } = useAuth()
 
   useEffect(() => {
-    if (!user || !db) {
+    if (!user) {
       setLoading(false)
       setDocuments([])
       return
