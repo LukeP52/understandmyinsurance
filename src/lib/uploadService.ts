@@ -18,6 +18,10 @@ export async function uploadDocuments(
   userId: string
 ): Promise<UploadResult> {
   
+  if (!db || !storage) {
+    throw new Error('Firebase not initialized')
+  }
+  
   // Create a document record first
   const docData = {
     userId: userId,
@@ -72,6 +76,10 @@ export async function uploadDocuments(
 
 export async function getUploadHistory(userId: string) {
   try {
+    if (!db) {
+      throw new Error('Firebase not initialized')
+    }
+    
     const q = query(
       collection(db, 'documents'),
       where('userId', '==', userId),
