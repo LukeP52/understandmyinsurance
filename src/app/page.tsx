@@ -359,7 +359,7 @@ export default function Home() {
                         if (section.startsWith('PLAN OVERVIEW')) {
                           const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
                           return (
-                            <div key={index} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                            <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
                               <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
                                 <span className="mr-2">📊</span>
                                 Plan Overview
@@ -368,9 +368,9 @@ export default function Home() {
                                 {overviewLines.map((line: string, lineIndex: number) => {
                                   const [label, value] = line.split(':').map(s => s.trim())
                                   return (
-                                    <div key={lineIndex} className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                                      <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">{label}</div>
-                                      <div className="text-base text-gray-900 font-semibold">{value}</div>
+                                    <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                      <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{label}</div>
+                                      <div className="text-lg text-gray-900 font-bold">{value}</div>
                                     </div>
                                   )
                                 })}
