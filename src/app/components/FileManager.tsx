@@ -23,6 +23,7 @@ export default function FileManager() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [updatingCategory, setUpdatingCategory] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -84,12 +85,18 @@ export default function FileManager() {
   };
 
   const handleCategoryUpdate = async (docId: string, newCategory: string) => {
+    setUpdatingCategory(docId);
     try {
+      console.log(`Updating document ${docId} to category: ${newCategory}`);
       await updateDoc(doc(db, 'documents', docId), {
         category: newCategory
       });
+      console.log('Category updated successfully');
     } catch (error) {
       console.error('Error updating category:', error);
+      alert('Failed to update category. Please try again.');
+    } finally {
+      setUpdatingCategory(null);
     }
   };
 
@@ -237,7 +244,10 @@ export default function FileManager() {
                       <select
                         value={document.category}
                         onChange={(e) => handleCategoryUpdate(document.id, e.target.value)}
-                        className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        disabled={updatingCategory === document.id}
+                        className={`text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                          updatingCategory === document.id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                       >
                         {categories.slice(1).map(category => (
                           <option key={category} value={category}>
@@ -245,6 +255,9 @@ export default function FileManager() {
                           </option>
                         ))}
                       </select>
+                      {updatingCategory === document.id && (
+                        <span className="ml-2 text-xs text-gray-500">Updating...</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatFileSize(document.fileSize)}
