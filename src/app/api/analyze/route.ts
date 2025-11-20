@@ -7,6 +7,15 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY not found in environment variables')
+      return NextResponse.json(
+        { error: 'Gemini API key not configured. Please contact support.' },
+        { status: 500 }
+      )
+    }
+
     const { fileUrl, fileName, userId } = await request.json()
 
     if (!fileUrl || !fileName || !userId) {
@@ -15,6 +24,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    console.log('Starting analysis for file:', fileName)
 
     // Fetch the file from Firebase Storage
     const response = await fetch(fileUrl)
@@ -28,55 +39,37 @@ export async function POST(request: NextRequest) {
     // Initialize Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    // Create the prompt for insurance document analysis
+    // Create the prompt for insurance document analysis  
     const prompt = `
-Analyze this insurance document and provide a clear, well-formatted explanation. Use proper formatting with clear sections and NO asterisks (*) or bullet points in the main text.
+Analyze this insurance document and explain it clearly.
 
-Please provide your response in this EXACT format:
+Provide your response in this format:
 
 KEY TAKEAWAYS
-[3-4 most important things to remember about this plan, written as short, clear statements]
+List 3-4 most important things about this plan
 
-PLAN OVERVIEW
+PLAN OVERVIEW  
 Monthly Premium: $X
 Annual Deductible: $X
-Plan Type: [HMO/PPO/etc.]
-Network: [Insurance company name or network]
-Out-of-Pocket Maximum: $X
+Plan Type: HMO/PPO/etc
+Network: Name of network
 
-DOCUMENT TYPE
-[Brief explanation of what type of insurance document this is]
+COVERAGE
+What's covered for doctor visits, specialists, hospital, prescriptions
 
-COVERAGE INCLUDED
-Primary Care: [Details about doctor visits]
-Specialist Care: [Details about specialist visits]
-Hospital Care: [Details about inpatient/outpatient care]
-Prescription Drugs: [Details about medication coverage]
-Emergency Care: [Details about ER visits]
-Preventive Care: [Details about wellness visits, screenings]
+COSTS
+What you pay monthly and when you use healthcare
 
-COST BREAKDOWN
-Monthly Premium: $X (what you pay every month)
-Deductible: $X (amount you pay first each year before insurance helps)
-Primary Care Copay: $X per visit
-Specialist Copay: $X per visit
-Emergency Room: $X per visit
-Prescription Copays: $X for generic, $X for brand name
+NETWORK
+Which doctors you can use
 
-NETWORK INFORMATION
-In-Network: [Which doctors and hospitals you can use for lower costs]
-Out-of-Network: [What happens and costs if you go outside the network]
+STRENGTHS
+What's good about this plan
 
-PLAN STRENGTHS
-[What's good about this plan - 3-4 key advantages]
+LIMITATIONS  
+What to watch out for
 
-PLAN LIMITATIONS
-[What to watch out for - 3-4 key limitations or exclusions]
-
-IMPORTANT DATES
-[Key dates, enrollment periods, when coverage starts/ends]
-
-Format everything cleanly with clear section headers. Present information in short, digestible chunks rather than long paragraphs. Do NOT use asterisks, bullets, or markdown symbols.
+Keep sections short and clear. No asterisks or bullets.
 `
 
     // Analyze the document
@@ -104,18 +97,37 @@ Format everything cleanly with clear section headers. Present information in sho
     
     // Handle specific API errors
     if (error instanceof Error) {
-      if (error.message.includes('API key')) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+      
+      if (error.message.includes('API_KEY') || error.message.includes('API key') || error.message.includes('401')) {
         return NextResponse.json(
-          { error: 'Invalid or missing API key' },
+          { error: 'Invalid Gemini API key. Please check configuration.' },
           { status: 401 }
         )
       }
-      if (error.message.includes('quota')) {
+      if (error.message.includes('quota') || error.message.includes('429')) {
         return NextResponse.json(
           { error: 'API quota exceeded. Please try again later.' },
           { status: 429 }
         )
       }
+      if (error.message.includes('404') || error.message.includes('model')) {
+        return NextResponse.json(
+          { error: 'Gemini model not available. Please try again later.' },
+          { status: 503 }
+        )
+      }
+      
+      // Return specific error message for debugging
+      return NextResponse.json(
+        { 
+          error: 'Analysis failed',
+          details: error.message,
+          type: error.constructor.name
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json(
