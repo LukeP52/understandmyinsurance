@@ -274,99 +274,190 @@ export default function Home() {
                     <div className="space-y-8">
                       {/* Check if this is a comparison result */}
                       {uploadResults.data.analysis.text.includes('PLAN RECOMMENDATIONS') ? (
-                        // Render comparison format
-                        uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
-                          // Handle Plan Recommendations section
-                          if (section.startsWith('PLAN RECOMMENDATIONS')) {
-                            return (
-                              <div key={index} className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-6 shadow-lg">
-                                <h4 className="text-xl font-bold text-gray-900 mb-4 text-center flex items-center justify-center">
-                                  <span className="mr-2">🎯</span>
-                                  Plan Recommendations
+                        // Render new comparison format
+                        (() => {
+                          const analysisText = uploadResults.data.analysis.text
+                          const sections = analysisText.split('\n\n')
+                          
+                          // Parse sections
+                          const planRecommendations = sections.find((s: string) => s.startsWith('PLAN RECOMMENDATIONS'))?.replace('PLAN RECOMMENDATIONS\n', '').split('\n').filter((line: string) => line.trim()) || []
+                          const sideByOverview = sections.find((s: string) => s.startsWith('SIDE-BY-SIDE OVERVIEW'))?.replace('SIDE-BY-SIDE OVERVIEW\n', '').split('\n').filter((line: string) => line.trim()) || []
+                          const prosAndCons = sections.find((s: string) => s.startsWith('PROS AND CONS'))?.replace('PROS AND CONS\n', '') || ''
+                          const detailedComparison = sections.find((s: string) => s.startsWith('DETAILED COMPARISON'))?.replace('DETAILED COMPARISON\n', '').split('\n').filter((line: string) => line.trim()) || []
+                          const bottomLine = sections.find((s: string) => s.startsWith('BOTTOM LINE RECOMMENDATION'))?.replace('BOTTOM LINE RECOMMENDATION\n', '') || ''
+                          
+                          return (
+                            <>
+                              {/* Plan Recommendation Boxes */}
+                              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                                {planRecommendations.map((rec: string, index: number) => {
+                                  if (rec.includes(':')) {
+                                    const [planName, recommendation] = rec.split(': ')
+                                    return (
+                                      <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg">
+                                        <h4 className="text-lg font-bold text-gray-900 mb-3">{planName}</h4>
+                                        <p className="text-gray-700 leading-relaxed">{recommendation}</p>
+                                      </div>
+                                    )
+                                  }
+                                  return null
+                                })}
+                              </div>
+
+                              {/* Side-by-Side Plan Details Tables */}
+                              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg mb-8">
+                                <h4 className="text-xl font-bold text-gray-900 mb-6 text-center">
+                                  Plan Details Comparison
                                 </h4>
-                                <div className="space-y-4">
-                                  {section.replace('PLAN RECOMMENDATIONS\n', '').split('\n').map((line: string, lineIndex: number) => {
-                                    if (line.trim() && line.includes(':')) {
-                                      const [planName, recommendation] = line.split(': ')
-                                      return (
-                                        <div key={lineIndex} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                                          <h5 className="font-bold text-gray-900 mb-2">{planName}</h5>
-                                          <p className="text-gray-700">{recommendation}</p>
-                                        </div>
-                                      )
-                                    }
-                                    return null
-                                  })}
+                                <div className="overflow-x-auto">
+                                  <table className="w-full border-collapse">
+                                    <thead>
+                                      <tr className="border-b-2 border-gray-300">
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Feature</th>
+                                        {planRecommendations.map((rec: string, index: number) => {
+                                          if (rec.includes(':')) {
+                                            const planName = rec.split(':')[0]
+                                            return (
+                                              <th key={index} className="text-center py-3 px-4 font-semibold text-gray-900 border-l border-gray-300">
+                                                {planName}
+                                              </th>
+                                            )
+                                          }
+                                          return null
+                                        })}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {sideByOverview.map((line: string, lineIndex: number) => {
+                                        const parts = line.split(':')
+                                        if (parts.length >= 2) {
+                                          const category = parts[0].trim()
+                                          const values = parts.slice(1).join(':').split('|').map((v: string) => v.trim())
+                                          return (
+                                            <tr key={lineIndex} className="border-b border-gray-200 hover:bg-gray-50">
+                                              <td className="py-3 px-4 font-medium text-gray-900">{category}</td>
+                                              {values.map((value: string, valueIndex: number) => (
+                                                <td key={valueIndex} className="py-3 px-4 text-center border-l border-gray-200 text-gray-700">
+                                                  {value}
+                                                </td>
+                                              ))}
+                                            </tr>
+                                          )
+                                        }
+                                        return null
+                                      })}
+                                    </tbody>
+                                  </table>
                                 </div>
                               </div>
-                            )
-                          }
-                          
-                          // Handle Side-by-Side Overview
-                          if (section.startsWith('SIDE-BY-SIDE OVERVIEW')) {
-                            const overviewLines = section.replace('SIDE-BY-SIDE OVERVIEW\n', '').split('\n').filter(line => line.trim())
-                            return (
-                              <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
-                                <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-                                  <span className="mr-2">📊</span>
-                                  Side-by-Side Comparison
+
+                              {/* Pros for Each Plan */}
+                              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                                {(() => {
+                                  const prosLines = prosAndCons.split('\n').filter((line: string) => line.trim())
+                                  const planPros: Record<string, string[]> = {}
+                                  
+                                  let currentPlan = ''
+                                  prosLines.forEach((line: string) => {
+                                    if (line.includes('Pros:')) {
+                                      currentPlan = line.replace(' Pros:', '').trim()
+                                      planPros[currentPlan] = []
+                                    } else if (line.includes('Cons:')) {
+                                      currentPlan = ''
+                                    } else if (currentPlan && line.startsWith('•')) {
+                                      planPros[currentPlan].push(line.replace('• ', ''))
+                                    }
+                                  })
+                                  
+                                  return Object.entries(planPros).map(([planName, pros], index) => (
+                                    <div key={index} className="bg-green-50 border-2 border-green-200 rounded-xl p-6 shadow-lg">
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                        <span className="mr-2">✓</span>
+                                        {planName} Pros
+                                      </h4>
+                                      <ul className="space-y-2">
+                                        {pros.map((pro: string, proIndex: number) => (
+                                          <li key={proIndex} className="flex items-start">
+                                            <span className="text-green-600 mr-3 mt-1 font-bold">•</span>
+                                            <span className="text-gray-700">{pro}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  ))
+                                })()}
+                              </div>
+
+                              {/* Main Differences - High Level */}
+                              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg mb-8">
+                                <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center justify-center">
+                                  <span className="mr-2">🔍</span>
+                                  Key Differences for Your Decision
                                 </h4>
                                 <div className="space-y-3">
-                                  {overviewLines.map((line: string, lineIndex: number) => {
-                                    const parts = line.split(':')
-                                    if (parts.length >= 2) {
-                                      const category = parts[0].trim()
-                                      const comparisons = parts.slice(1).join(':').trim()
-                                      return (
-                                        <div key={lineIndex} className="bg-white p-3 rounded-lg border border-gray-100">
-                                          <div className="font-semibold text-gray-900 mb-1">{category}:</div>
-                                          <div className="text-sm text-gray-700">{comparisons}</div>
-                                        </div>
-                                      )
-                                    }
-                                    return null
-                                  })}
+                                  {detailedComparison.map((diff: string, index: number) => (
+                                    <div key={index} className="bg-white p-4 rounded-lg border border-yellow-200">
+                                      <p className="text-gray-700 font-medium">{diff}</p>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
-                            )
-                          }
-                          
-                          // Handle other comparison sections with enhanced formatting
-                          if (section.trim()) {
-                            const lines = section.split('\n')
-                            const title = lines[0]
-                            const content = lines.slice(1).join('\n')
-                            
-                            const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DETAILED') || title.startsWith('PROS') || title.startsWith('BOTTOM')
-                            
-                            if (isHeader) {
-                              return (
-                                <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
-                                    {title}
+
+                              {/* Bottom Line Recommendation */}
+                              {bottomLine && (
+                                <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-6 shadow-lg mb-8">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                                    Bottom Line Recommendation
                                   </h4>
-                                  <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {content.split('\n').map((line: string, lineIndex: number) => (
-                                      line.trim() && (
-                                        <div key={lineIndex} className="flex items-start">
-                                          {line.startsWith('•') ? (
-                                            <>
-                                              <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
-                                              <span>{line.replace('• ', '')}</span>
-                                            </>
-                                          ) : (
-                                            <span className="whitespace-pre-wrap">{line}</span>
-                                          )}
-                                        </div>
-                                      )
-                                    ))}
-                                  </div>
+                                  <p className="text-gray-700 leading-relaxed text-center">{bottomLine}</p>
                                 </div>
-                              )
-                            }
-                          }
-                          return null
-                        })
+                              )}
+
+                              {/* Detailed Plan Analysis */}
+                              <div className="space-y-6">
+                                <h3 className="text-2xl font-bold text-gray-900 text-center mb-6">
+                                  Detailed Plan Analysis
+                                </h3>
+                                {sections.filter((section: string) => 
+                                  !section.startsWith('PLAN RECOMMENDATIONS') &&
+                                  !section.startsWith('SIDE-BY-SIDE OVERVIEW') &&
+                                  !section.startsWith('PROS AND CONS') &&
+                                  !section.startsWith('DETAILED COMPARISON') &&
+                                  !section.startsWith('BOTTOM LINE RECOMMENDATION') &&
+                                  section.trim()
+                                ).map((section: string, index: number) => {
+                                  const lines = section.split('\n')
+                                  const title = lines[0]
+                                  const content = lines.slice(1).join('\n')
+                                  
+                                  return (
+                                    <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                      <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                        {title}
+                                      </h4>
+                                      <div className="text-gray-700 leading-relaxed space-y-2">
+                                        {content.split('\n').map((line: string, lineIndex: number) => (
+                                          line.trim() && (
+                                            <div key={lineIndex} className="flex items-start">
+                                              {line.startsWith('•') ? (
+                                                <>
+                                                  <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
+                                                  <span>{line.replace('• ', '')}</span>
+                                                </>
+                                              ) : (
+                                                <span className="whitespace-pre-wrap">{line}</span>
+                                              )}
+                                            </div>
+                                          )
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </>
+                          )
+                        })()
                       ) : (
                         // Render single plan format (existing logic)
                         uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
