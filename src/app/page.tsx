@@ -4,28 +4,22 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
-import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
 import AuthModal from './components/Auth/AuthModal'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [urls, setUrls] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [geminiTest, setGeminiTest] = useState<any>(null)
-  const [testingGemini, setTestingGemini] = useState(false)
+  const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
   const { user, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files])
   }
 
-  const handleUrlAdd = (url: string) => {
-    setUrls(prev => [...prev, url])
-  }
 
   const handleUpload = async () => {
     if (!user) {
@@ -34,9 +28,16 @@ export default function Home() {
     }
 
     // Validate file count before processing
-    const totalItems = uploadedFiles.length + urls.length
-    if (totalItems > 3) {
-      alert(`Too many items (${totalItems}). Maximum 3 files/URLs per upload.`)
+    if (analysisMode === 'single' && uploadedFiles.length > 1) {
+      alert('Please upload only one PDF for single plan analysis.')
+      return
+    }
+    if (analysisMode === 'compare' && uploadedFiles.length < 2) {
+      alert('Please upload at least 2 PDFs to compare plans.')
+      return
+    }
+    if (uploadedFiles.length > 5) {
+      alert('Maximum 5 PDFs allowed for comparison.')
       return
     }
     
@@ -59,7 +60,7 @@ export default function Home() {
         setIsAnalyzing(true)
       }
 
-      const result = await uploadDocuments(uploadedFiles, urls, user.uid)
+      const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
       
       setUploadResults({
         success: true,
@@ -70,8 +71,8 @@ export default function Home() {
             size: file.size,
             type: file.type
           })),
-          urls: urls,
-          totalItems: uploadedFiles.length + urls.length,
+          urls: [],
+          totalItems: uploadedFiles.length,
           timestamp: new Date().toISOString(),
           analysis: result.analysis
         }
@@ -79,7 +80,6 @@ export default function Home() {
 
       // Clear the form
       setUploadedFiles([])
-      setUrls([])
       
     } catch (error) {
       console.error('Upload failed:', error)
@@ -90,7 +90,7 @@ export default function Home() {
     }
   }
 
-  const canUpload = uploadedFiles.length > 0 || urls.length > 0
+  const canUpload = uploadedFiles.length > 0
 
   const testGemini = async () => {
     setTestingGemini(true)
@@ -162,31 +162,72 @@ export default function Home() {
         {/* Upload Section */}
         <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
+            <h2 className="text-2xl font-bold text-black mb-6">Analyze Your Insurance Plans</h2>
             
-            
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
-              <URLInput onUrlAdd={handleUrlAdd} />
+            {/* Analysis Mode Toggle */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-gray-100 rounded-lg p-1 inline-flex">
+                <button
+                  onClick={() => setAnalysisMode('single')}
+                  className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                    analysisMode === 'single'
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Analyze One Plan
+                </button>
+                <button
+                  onClick={() => setAnalysisMode('compare')}
+                  className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                    analysisMode === 'compare'
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Compare Multiple Plans
+                </button>
+              </div>
             </div>
 
-            {/* Uploaded Items Summary */}
-            {(uploadedFiles.length > 0 || urls.length > 0) && (
-              <div className="mb-6 p-4 bg-beige-50 rounded-lg">
-                <h3 className="font-semibold text-black mb-2">Ready to Upload:</h3>
+            {/* Upload Instructions */}
+            <div className="text-center mb-6">
+              <p className="text-gray-600">
+                {analysisMode === 'single' 
+                  ? 'Upload one PDF to get a detailed analysis of your insurance plan'
+                  : 'Upload 2-5 PDFs to compare different insurance plans side by side'
+                }
+              </p>
+            </div>
+            
+            <div className="mb-8">
+              <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
+            </div>
+
+            {/* Uploaded Files Summary */}
+            {uploadedFiles.length > 0 && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="font-semibold text-black mb-2">
+                  {analysisMode === 'single' ? 'Ready to Analyze:' : `Ready to Compare (${uploadedFiles.length} plans):`}
+                </h3>
                 <div className="space-y-1 text-sm text-gray-700">
                   {uploadedFiles.map((file, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span>📄 {file.name}</span>
-                      {file.type === 'application/pdf' && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                          Will be analyzed
-                        </span>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        {analysisMode === 'compare' && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                            Plan {index + 1}
+                          </span>
+                        )}
+                        <button
+                          onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
+                          className="text-xs text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
-                  ))}
-                  {urls.map((url, index) => (
-                    <div key={index}>🔗 {url}</div>
                   ))}
                 </div>
               </div>
