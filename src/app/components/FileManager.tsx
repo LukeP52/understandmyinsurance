@@ -79,10 +79,17 @@ export default function FileManager() {
       // Delete from Firestore
       await deleteDoc(doc(db, 'documents', document.id));
       
-      // Delete from Storage if it exists
+      // Try to delete from Storage if it exists - ignore if not found
       if (document.downloadURL) {
-        const storageRef = ref(storage, `users/${user?.uid}/${document.id}_${document.fileName}`);
-        await deleteObject(storageRef);
+        try {
+          const storageRef = ref(storage, `users/${user?.uid}/${document.id}_${document.fileName}`);
+          await deleteObject(storageRef);
+        } catch (storageError: any) {
+          // Ignore storage errors (file might not exist)
+          if (storageError.code !== 'storage/object-not-found') {
+            console.warn('Storage delete error:', storageError);
+          }
+        }
       }
     } catch (error) {
       console.error('Error deleting document:', error);

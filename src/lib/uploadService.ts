@@ -74,9 +74,7 @@ export async function getUploadHistory(userId: string) {
   try {
     const q = query(
       collection(db, 'documents'),
-      where('userId', '==', userId),
-      where('status', '==', 'completed'),
-      orderBy('uploadedAt', 'desc')
+      where('userId', '==', userId)
     )
     
     const querySnapshot = await getDocs(q)
@@ -85,7 +83,15 @@ export async function getUploadHistory(userId: string) {
       ...doc.data()
     }))
     
-    return documents
+    // Filter completed and sort on client
+    const completedDocs = documents
+      .filter(doc => doc.status === 'completed')
+      .sort((a: any, b: any) => {
+        if (!a.uploadedAt || !b.uploadedAt) return 0;
+        return b.uploadedAt.toDate() - a.uploadedAt.toDate();
+      });
+    
+    return completedDocs
   } catch (error) {
     console.error('Error fetching upload history:', error)
     return []
