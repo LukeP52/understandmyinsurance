@@ -1,6 +1,6 @@
 import { storage, db } from './firebase'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
 
 interface UploadResult {
   id: string
