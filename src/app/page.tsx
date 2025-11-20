@@ -138,7 +138,7 @@ export default function Home() {
             <PrivacyNotice />
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <FileUpload onFileUpload={handleFileUpload} />
+              <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
               <URLInput onUrlAdd={handleUrlAdd} />
             </div>
 

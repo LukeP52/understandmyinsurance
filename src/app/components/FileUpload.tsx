@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface FileUploadProps {
   onFileUpload: (files: File[]) => void
+  onAuthRequired: () => void
 }
 
-export default function FileUpload({ onFileUpload }: FileUploadProps) {
+export default function FileUpload({ onFileUpload, onAuthRequired }: FileUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { user } = useAuth()
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -23,6 +26,11 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragOver(false)
+    
+    if (!user) {
+      onAuthRequired()
+      return
+    }
     
     const files = Array.from(e.dataTransfer.files).filter(file => {
       const validTypes = [
@@ -57,6 +65,11 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) {
+      onAuthRequired()
+      return
+    }
+    
     const files = Array.from(e.target.files || [])
     if (files.length > 0) {
       onFileUpload(files)
@@ -64,6 +77,10 @@ export default function FileUpload({ onFileUpload }: FileUploadProps) {
   }
 
   const openFileDialog = () => {
+    if (!user) {
+      onAuthRequired()
+      return
+    }
     fileInputRef.current?.click()
   }
 
