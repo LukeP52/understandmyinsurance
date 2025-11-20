@@ -332,44 +332,105 @@ export default function Home() {
                     </h3>
                     <div className="text-blue-900">
                       {uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
-                        // Check if this is the QUICK OVERVIEW section
-                        if (section.startsWith('QUICK OVERVIEW')) {
+                        // Check if this is the KEY TAKEAWAYS section (show first)
+                        if (section.startsWith('KEY TAKEAWAYS')) {
                           return (
-                            <div key={index} className="mb-6 p-4 bg-white border border-blue-300 rounded-lg">
-                              <h4 className="font-bold text-blue-800 text-lg mb-3">📋 Quick Overview</h4>
-                              <div className="text-sm text-blue-900 font-medium space-y-1">
-                                {section.replace('QUICK OVERVIEW\n', '').split('\n').map((line: string, lineIndex: number) => (
-                                  <div key={lineIndex}>{line}</div>
+                            <div key={index} className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+                              <h4 className="font-bold text-yellow-800 text-lg mb-3 flex items-center">
+                                ⚡ Key Takeaways
+                              </h4>
+                              <div className="text-sm text-yellow-900 leading-relaxed">
+                                {section.replace('KEY TAKEAWAYS\n', '').split('\n').map((line: string, lineIndex: number) => (
+                                  line.trim() && (
+                                    <div key={lineIndex} className="mb-2 font-medium">{line}</div>
+                                  )
                                 ))}
                               </div>
                             </div>
                           )
                         }
                         
-                        // Handle other sections
+                        // Check if this is the PLAN OVERVIEW section (show as chart)
+                        if (section.startsWith('PLAN OVERVIEW')) {
+                          const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
+                          return (
+                            <div key={index} className="mb-6 p-4 bg-white border border-blue-300 rounded-lg">
+                              <h4 className="font-bold text-blue-800 text-lg mb-4 text-center">📊 Plan Overview</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {overviewLines.map((line: string, lineIndex: number) => {
+                                  const [label, value] = line.split(':').map(s => s.trim())
+                                  return (
+                                    <div key={lineIndex} className="bg-blue-50 p-3 rounded">
+                                      <div className="text-xs text-blue-600 font-medium">{label}</div>
+                                      <div className="text-sm text-blue-900 font-bold">{value}</div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        }
+                        
+                        // Handle structured sections (COVERAGE, COST BREAKDOWN, etc.)
                         if (section.trim()) {
                           const lines = section.split('\n')
                           const title = lines[0]
-                          const content = lines.slice(1).join('\n')
+                          const content = lines.slice(1).filter(line => line.trim())
                           
-                          // Check if this line looks like a section header (all caps or starts with specific patterns)
-                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT') || title.startsWith('KEY')
+                          // Check if this line looks like a section header
+                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('COVERAGE') || title.startsWith('COST') || title.startsWith('NETWORK') || title.startsWith('PLAN') || title.startsWith('IMPORTANT')
                           
                           if (isHeader) {
-                            return (
-                              <div key={index} className="mb-4">
-                                <h4 className="font-bold text-blue-800 text-base mb-2 border-b border-blue-300 pb-1">
-                                  {title}
-                                </h4>
-                                <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
-                                  {content}
+                            // Check if content has structured data (label: value format)
+                            const hasStructuredData = content.some(line => line.includes(':'))
+                            
+                            if (hasStructuredData && (title.includes('COVERAGE') || title.includes('COST'))) {
+                              return (
+                                <div key={index} className="mb-6">
+                                  <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
+                                    {title}
+                                  </h4>
+                                  <div className="grid grid-cols-1 gap-3">
+                                    {content.map((line: string, lineIndex: number) => {
+                                      if (line.includes(':')) {
+                                        const [label, value] = line.split(':').map(s => s.trim())
+                                        return (
+                                          <div key={lineIndex} className="flex justify-between items-start p-2 bg-gray-50 rounded">
+                                            <span className="font-medium text-gray-700 text-sm">{label}</span>
+                                            <span className="text-sm text-gray-900 text-right max-w-xs">{value}</span>
+                                          </div>
+                                        )
+                                      }
+                                      return (
+                                        <div key={lineIndex} className="text-sm text-blue-900 leading-relaxed">
+                                          {line}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                            )
+                              )
+                            } else {
+                              // Regular section with paragraph content
+                              return (
+                                <div key={index} className="mb-6">
+                                  <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
+                                    {title}
+                                  </h4>
+                                  <div className="text-sm text-blue-900 leading-relaxed space-y-2">
+                                    {content.map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex}>{line}</div>
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            }
                           }
                           
                           return (
-                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed">
                               {section}
                             </div>
                           )

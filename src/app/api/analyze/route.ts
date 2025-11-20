@@ -34,41 +34,49 @@ Analyze this insurance document and provide a clear, well-formatted explanation.
 
 Please provide your response in this EXACT format:
 
-QUICK OVERVIEW
-Monthly Cost: $X (the premium you pay each month)
-Deductible: $X (amount you pay first each year before insurance kicks in)
-Network: [In-Network/Out-of-Network details]
-Plan Type: [HMO/PPO/etc. with brief explanation]
+KEY TAKEAWAYS
+[3-4 most important things to remember about this plan, written as short, clear statements]
+
+PLAN OVERVIEW
+Monthly Premium: $X
+Annual Deductible: $X
+Plan Type: [HMO/PPO/etc.]
+Network: [Insurance company name or network]
+Out-of-Pocket Maximum: $X
 
 DOCUMENT TYPE
-[Explain what type of insurance document this is]
+[Brief explanation of what type of insurance document this is]
 
-WHAT YOU'RE COVERED FOR
-[List main services covered - doctor visits, hospital stays, prescriptions, etc.]
+COVERAGE INCLUDED
+Primary Care: [Details about doctor visits]
+Specialist Care: [Details about specialist visits]
+Hospital Care: [Details about inpatient/outpatient care]
+Prescription Drugs: [Details about medication coverage]
+Emergency Care: [Details about ER visits]
+Preventive Care: [Details about wellness visits, screenings]
 
-WHAT YOU PAY
-Monthly Premium: $X
-Deductible: $X (explain what this means)
-Copays: $X for [service] (fixed amount you pay for each visit)
-Coinsurance: X% (percentage you pay after meeting deductible)
+COST BREAKDOWN
+Monthly Premium: $X (what you pay every month)
+Deductible: $X (amount you pay first each year before insurance helps)
+Primary Care Copay: $X per visit
+Specialist Copay: $X per visit
+Emergency Room: $X per visit
+Prescription Copays: $X for generic, $X for brand name
 
-NETWORK DETAILS
-In-Network: [Which doctors/hospitals are included]
-Out-of-Network: [What happens if you go outside the network]
+NETWORK INFORMATION
+In-Network: [Which doctors and hospitals you can use for lower costs]
+Out-of-Network: [What happens and costs if you go outside the network]
 
-WHAT'S GOOD ABOUT THIS PLAN
-[Positive aspects and advantages]
+PLAN STRENGTHS
+[What's good about this plan - 3-4 key advantages]
 
-WHAT TO WATCH OUT FOR
-[Limitations, exclusions, things that might surprise you]
+PLAN LIMITATIONS
+[What to watch out for - 3-4 key limitations or exclusions]
 
-IMPORTANT DATES AND DEADLINES
-[Key dates, enrollment periods, etc.]
+IMPORTANT DATES
+[Key dates, enrollment periods, when coverage starts/ends]
 
-KEY TAKEAWAYS
-[3-4 most important things to remember]
-
-Format everything cleanly with proper headings. Do NOT use asterisks, bullets, or markdown symbols. Use clear section headers and readable paragraphs.
+Format everything cleanly with clear section headers. Present information in short, digestible chunks rather than long paragraphs. Do NOT use asterisks, bullets, or markdown symbols.
 `
 
     // Analyze the document
