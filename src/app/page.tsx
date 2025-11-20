@@ -164,51 +164,6 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
             
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-3 flex-1">
-                  <div className="text-2xl">🤖</div>
-                  <div>
-                    <h3 className="font-semibold text-blue-800 mb-1">AI-Powered Analysis</h3>
-                    <p className="text-sm text-blue-700">
-                      PDF insurance documents will be automatically analyzed by AI and explained in plain English. 
-                      No confusing insurance jargon - just simple explanations of what your plan covers, what you pay, 
-                      and what to watch out for.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={testGemini}
-                  disabled={testingGemini}
-                  className="ml-4 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex-shrink-0"
-                >
-                  {testingGemini ? 'Testing...' : 'Test AI'}
-                </button>
-              </div>
-              
-              {/* Gemini Test Results */}
-              {geminiTest && (
-                <div className={`mt-4 p-3 rounded text-xs border ${
-                  geminiTest.success 
-                    ? 'bg-green-50 border-green-200 text-green-800' 
-                    : 'bg-red-50 border-red-200 text-red-800'
-                }`}>
-                  {geminiTest.success ? (
-                    <div>
-                      <div className="font-medium mb-1">✅ Gemini AI Connected Successfully!</div>
-                      <div className="italic">"{geminiTest.response}"</div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="font-medium mb-1">❌ {geminiTest.error}</div>
-                      {geminiTest.details && <div className="text-xs opacity-75">{geminiTest.details}</div>}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <PrivacyNotice />
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
@@ -287,39 +242,6 @@ export default function Home() {
                 {uploadResults.data.analysis ? 'Upload & Analysis Complete ✅' : 'Upload Successful ✅'}
               </h2>
               
-              <div className="space-y-6">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <h3 className="font-semibold text-green-800 mb-4">Files and URLs processed successfully</h3>
-                  
-                  {uploadResults.data.files.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-medium text-green-700 mb-2">Files uploaded:</h4>
-                      <ul className="text-green-600 space-y-1">
-                        {uploadResults.data.files.map((file: any, index: number) => (
-                          <li key={index}>
-                            📄 {file.name} ({(file.size / 1024).toFixed(0)} KB)
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {uploadResults.data.urls.length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-medium text-green-700 mb-2">URLs added:</h4>
-                      <ul className="text-green-600 space-y-1">
-                        {uploadResults.data.urls.map((url: string, index: number) => (
-                          <li key={index}>🔗 {url}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  <div className="text-sm text-green-600 mt-4">
-                    Total items: {uploadResults.data.totalItems} • 
-                    Uploaded: {uploadResults.data.timestamp ? new Date(uploadResults.data.timestamp).toLocaleString() : 'now'}
-                  </div>
-                </div>
 
                 {/* AI Analysis Results */}
                 {uploadResults.data.analysis && (
@@ -337,15 +259,15 @@ export default function Home() {
                         // Check if this is the KEY TAKEAWAYS section (show first)
                         if (section.startsWith('KEY TAKEAWAYS')) {
                           return (
-                            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                              <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                            <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                              <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                 Key Takeaways
                               </h4>
                               <div className="space-y-3">
                                 {section.replace('KEY TAKEAWAYS\n', '').split('\n').map((line: string, lineIndex: number) => (
                                   line.trim() && (
                                     <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                      <span className="text-blue-500 mr-3 mt-1">•</span>
+                                      <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
                                       <span className="font-medium">{line.replace('• ', '')}</span>
                                     </div>
                                   )
@@ -379,7 +301,7 @@ export default function Home() {
                           )
                         }
                         
-                        // Handle all other sections with clean formatting
+                        // Handle all other sections with enhanced formatting
                         if (section.trim()) {
                           const lines = section.split('\n')
                           const title = lines[0]
@@ -390,8 +312,8 @@ export default function Home() {
                           
                           if (isHeader) {
                             return (
-                              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
-                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                              <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                   {title}
                                 </h4>
                                 <div className="text-gray-700 leading-relaxed space-y-2">
@@ -400,7 +322,7 @@ export default function Home() {
                                       <div key={lineIndex} className="flex items-start">
                                         {line.startsWith('•') ? (
                                           <>
-                                            <span className="text-blue-500 mr-3 mt-1">•</span>
+                                            <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
                                             <span>{line.replace('• ', '')}</span>
                                           </>
                                         ) : (
@@ -415,7 +337,7 @@ export default function Home() {
                           }
                           
                           return (
-                            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                            <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                               <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                                 {section}
                               </div>
