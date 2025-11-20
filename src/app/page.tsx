@@ -292,7 +292,104 @@ export default function Home() {
                       </p>
                     </div>
                     <div className="space-y-8">
-                      {uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
+                      {/* Check if this is a comparison result */}
+                      {uploadResults.data.analysis.text.includes('PLAN RECOMMENDATIONS') ? (
+                        // Render comparison format
+                        uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
+                          // Handle Plan Recommendations section
+                          if (section.startsWith('PLAN RECOMMENDATIONS')) {
+                            return (
+                              <div key={index} className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-6 shadow-lg">
+                                <h4 className="text-xl font-bold text-gray-900 mb-4 text-center flex items-center justify-center">
+                                  <span className="mr-2">🎯</span>
+                                  Plan Recommendations
+                                </h4>
+                                <div className="space-y-4">
+                                  {section.replace('PLAN RECOMMENDATIONS\n', '').split('\n').map((line: string, lineIndex: number) => {
+                                    if (line.trim() && line.includes(':')) {
+                                      const [planName, recommendation] = line.split(': ')
+                                      return (
+                                        <div key={lineIndex} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                                          <h5 className="font-bold text-gray-900 mb-2">{planName}</h5>
+                                          <p className="text-gray-700">{recommendation}</p>
+                                        </div>
+                                      )
+                                    }
+                                    return null
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          }
+                          
+                          // Handle Side-by-Side Overview
+                          if (section.startsWith('SIDE-BY-SIDE OVERVIEW')) {
+                            const overviewLines = section.replace('SIDE-BY-SIDE OVERVIEW\n', '').split('\n').filter(line => line.trim())
+                            return (
+                              <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
+                                <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                  <span className="mr-2">📊</span>
+                                  Side-by-Side Comparison
+                                </h4>
+                                <div className="space-y-3">
+                                  {overviewLines.map((line: string, lineIndex: number) => {
+                                    const parts = line.split(':')
+                                    if (parts.length >= 2) {
+                                      const category = parts[0].trim()
+                                      const comparisons = parts.slice(1).join(':').trim()
+                                      return (
+                                        <div key={lineIndex} className="bg-white p-3 rounded-lg border border-gray-100">
+                                          <div className="font-semibold text-gray-900 mb-1">{category}:</div>
+                                          <div className="text-sm text-gray-700">{comparisons}</div>
+                                        </div>
+                                      )
+                                    }
+                                    return null
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          }
+                          
+                          // Handle other comparison sections with enhanced formatting
+                          if (section.trim()) {
+                            const lines = section.split('\n')
+                            const title = lines[0]
+                            const content = lines.slice(1).join('\n')
+                            
+                            const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DETAILED') || title.startsWith('PROS') || title.startsWith('BOTTOM')
+                            
+                            if (isHeader) {
+                              return (
+                                <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                    {title}
+                                  </h4>
+                                  <div className="text-gray-700 leading-relaxed space-y-2">
+                                    {content.split('\n').map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex} className="flex items-start">
+                                          {line.startsWith('•') ? (
+                                            <>
+                                              <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
+                                              <span>{line.replace('• ', '')}</span>
+                                            </>
+                                          ) : (
+                                            <span className="whitespace-pre-wrap">{line}</span>
+                                          )}
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            }
+                          }
+                          return null
+                        })
+                      ) : (
+                        // Render single plan format (existing logic)
+                        uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
                         // Check if this is the KEY TAKEAWAYS section (show first)
                         if (section.startsWith('KEY TAKEAWAYS')) {
                           return (
@@ -382,7 +479,8 @@ export default function Home() {
                           )
                         }
                         return null
-                      })}
+                      })
+                      )}
                     </div>
                   </div>
                 </div>
