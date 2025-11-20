@@ -37,6 +37,8 @@ export async function uploadDocuments(
   
   let uploadedFileData = null
 
+  let analysis = undefined
+
   // Upload files to Firebase Storage
   if (files.length > 0) {
     const file = files[0] // For now, handle single file
@@ -63,7 +65,6 @@ export async function uploadDocuments(
     })
 
     // Trigger analysis for PDF files
-    let analysis = undefined
     if (file.type === 'application/pdf') {
       try {
         const analysisResponse = await fetch('/api/analyze', {

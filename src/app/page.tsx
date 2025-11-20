@@ -15,6 +15,8 @@ export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [geminiTest, setGeminiTest] = useState<any>(null)
+  const [testingGemini, setTestingGemini] = useState(false)
   const { user, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
@@ -90,6 +92,25 @@ export default function Home() {
 
   const canUpload = uploadedFiles.length > 0 || urls.length > 0
 
+  const testGemini = async () => {
+    setTestingGemini(true)
+    setGeminiTest(null)
+    
+    try {
+      const response = await fetch('/api/test-gemini')
+      const result = await response.json()
+      setGeminiTest(result)
+    } catch (error) {
+      setGeminiTest({
+        success: false,
+        error: 'Failed to connect to test endpoint',
+        details: error instanceof Error ? error.message : 'Network error'
+      })
+    } finally {
+      setTestingGemini(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-beige-100">
       {/* Navigation */}
@@ -144,16 +165,46 @@ export default function Home() {
             <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
             
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <div className="text-2xl">🤖</div>
-                <div>
-                  <h3 className="font-semibold text-blue-800 mb-1">AI-Powered Analysis</h3>
-                  <p className="text-sm text-blue-700">
-                    PDF insurance documents will be automatically analyzed by AI to extract key coverage details, 
-                    deductibles, limits, and important information you should know.
-                  </p>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-3 flex-1">
+                  <div className="text-2xl">🤖</div>
+                  <div>
+                    <h3 className="font-semibold text-blue-800 mb-1">AI-Powered Analysis</h3>
+                    <p className="text-sm text-blue-700">
+                      PDF insurance documents will be automatically analyzed by AI to extract key coverage details, 
+                      deductibles, limits, and important information you should know.
+                    </p>
+                  </div>
                 </div>
+                <button
+                  onClick={testGemini}
+                  disabled={testingGemini}
+                  className="ml-4 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex-shrink-0"
+                >
+                  {testingGemini ? 'Testing...' : 'Test AI'}
+                </button>
               </div>
+              
+              {/* Gemini Test Results */}
+              {geminiTest && (
+                <div className={`mt-4 p-3 rounded text-xs border ${
+                  geminiTest.success 
+                    ? 'bg-green-50 border-green-200 text-green-800' 
+                    : 'bg-red-50 border-red-200 text-red-800'
+                }`}>
+                  {geminiTest.success ? (
+                    <div>
+                      <div className="font-medium mb-1">✅ Gemini AI Connected Successfully!</div>
+                      <div className="italic">"{geminiTest.response}"</div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="font-medium mb-1">❌ {geminiTest.error}</div>
+                      {geminiTest.details && <div className="text-xs opacity-75">{geminiTest.details}</div>}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             
             <PrivacyNotice />
