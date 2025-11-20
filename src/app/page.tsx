@@ -280,7 +280,7 @@ export default function Home() {
                           const sections = analysisText.split('\n\n')
                           
                           // Parse sections
-                          const planRecommendations = sections.find((s: string) => s.startsWith('PLAN RECOMMENDATIONS'))?.replace('PLAN RECOMMENDATIONS\n', '').split('\n').filter((line: string) => line.trim()) || []
+                          const planRecommendations = sections.find((s: string) => s.startsWith('PLAN RECOMMENDATIONS'))?.replace('PLAN RECOMMENDATIONS\n', '').split('\n').filter((line: string) => line.trim() && line.includes(':')) || []
                           const sideByOverview = sections.find((s: string) => s.startsWith('SIDE-BY-SIDE OVERVIEW'))?.replace('SIDE-BY-SIDE OVERVIEW\n', '').split('\n').filter((line: string) => line.trim()) || []
                           const prosAndCons = sections.find((s: string) => s.startsWith('PROS AND CONS'))?.replace('PROS AND CONS\n', '') || ''
                           const detailedComparison = sections.find((s: string) => s.startsWith('DETAILED COMPARISON'))?.replace('DETAILED COMPARISON\n', '').split('\n').filter((line: string) => line.trim()) || []
@@ -288,11 +288,23 @@ export default function Home() {
                           
                           return (
                             <>
+                              {/* Debug Info - Remove after testing */}
+                              {process.env.NODE_ENV === 'development' && (
+                                <div className="bg-red-100 border border-red-300 p-4 mb-4 text-xs">
+                                  <p><strong>Debug - Plan Recommendations Found:</strong> {planRecommendations.length}</p>
+                                  {planRecommendations.map((rec: string, i: number) => (
+                                    <p key={i}><strong>Plan {i + 1}:</strong> {rec}</p>
+                                  ))}
+                                </div>
+                              )}
+
                               {/* Plan Recommendation Boxes */}
-                              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                              <div className={`grid gap-6 mb-8 ${planRecommendations.length === 2 ? 'md:grid-cols-2' : planRecommendations.length === 3 ? 'md:grid-cols-3' : planRecommendations.length >= 4 ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-1'}`}>
                                 {planRecommendations.map((rec: string, index: number) => {
-                                  if (rec.includes(':')) {
-                                    const [planName, recommendation] = rec.split(': ')
+                                  if (rec.includes(':') && rec.trim()) {
+                                    const colonIndex = rec.indexOf(':')
+                                    const planName = rec.substring(0, colonIndex).trim()
+                                    const recommendation = rec.substring(colonIndex + 1).trim()
                                     return (
                                       <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg">
                                         <h4 className="text-lg font-bold text-gray-900 mb-3">{planName}</h4>
@@ -315,8 +327,9 @@ export default function Home() {
                                       <tr className="border-b-2 border-gray-300">
                                         <th className="text-left py-3 px-4 font-semibold text-gray-900">Feature</th>
                                         {planRecommendations.map((rec: string, index: number) => {
-                                          if (rec.includes(':')) {
-                                            const planName = rec.split(':')[0]
+                                          if (rec.includes(':') && rec.trim()) {
+                                            const colonIndex = rec.indexOf(':')
+                                            const planName = rec.substring(0, colonIndex).trim()
                                             return (
                                               <th key={index} className="text-center py-3 px-4 font-semibold text-gray-900 border-l border-gray-300">
                                                 {planName}
