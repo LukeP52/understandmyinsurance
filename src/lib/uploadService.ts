@@ -10,6 +10,10 @@ interface UploadResult {
   fileType: string
   urls: string[]
   uploadedAt: any
+  analysis?: {
+    text: string
+    analyzedAt: string
+  }
 }
 
 export async function uploadDocuments(
@@ -57,6 +61,35 @@ export async function uploadDocuments(
       file: uploadedFileData,
       status: 'completed'
     })
+
+    // Trigger analysis for PDF files
+    let analysis = undefined
+    if (file.type === 'application/pdf') {
+      try {
+        const analysisResponse = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fileUrl: downloadURL,
+            fileName: file.name,
+            userId: userId
+          })
+        })
+
+        if (analysisResponse.ok) {
+          const analysisResult = await analysisResponse.json()
+          analysis = {
+            text: analysisResult.analysis,
+            analyzedAt: analysisResult.analyzedAt
+          }
+        }
+      } catch (error) {
+        console.error('Analysis failed:', error)
+        // Continue without analysis - don't fail the upload
+      }
+    }
   }
 
   return {
@@ -66,7 +99,8 @@ export async function uploadDocuments(
     fileSize: uploadedFileData?.fileSize || 0,
     fileType: uploadedFileData?.fileType || '',
     urls: urls,
-    uploadedAt: docData.uploadedAt
+    uploadedAt: docData.uploadedAt,
+    analysis: analysis
   }
 }
 

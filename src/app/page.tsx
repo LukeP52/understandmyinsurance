@@ -12,6 +12,7 @@ export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [urls, setUrls] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, signOut } = useAuth()
@@ -50,6 +51,12 @@ export default function Home() {
     setIsUploading(true)
     
     try {
+      // Check if we have PDF files that will trigger analysis
+      const hasPdfFiles = uploadedFiles.some(file => file.type === 'application/pdf')
+      if (hasPdfFiles) {
+        setIsAnalyzing(true)
+      }
+
       const result = await uploadDocuments(uploadedFiles, urls, user.uid)
       
       setUploadResults({
@@ -63,7 +70,8 @@ export default function Home() {
           })),
           urls: urls,
           totalItems: uploadedFiles.length + urls.length,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          analysis: result.analysis
         }
       })
 
@@ -76,6 +84,7 @@ export default function Home() {
       alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsUploading(false)
+      setIsAnalyzing(false)
     }
   }
 
@@ -134,6 +143,19 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
             
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <div className="text-2xl">🤖</div>
+                <div>
+                  <h3 className="font-semibold text-blue-800 mb-1">AI-Powered Analysis</h3>
+                  <p className="text-sm text-blue-700">
+                    PDF insurance documents will be automatically analyzed by AI to extract key coverage details, 
+                    deductibles, limits, and important information you should know.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <PrivacyNotice />
             
             <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -163,7 +185,7 @@ export default function Home() {
                 disabled={!canUpload || isUploading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isUploading ? 'Uploading...' : 'Upload Documents'}
+                {isAnalyzing ? 'Analyzing PDF...' : isUploading ? 'Uploading...' : 'Upload Documents'}
               </button>
             </div>
           </div>
@@ -208,6 +230,21 @@ export default function Home() {
                     Uploaded: {uploadResults.data.timestamp ? new Date(uploadResults.data.timestamp).toLocaleString() : 'now'}
                   </div>
                 </div>
+
+                {/* AI Analysis Results */}
+                {uploadResults.data.analysis && (
+                  <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h3 className="font-semibold text-blue-800 mb-4 flex items-center">
+                      🤖 AI Analysis Results
+                      <span className="ml-2 text-xs text-blue-600 font-normal">
+                        Analyzed: {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
+                      </span>
+                    </h3>
+                    <div className="text-blue-900 whitespace-pre-wrap text-sm leading-relaxed">
+                      {uploadResults.data.analysis.text}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
