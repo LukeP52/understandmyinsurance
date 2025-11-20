@@ -91,25 +91,6 @@ export default function Home() {
 
   const canUpload = uploadedFiles.length > 0
 
-  const testGemini = async () => {
-    setTestingGemini(true)
-    setGeminiTest(null)
-    
-    try {
-      const response = await fetch('/api/test-gemini')
-      const result = await response.json()
-      setGeminiTest(result)
-    } catch (error) {
-      setGeminiTest({
-        success: false,
-        error: 'Failed to connect to test endpoint',
-        details: error instanceof Error ? error.message : 'Network error'
-      })
-    } finally {
-      setTestingGemini(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-beige-100">
       {/* Navigation */}
