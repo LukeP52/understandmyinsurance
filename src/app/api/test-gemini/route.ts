@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     // Initialize Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     // Simple test prompt
     const prompt = "Say 'Hello from Gemini AI!' and explain in one sentence what you can do for insurance document analysis."

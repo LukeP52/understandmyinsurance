@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const base64Data = Buffer.from(arrayBuffer).toString('base64')
 
     // Initialize Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     // Create the prompt for insurance document analysis
     const prompt = `
