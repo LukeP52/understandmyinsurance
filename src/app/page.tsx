@@ -292,8 +292,52 @@ export default function Home() {
                         Analyzed: {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
                       </span>
                     </h3>
-                    <div className="text-blue-900 whitespace-pre-wrap text-sm leading-relaxed">
-                      {uploadResults.data.analysis.text}
+                    <div className="text-blue-900">
+                      {uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
+                        // Check if this is the QUICK OVERVIEW section
+                        if (section.startsWith('QUICK OVERVIEW')) {
+                          return (
+                            <div key={index} className="mb-6 p-4 bg-white border border-blue-300 rounded-lg">
+                              <h4 className="font-bold text-blue-800 text-lg mb-3">📋 Quick Overview</h4>
+                              <div className="text-sm text-blue-900 font-medium space-y-1">
+                                {section.replace('QUICK OVERVIEW\n', '').split('\n').map((line: string, lineIndex: number) => (
+                                  <div key={lineIndex}>{line}</div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        }
+                        
+                        // Handle other sections
+                        if (section.trim()) {
+                          const lines = section.split('\n')
+                          const title = lines[0]
+                          const content = lines.slice(1).join('\n')
+                          
+                          // Check if this line looks like a section header (all caps or starts with specific patterns)
+                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT') || title.startsWith('KEY')
+                          
+                          if (isHeader) {
+                            return (
+                              <div key={index} className="mb-4">
+                                <h4 className="font-bold text-blue-800 text-base mb-2 border-b border-blue-300 pb-1">
+                                  {title}
+                                </h4>
+                                <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                                  {content}
+                                </div>
+                              </div>
+                            )
+                          }
+                          
+                          return (
+                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                              {section}
+                            </div>
+                          )
+                        }
+                        return null
+                      })}
                     </div>
                   </div>
                 )}

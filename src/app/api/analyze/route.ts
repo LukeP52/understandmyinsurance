@@ -30,36 +30,45 @@ export async function POST(request: NextRequest) {
 
     // Create the prompt for insurance document analysis
     const prompt = `
-You are helping someone who doesn't understand insurance at all. Analyze this insurance document and explain it in plain, simple English with NO industry jargon.
+Analyze this insurance document and provide a clear, well-formatted explanation. Use proper formatting with clear sections and NO asterisks (*) or bullet points in the main text.
 
-Please provide:
+Please provide your response in this EXACT format:
 
-## What This Document Is
-- Explain what type of insurance document this is in simple terms
+QUICK OVERVIEW
+Monthly Cost: $X (the premium you pay each month)
+Deductible: $X (amount you pay first each year before insurance kicks in)
+Network: [In-Network/Out-of-Network details]
+Plan Type: [HMO/PPO/etc. with brief explanation]
 
-## What You're Covered For
-- List the main things this insurance will pay for
-- Use everyday language (avoid terms like "benefits", "coverage", etc.)
+DOCUMENT TYPE
+[Explain what type of insurance document this is]
 
-## What You Pay
-- How much do you pay each month? (premium)
-- How much do you pay when you use healthcare? (deductible, copays)
-- Explain these in simple terms like "You pay $X first, then insurance kicks in"
+WHAT YOU'RE COVERED FOR
+[List main services covered - doctor visits, hospital stays, prescriptions, etc.]
 
-## What's Good About This Plan
-- What are the positive aspects or advantages?
-- What makes this plan helpful or valuable?
+WHAT YOU PAY
+Monthly Premium: $X
+Deductible: $X (explain what this means)
+Copays: $X for [service] (fixed amount you pay for each visit)
+Coinsurance: X% (percentage you pay after meeting deductible)
 
-## What to Watch Out For
-- What are the limitations or downsides?
-- What might surprise you or cost extra money?
-- What's NOT covered that people might expect?
+NETWORK DETAILS
+In-Network: [Which doctors/hospitals are included]
+Out-of-Network: [What happens if you go outside the network]
 
-## Important Things to Remember
-- Key dates, deadlines, or requirements
-- Most important things to know in 3-4 simple bullet points
+WHAT'S GOOD ABOUT THIS PLAN
+[Positive aspects and advantages]
 
-Use simple language like you're explaining to a friend who has never had insurance before. Avoid words like: deductible, copay, coinsurance, premium, benefits, coverage, exclusions - instead use plain English explanations.
+WHAT TO WATCH OUT FOR
+[Limitations, exclusions, things that might surprise you]
+
+IMPORTANT DATES AND DEADLINES
+[Key dates, enrollment periods, etc.]
+
+KEY TAKEAWAYS
+[3-4 most important things to remember]
+
+Format everything cleanly with proper headings. Do NOT use asterisks, bullets, or markdown symbols. Use clear section headers and readable paragraphs.
 `
 
     // Analyze the document
