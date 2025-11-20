@@ -234,18 +234,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* Upload Results Section */}
-        {uploadResults && (
+        {/* AI Analysis Results */}
+        {uploadResults && uploadResults.data.analysis && (
           <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-3xl font-bold text-black mb-6">
-                {uploadResults.data.analysis ? 'Upload & Analysis Complete ✅' : 'Upload Successful ✅'}
-              </h2>
-              
-
-                {/* AI Analysis Results */}
-                {uploadResults.data.analysis && (
-                  <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                     <div className="text-center mb-8">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">
                         Your Insurance Plan Explained
@@ -348,11 +340,8 @@ export default function Home() {
                       })}
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+                </div>
+              )}
 
 
         {/* How It Works */}
