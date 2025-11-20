@@ -244,7 +244,7 @@ export default function Home() {
                 disabled={!canUpload || isUploading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isAnalyzing ? 'Generating Report...' : isUploading ? 'Uploading...' : 'Upload Documents'}
+{isAnalyzing ? 'Generating Report...' : isUploading ? 'Uploading...' : 'Analyze Documents'}
               </button>
             </div>
           </div>
@@ -337,17 +337,16 @@ export default function Home() {
                         // Check if this is the KEY TAKEAWAYS section (show first)
                         if (section.startsWith('KEY TAKEAWAYS')) {
                           return (
-                            <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 rounded-lg p-6">
-                              <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                                <span className="text-yellow-500 mr-2">⚡</span>
+                            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                              <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
                                 Key Takeaways
                               </h4>
-                              <div className="space-y-2">
+                              <div className="space-y-3">
                                 {section.replace('KEY TAKEAWAYS\n', '').split('\n').map((line: string, lineIndex: number) => (
                                   line.trim() && (
-                                    <div key={lineIndex} className="text-gray-800 font-medium flex items-start">
-                                      <span className="text-yellow-500 mr-2 mt-1">•</span>
-                                      <span>{line.replace('• ', '')}</span>
+                                    <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
+                                      <span className="text-blue-500 mr-3 mt-1">•</span>
+                                      <span className="font-medium">{line.replace('• ', '')}</span>
                                     </div>
                                   )
                                 ))}

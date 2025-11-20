@@ -46,10 +46,10 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format:
 
 KEY TAKEAWAYS
-• [Most important thing about this plan]
-• [Second most important thing]  
-• [Third most important thing]
-• [Fourth most important thing if relevant]
+• [Most important thing about this plan - explain any terms used like "Your deductible (amount you pay first) is $X"]
+• [Second most important thing - define terms like "premium (monthly cost)" if used]  
+• [Third most important thing - always explain insurance terms in plain language]
+• [Fourth most important thing if relevant - make it understandable for someone new to insurance]
 
 PLAN OVERVIEW
 Monthly Premium: $X
@@ -97,7 +97,7 @@ IMPORTANT DATES AND DEADLINES
 • [Enrollment periods]
 • [Any important deadlines]
 
-Format with clear headers and bullet points. Explain insurance terms simply.
+Format with clear headers and bullet points. Explain insurance terms simply. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
 
     // Analyze the document
