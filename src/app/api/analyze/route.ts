@@ -61,19 +61,6 @@ Coverage Start Date: [Date]
 Primary Care Copay: $X
 Specialist Copay: $X
 
-DOCUMENT TYPE
-[Brief explanation of what type of insurance document this is]
-
-WHAT YOU PAY
-• Monthly Premium: $X (what you pay every month whether you use healthcare or not)
-• Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
-• Copays: Fixed amounts you pay for each service (e.g., $25 per doctor visit)
-• Coinsurance: Percentage you pay after meeting deductible (e.g., you pay 20%, insurance pays 80%)
-
-NETWORK DETAILS
-• In-Network: [Which doctors and hospitals you can use for lower costs]
-• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
-
 WHAT'S GOOD ABOUT THIS PLAN
 • [Positive aspect 1]
 • [Positive aspect 2] 
@@ -85,6 +72,16 @@ WHAT TO WATCH OUT FOR
 • [Limitation or exclusion 2]
 • [Things that might cost extra]
 • [Services not covered]
+
+WHAT YOU PAY
+• Monthly Premium: $X (what you pay every month whether you use healthcare or not)
+• Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
+• Copays: Fixed amounts you pay for each service (e.g., $25 per doctor visit)
+• Coinsurance: Percentage you pay after meeting deductible (e.g., you pay 20%, insurance pays 80%)
+
+NETWORK DETAILS
+• In-Network: [Which doctors and hospitals you can use for lower costs]
+• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
 
 WHAT YOU'RE COVERED FOR
 • Primary care doctor visits
