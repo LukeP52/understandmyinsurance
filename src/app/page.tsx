@@ -221,7 +221,14 @@ export default function Home() {
                 <h3 className="font-semibold text-black mb-2">Ready to Upload:</h3>
                 <div className="space-y-1 text-sm text-gray-700">
                   {uploadedFiles.map((file, index) => (
-                    <div key={index}>📄 {file.name}</div>
+                    <div key={index} className="flex items-center justify-between">
+                      <span>📄 {file.name}</span>
+                      {file.type === 'application/pdf' && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                          Will be analyzed
+                        </span>
+                      )}
+                    </div>
                   ))}
                   {urls.map((url, index) => (
                     <div key={index}>🔗 {url}</div>
@@ -237,17 +244,48 @@ export default function Home() {
                 disabled={!canUpload || isUploading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isAnalyzing ? 'Analyzing PDF...' : isUploading ? 'Uploading...' : 'Upload Documents'}
+                {isAnalyzing ? 'Generating Report...' : isUploading ? 'Uploading...' : 'Upload Documents'}
               </button>
             </div>
           </div>
         </div>
 
+        {/* Analysis Loading Display */}
+        {isAnalyzing && (
+          <div className="max-w-4xl mx-auto mb-12">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <div className="text-center">
+                <div className="mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                  <h2 className="text-2xl font-bold text-black mb-2">Generating Your Report</h2>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    Our AI is reading your insurance document and creating a personalized analysis. 
+                    This usually takes 10-30 seconds.
+                  </p>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                  <div className="flex items-center justify-center space-x-2 text-blue-700 text-sm">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    <span className="ml-3 font-medium">Analyzing coverage details...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Upload Results Section */}
         {uploadResults && (
           <div className="max-w-4xl mx-auto mb-12">
             <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h2 className="text-3xl font-bold text-black mb-6">Upload Successful ✅</h2>
+              <h2 className="text-3xl font-bold text-black mb-6">
+                {uploadResults.data.analysis ? 'Upload & Analysis Complete ✅' : 'Upload Successful ✅'}
+              </h2>
               
               <div className="space-y-6">
                 <div className="bg-green-50 border border-green-200 rounded-lg p-6">
