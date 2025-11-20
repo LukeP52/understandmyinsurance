@@ -93,13 +93,13 @@ export default function FileManager() {
     }
   };
 
-  const handleDownload = async (document: FileDocument) => {
-    if (!document.downloadURL) return;
+  const handleDownload = async (fileDoc: FileDocument) => {
+    if (!fileDoc.downloadURL) return;
     
     try {
       const link = document.createElement('a');
-      link.href = document.downloadURL;
-      link.download = document.fileName;
+      link.href = fileDoc.downloadURL;
+      link.download = fileDoc.fileName;
       link.click();
     } catch (error) {
       console.error('Error downloading file:', error);
