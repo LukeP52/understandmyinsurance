@@ -34,8 +34,7 @@ export default function FileManager() {
 
     const q = query(
       collection(db, 'documents'),
-      where('userId', '==', user.uid),
-      orderBy('uploadedAt', 'desc')
+      where('userId', '==', user.uid)
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -57,6 +56,13 @@ export default function FileManager() {
           });
         }
       });
+      
+      // Sort by uploadedAt on client-side instead of in query
+      docs.sort((a, b) => {
+        if (!a.uploadedAt || !b.uploadedAt) return 0;
+        return b.uploadedAt.toDate() - a.uploadedAt.toDate();
+      });
+      
       setDocuments(docs);
       setLoading(false);
     });

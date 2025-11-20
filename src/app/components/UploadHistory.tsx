@@ -34,9 +34,7 @@ export default function UploadHistory() {
     // Real-time listener for user's documents
     const q = query(
       collection(db, 'documents'), 
-      where('userId', '==', user.uid),
-      orderBy('uploadedAt', 'desc'), 
-      limit(10)
+      where('userId', '==', user.uid)
     )
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -44,7 +42,14 @@ export default function UploadHistory() {
       querySnapshot.forEach((doc) => {
         docs.push({ id: doc.id, ...doc.data() } as Document)
       })
-      setDocuments(docs)
+      
+      // Sort by uploadedAt on client-side and limit to 10
+      docs.sort((a, b) => {
+        if (!a.uploadedAt || !b.uploadedAt) return 0;
+        return b.uploadedAt.toDate() - a.uploadedAt.toDate();
+      });
+      
+      setDocuments(docs.slice(0, 10))
       setLoading(false)
     })
 
