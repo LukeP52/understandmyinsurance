@@ -64,15 +64,6 @@ Specialist Copay: $X
 DOCUMENT TYPE
 [Brief explanation of what type of insurance document this is]
 
-WHAT YOU'RE COVERED FOR
-• Primary care doctor visits
-• Specialist visits
-• Hospital stays (inpatient and outpatient)
-• Emergency room visits
-• Prescription medications
-• Preventive care (checkups, screenings)
-• [Other specific services covered]
-
 WHAT YOU PAY
 • Monthly Premium: $X (what you pay every month whether you use healthcare or not)
 • Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
@@ -94,6 +85,15 @@ WHAT TO WATCH OUT FOR
 • [Limitation or exclusion 2]
 • [Things that might cost extra]
 • [Services not covered]
+
+WHAT YOU'RE COVERED FOR
+• Primary care doctor visits
+• Specialist visits
+• Hospital stays (inpatient and outpatient)
+• Emergency room visits
+• Prescription medications
+• Preventive care (checkups, screenings)
+• [Other specific services covered]
 
 IMPORTANT DATES AND DEADLINES
 • [Coverage start/end dates]

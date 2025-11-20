@@ -323,26 +323,32 @@ export default function Home() {
 
                 {/* AI Analysis Results */}
                 {uploadResults.data.analysis && (
-                  <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-                    <h3 className="font-semibold text-blue-800 mb-4 flex items-center">
-                      🤖 Your Insurance Plan Explained
-                      <span className="ml-2 text-xs text-blue-600 font-normal">
-                        Analyzed: {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
-                      </span>
-                    </h3>
-                    <div className="text-blue-900">
+                  <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                    <div className="text-center mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        Your Insurance Plan Explained
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Analyzed {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="space-y-8">
                       {uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
                         // Check if this is the KEY TAKEAWAYS section (show first)
                         if (section.startsWith('KEY TAKEAWAYS')) {
                           return (
-                            <div key={index} className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
-                              <h4 className="font-bold text-yellow-800 text-lg mb-3 flex items-center">
-                                ⚡ Key Takeaways
+                            <div key={index} className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 rounded-lg p-6">
+                              <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <span className="text-yellow-500 mr-2">⚡</span>
+                                Key Takeaways
                               </h4>
-                              <div className="text-sm text-yellow-900 leading-relaxed">
+                              <div className="space-y-2">
                                 {section.replace('KEY TAKEAWAYS\n', '').split('\n').map((line: string, lineIndex: number) => (
                                   line.trim() && (
-                                    <div key={lineIndex} className="mb-2 font-medium">{line}</div>
+                                    <div key={lineIndex} className="text-gray-800 font-medium flex items-start">
+                                      <span className="text-yellow-500 mr-2 mt-1">•</span>
+                                      <span>{line.replace('• ', '')}</span>
+                                    </div>
                                   )
                                 ))}
                               </div>
@@ -354,15 +360,18 @@ export default function Home() {
                         if (section.startsWith('PLAN OVERVIEW')) {
                           const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
                           return (
-                            <div key={index} className="mb-6 p-4 bg-white border border-blue-300 rounded-lg">
-                              <h4 className="font-bold text-blue-800 text-lg mb-4 text-center">📊 Plan Overview</h4>
+                            <div key={index} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                              <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                <span className="mr-2">📊</span>
+                                Plan Overview
+                              </h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {overviewLines.map((line: string, lineIndex: number) => {
                                   const [label, value] = line.split(':').map(s => s.trim())
                                   return (
-                                    <div key={lineIndex} className="bg-blue-50 p-3 rounded">
-                                      <div className="text-xs text-blue-600 font-medium">{label}</div>
-                                      <div className="text-sm text-blue-900 font-bold">{value}</div>
+                                    <div key={lineIndex} className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                                      <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">{label}</div>
+                                      <div className="text-base text-gray-900 font-semibold">{value}</div>
                                     </div>
                                   )
                                 })}
@@ -371,7 +380,7 @@ export default function Home() {
                           )
                         }
                         
-                        // Handle all other sections with simple formatting
+                        // Handle all other sections with clean formatting
                         if (section.trim()) {
                           const lines = section.split('\n')
                           const title = lines[0]
@@ -382,20 +391,35 @@ export default function Home() {
                           
                           if (isHeader) {
                             return (
-                              <div key={index} className="mb-6">
-                                <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
+                              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
                                   {title}
                                 </h4>
-                                <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
-                                  {content}
+                                <div className="text-gray-700 leading-relaxed space-y-2">
+                                  {content.split('\n').map((line: string, lineIndex: number) => (
+                                    line.trim() && (
+                                      <div key={lineIndex} className="flex items-start">
+                                        {line.startsWith('•') ? (
+                                          <>
+                                            <span className="text-blue-500 mr-3 mt-1">•</span>
+                                            <span>{line.replace('• ', '')}</span>
+                                          </>
+                                        ) : (
+                                          <span>{line}</span>
+                                        )}
+                                      </div>
+                                    )
+                                  ))}
                                 </div>
                               </div>
                             )
                           }
                           
                           return (
-                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
-                              {section}
+                            <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                {section}
+                              </div>
                             </div>
                           )
                         }
