@@ -171,8 +171,9 @@ export default function Home() {
                   <div>
                     <h3 className="font-semibold text-blue-800 mb-1">AI-Powered Analysis</h3>
                     <p className="text-sm text-blue-700">
-                      PDF insurance documents will be automatically analyzed by AI to extract key coverage details, 
-                      deductibles, limits, and important information you should know.
+                      PDF insurance documents will be automatically analyzed by AI and explained in plain English. 
+                      No confusing insurance jargon - just simple explanations of what your plan covers, what you pay, 
+                      and what to watch out for.
                     </p>
                   </div>
                 </div>
@@ -286,7 +287,7 @@ export default function Home() {
                 {uploadResults.data.analysis && (
                   <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
                     <h3 className="font-semibold text-blue-800 mb-4 flex items-center">
-                      🤖 AI Analysis Results
+                      🤖 Your Insurance Plan Explained
                       <span className="ml-2 text-xs text-blue-600 font-normal">
                         Analyzed: {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
                       </span>

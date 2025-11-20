@@ -30,21 +30,36 @@ export async function POST(request: NextRequest) {
 
     // Create the prompt for insurance document analysis
     const prompt = `
-Analyze this insurance document and provide a comprehensive summary. Focus on:
+You are helping someone who doesn't understand insurance at all. Analyze this insurance document and explain it in plain, simple English with NO industry jargon.
 
-1. **Document Type**: What type of insurance document is this? (policy, benefits summary, EOB, etc.)
-2. **Coverage Summary**: What is covered and what are the key benefits?
-3. **Key Details**: 
-   - Deductibles
-   - Copays/Coinsurance
-   - Coverage limits
-   - Premium information (if available)
-   - Policy period/dates
-4. **Important Exclusions**: What's NOT covered?
-5. **Action Items**: Any important dates, requirements, or actions needed?
-6. **Key Takeaways**: 3-5 bullet points of the most important information
+Please provide:
 
-Please format your response in clear sections with headers. Be specific about dollar amounts, percentages, and dates when available.
+## What This Document Is
+- Explain what type of insurance document this is in simple terms
+
+## What You're Covered For
+- List the main things this insurance will pay for
+- Use everyday language (avoid terms like "benefits", "coverage", etc.)
+
+## What You Pay
+- How much do you pay each month? (premium)
+- How much do you pay when you use healthcare? (deductible, copays)
+- Explain these in simple terms like "You pay $X first, then insurance kicks in"
+
+## What's Good About This Plan
+- What are the positive aspects or advantages?
+- What makes this plan helpful or valuable?
+
+## What to Watch Out For
+- What are the limitations or downsides?
+- What might surprise you or cost extra money?
+- What's NOT covered that people might expect?
+
+## Important Things to Remember
+- Key dates, deadlines, or requirements
+- Most important things to know in 3-4 simple bullet points
+
+Use simple language like you're explaining to a friend who has never had insurance before. Avoid words like: deductible, copay, coinsurance, premium, benefits, coverage, exclusions - instead use plain English explanations.
 `
 
     // Analyze the document
