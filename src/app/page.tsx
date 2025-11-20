@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
-import PrivacyNotice from './components/PrivacyNotice'
 import AuthModal from './components/Auth/AuthModal'
 
 export default function Home() {

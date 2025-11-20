@@ -187,7 +187,7 @@ Explain all insurance terms clearly. Do NOT use asterisks (*) anywhere - only bu
 `
 
       // Send all files to Gemini for comparison
-      const content = [comparePrompt]
+      const content: any[] = [comparePrompt]
       
       for (let i = 0; i < fileData.length; i++) {
         content.push({
