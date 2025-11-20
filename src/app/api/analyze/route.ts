@@ -39,37 +39,68 @@ export async function POST(request: NextRequest) {
     // Initialize Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    // Create the prompt for insurance document analysis  
+    // Create the prompt for insurance document analysis
     const prompt = `
-Analyze this insurance document and explain it clearly.
+Analyze this insurance document and provide a clear explanation in plain English.
 
-Provide your response in this format:
+Please provide your response in this EXACT format:
 
 KEY TAKEAWAYS
-List 3-4 most important things about this plan
+• [Most important thing about this plan]
+• [Second most important thing]  
+• [Third most important thing]
+• [Fourth most important thing if relevant]
 
-PLAN OVERVIEW  
+PLAN OVERVIEW
 Monthly Premium: $X
-Annual Deductible: $X
-Plan Type: HMO/PPO/etc
-Network: Name of network
+Annual Deductible: $X  
+Plan Type: [HMO/PPO/etc.]
+Network: [Insurance company name]
+Out-of-Pocket Maximum: $X
+Coverage Start Date: [Date]
+Primary Care Copay: $X
+Specialist Copay: $X
 
-COVERAGE
-What's covered for doctor visits, specialists, hospital, prescriptions
+DOCUMENT TYPE
+[Brief explanation of what type of insurance document this is]
 
-COSTS
-What you pay monthly and when you use healthcare
+WHAT YOU'RE COVERED FOR
+• Primary care doctor visits
+• Specialist visits
+• Hospital stays (inpatient and outpatient)
+• Emergency room visits
+• Prescription medications
+• Preventive care (checkups, screenings)
+• [Other specific services covered]
 
-NETWORK
-Which doctors you can use
+WHAT YOU PAY
+• Monthly Premium: $X (what you pay every month whether you use healthcare or not)
+• Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
+• Copays: Fixed amounts you pay for each service (e.g., $25 per doctor visit)
+• Coinsurance: Percentage you pay after meeting deductible (e.g., you pay 20%, insurance pays 80%)
 
-STRENGTHS
-What's good about this plan
+NETWORK DETAILS
+• In-Network: [Which doctors and hospitals you can use for lower costs]
+• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
 
-LIMITATIONS  
-What to watch out for
+WHAT'S GOOD ABOUT THIS PLAN
+• [Positive aspect 1]
+• [Positive aspect 2] 
+• [Positive aspect 3]
+• [Additional benefits or advantages]
 
-Keep sections short and clear. No asterisks or bullets.
+WHAT TO WATCH OUT FOR
+• [Limitation or exclusion 1]
+• [Limitation or exclusion 2]
+• [Things that might cost extra]
+• [Services not covered]
+
+IMPORTANT DATES AND DEADLINES
+• [Coverage start/end dates]
+• [Enrollment periods]
+• [Any important deadlines]
+
+Format with clear headers and bullet points. Explain insurance terms simply.
 `
 
     // Analyze the document

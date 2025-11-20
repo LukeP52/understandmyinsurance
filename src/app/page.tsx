@@ -371,66 +371,30 @@ export default function Home() {
                           )
                         }
                         
-                        // Handle structured sections (COVERAGE, COST BREAKDOWN, etc.)
+                        // Handle all other sections with simple formatting
                         if (section.trim()) {
                           const lines = section.split('\n')
                           const title = lines[0]
-                          const content = lines.slice(1).filter(line => line.trim())
+                          const content = lines.slice(1).join('\n')
                           
                           // Check if this line looks like a section header
-                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('COVERAGE') || title.startsWith('COST') || title.startsWith('NETWORK') || title.startsWith('PLAN') || title.startsWith('IMPORTANT')
+                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT')
                           
                           if (isHeader) {
-                            // Check if content has structured data (label: value format)
-                            const hasStructuredData = content.some(line => line.includes(':'))
-                            
-                            if (hasStructuredData && (title.includes('COVERAGE') || title.includes('COST'))) {
-                              return (
-                                <div key={index} className="mb-6">
-                                  <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
-                                    {title}
-                                  </h4>
-                                  <div className="grid grid-cols-1 gap-3">
-                                    {content.map((line: string, lineIndex: number) => {
-                                      if (line.includes(':')) {
-                                        const [label, value] = line.split(':').map(s => s.trim())
-                                        return (
-                                          <div key={lineIndex} className="flex justify-between items-start p-2 bg-gray-50 rounded">
-                                            <span className="font-medium text-gray-700 text-sm">{label}</span>
-                                            <span className="text-sm text-gray-900 text-right max-w-xs">{value}</span>
-                                          </div>
-                                        )
-                                      }
-                                      return (
-                                        <div key={lineIndex} className="text-sm text-blue-900 leading-relaxed">
-                                          {line}
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
+                            return (
+                              <div key={index} className="mb-6">
+                                <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
+                                  {title}
+                                </h4>
+                                <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                                  {content}
                                 </div>
-                              )
-                            } else {
-                              // Regular section with paragraph content
-                              return (
-                                <div key={index} className="mb-6">
-                                  <h4 className="font-bold text-blue-800 text-base mb-3 border-b border-blue-300 pb-1">
-                                    {title}
-                                  </h4>
-                                  <div className="text-sm text-blue-900 leading-relaxed space-y-2">
-                                    {content.map((line: string, lineIndex: number) => (
-                                      line.trim() && (
-                                        <div key={lineIndex}>{line}</div>
-                                      )
-                                    ))}
-                                  </div>
-                                </div>
-                              )
-                            }
+                              </div>
+                            )
                           }
                           
                           return (
-                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed">
+                            <div key={index} className="mb-4 text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
                               {section}
                             </div>
                           )
