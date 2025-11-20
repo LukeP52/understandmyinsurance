@@ -35,7 +35,6 @@ export default function FileManager() {
     const q = query(
       collection(db, 'documents'),
       where('userId', '==', user.uid),
-      where('status', '==', 'completed'),
       orderBy('uploadedAt', 'desc')
     );
 
@@ -43,7 +42,8 @@ export default function FileManager() {
       const docs: FileDocument[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.file) {
+        // Only show completed documents with files
+        if (data.file && data.status === 'completed') {
           docs.push({
             id: doc.id,
             fileName: data.file.fileName,
