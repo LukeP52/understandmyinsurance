@@ -240,7 +240,11 @@ export default function Home() {
                 disabled={!canUpload || isUploading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-{isAnalyzing ? 'Generating Report...' : isUploading ? 'Uploading...' : 'Analyze Documents'}
+{isAnalyzing 
+                  ? (analysisMode === 'compare' ? 'Comparing Plans...' : 'Generating Report...') 
+                  : isUploading ? 'Uploading...' 
+                  : (analysisMode === 'compare' ? 'Compare Plans' : 'Analyze Plan')
+                }
               </button>
             </div>
           </div>

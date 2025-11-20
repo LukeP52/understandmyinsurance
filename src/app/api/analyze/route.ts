@@ -16,31 +16,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { fileUrl, fileName, userId } = await request.json()
+    const body = await request.json()
+    const { fileUrl, fileName, userId, files, mode = 'single' } = body
 
-    if (!fileUrl || !fileName || !userId) {
-      return NextResponse.json(
-        { error: 'Missing required fields: fileUrl, fileName, userId' },
-        { status: 400 }
-      )
+    if (mode === 'single') {
+      if (!fileUrl || !fileName || !userId) {
+        return NextResponse.json(
+          { error: 'Missing required fields: fileUrl, fileName, userId' },
+          { status: 400 }
+        )
+      }
+      console.log('Starting single analysis for file:', fileName)
+    } else {
+      if (!files || !userId || !Array.isArray(files)) {
+        return NextResponse.json(
+          { error: 'Missing required fields for comparison: files, userId' },
+          { status: 400 }
+        )
+      }
+      console.log('Starting comparison analysis for', files.length, 'files')
     }
-
-    console.log('Starting analysis for file:', fileName)
-
-    // Fetch the file from Firebase Storage
-    const response = await fetch(fileUrl)
-    if (!response.ok) {
-      throw new Error('Failed to fetch file from storage')
-    }
-
-    const arrayBuffer = await response.arrayBuffer()
-    const base64Data = Buffer.from(arrayBuffer).toString('base64')
 
     // Initialize Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    // Create the prompt for insurance document analysis
-    const prompt = `
+    let analysisText
+
+    if (mode === 'single') {
+      // Single file analysis
+      const response = await fetch(fileUrl)
+      if (!response.ok) {
+        throw new Error('Failed to fetch file from storage')
+      }
+
+      const arrayBuffer = await response.arrayBuffer()
+      const base64Data = Buffer.from(arrayBuffer).toString('base64')
+
+      const singlePrompt = `
 Analyze this insurance document and provide a clear explanation in plain English.
 
 Please provide your response in this EXACT format:
@@ -100,18 +112,95 @@ IMPORTANT DATES AND DEADLINES
 Format with clear headers and bullet points. Explain insurance terms simply. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
 
-    // Analyze the document
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          mimeType: 'application/pdf',
-          data: base64Data
+      const result = await model.generateContent([
+        singlePrompt,
+        {
+          inlineData: {
+            mimeType: 'application/pdf',
+            data: base64Data
+          }
         }
-      }
-    ])
+      ])
 
-    const analysisText = result.response.text()
+      analysisText = result.response.text()
+
+    } else {
+      // Multiple file comparison
+      const fileData = []
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const response = await fetch(file.url)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file from storage: ${file.name}`)
+        }
+        
+        const arrayBuffer = await response.arrayBuffer()
+        const base64Data = Buffer.from(arrayBuffer).toString('base64')
+        
+        fileData.push({
+          name: file.name,
+          data: base64Data
+        })
+      }
+
+      const comparePrompt = `
+Compare these ${files.length} insurance plans and provide a comprehensive comparison. 
+
+Please provide your response in this EXACT format:
+
+PLAN RECOMMENDATIONS
+Plan A (${fileData[0].name}): This plan would be good to choose if [specific scenarios when this plan is better - be specific about costs, coverage, or situations]
+
+Plan B (${fileData[1].name}): This plan would be good to choose if [specific scenarios when this plan is better - be specific about costs, coverage, or situations]
+
+${fileData.length > 2 ? `Plan C (${fileData[2].name}): This plan would be good to choose if [specific scenarios when this plan is better]` : ''}
+
+${fileData.length > 3 ? `Plan D (${fileData[3].name}): This plan would be good to choose if [specific scenarios when this plan is better]` : ''}
+
+SIDE-BY-SIDE OVERVIEW
+Monthly Premium: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Annual Deductible: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Plan Type: Plan A: [Type] | Plan B: [Type] ${fileData.length > 2 ? '| Plan C: [Type]' : ''} ${fileData.length > 3 ? '| Plan D: [Type]' : ''}
+Out-of-Pocket Max: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Primary Care Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Specialist Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+
+DETAILED COMPARISON
+Cost Winner: [Which plan has the lowest overall costs and why]
+Coverage Winner: [Which plan has the best coverage and why]
+Network Winner: [Which plan has the best network of doctors/hospitals]
+
+PROS AND CONS
+Plan A Pros: • [Pro 1] • [Pro 2] • [Pro 3]
+Plan A Cons: • [Con 1] • [Con 2] • [Con 3]
+
+Plan B Pros: • [Pro 1] • [Pro 2] • [Pro 3]  
+Plan B Cons: • [Con 1] • [Con 2] • [Con 3]
+
+${fileData.length > 2 ? `Plan C Pros: • [Pro 1] • [Pro 2] • [Pro 3]\nPlan C Cons: • [Con 1] • [Con 2] • [Con 3]` : ''}
+
+BOTTOM LINE RECOMMENDATION
+[Clear recommendation of which plan is best for different types of people - young/healthy, families, frequent doctor visits, etc.]
+
+Explain all insurance terms clearly. Do NOT use asterisks (*) anywhere - only bullet points (•).
+`
+
+      // Send all files to Gemini for comparison
+      const content = [comparePrompt]
+      
+      for (let i = 0; i < fileData.length; i++) {
+        content.push({
+          inlineData: {
+            mimeType: 'application/pdf',
+            data: fileData[i].data
+          }
+        })
+      }
+
+      const result = await model.generateContent(content)
+      analysisText = result.response.text()
+    }
 
     return NextResponse.json({
       success: true,
