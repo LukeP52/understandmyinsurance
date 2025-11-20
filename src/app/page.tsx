@@ -6,7 +6,6 @@ import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
 import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
-import UploadHistory from './components/UploadHistory'
 import AuthModal from './components/Auth/AuthModal'
 
 export default function Home() {
@@ -214,8 +213,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Upload History */}
-        <UploadHistory />
 
         {/* How It Works */}
         <div className="max-w-4xl mx-auto">
