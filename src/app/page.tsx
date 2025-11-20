@@ -8,6 +8,7 @@ import URLInput from './components/URLInput'
 import PrivacyNotice from './components/PrivacyNotice'
 import UploadHistory from './components/UploadHistory'
 import AuthModal from './components/Auth/AuthModal'
+import FileManager from './components/FileManager'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -15,6 +16,7 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [activeTab, setActiveTab] = useState<'upload' | 'manage'>('upload')
   const { user, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
@@ -130,8 +132,37 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Upload Section */}
-        <div className="max-w-4xl mx-auto mb-12">
+        {/* Tab Navigation */}
+        <div className="max-w-6xl mx-auto mb-8">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('upload')}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === 'upload'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Upload Documents
+            </button>
+            <button
+              onClick={() => setActiveTab('manage')}
+              className={`px-6 py-3 font-medium text-sm border-b-2 transition-colors ${
+                activeTab === 'manage'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Manage Files
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'upload' && (
+          <>
+            {/* Upload Section */}
+            <div className="max-w-4xl mx-auto mb-12">
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Upload Your Insurance Documents</h2>
             
@@ -214,45 +245,52 @@ export default function Home() {
           </div>
         )}
 
-        {/* Upload History */}
-        <UploadHistory />
+            {/* Upload History */}
+            <UploadHistory />
 
-        {/* How It Works */}
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-black text-center mb-12">How It Works</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-2xl font-bold">1</span>
+            {/* How It Works */}
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold text-black text-center mb-12">How It Works</h2>
+              
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-white text-2xl font-bold">1</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-black mb-3">Upload Documents</h3>
+                  <p className="text-gray-700">
+                    Upload PDFs, documents, or paste links to your insurance plan details.
+                  </p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-white text-2xl font-bold">2</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-black mb-3">Secure Processing</h3>
+                  <p className="text-gray-700">
+                    Your documents are validated and processed securely in our system.
+                  </p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-white text-2xl font-bold">3</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-black mb-3">Organized Storage</h3>
+                  <p className="text-gray-700">
+                    Keep all your insurance documents organized and accessible in one place.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Upload Documents</h3>
-              <p className="text-gray-700">
-                Upload PDFs, documents, or paste links to your insurance plan details.
-              </p>
             </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-2xl font-bold">2</span>
-              </div>
-              <h3 className="text-xl font-bold text-black mb-3">Secure Processing</h3>
-              <p className="text-gray-700">
-                Your documents are validated and processed securely in our system.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-2xl font-bold">3</span>
-              </div>
-              <h3 className="text-xl font-bold text-black mb-3">Organized Storage</h3>
-              <p className="text-gray-700">
-                Keep all your insurance documents organized and accessible in one place.
-              </p>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
+
+        {/* File Management Tab */}
+        {activeTab === 'manage' && (
+          <FileManager />
+        )}
       </div>
 
       {/* Auth Modal */}
