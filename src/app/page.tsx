@@ -96,7 +96,7 @@ export default function Home() {
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Understand My Insurance</h1>
+          <h1 className="text-xl font-bold text-green-600">Understand My Insurance</h1>
           <div className="flex items-center space-x-4">
             {user ? (
               <>
@@ -131,7 +131,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-7xl font-black font-display text-black mb-6 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-black font-display text-green-600 mb-6 tracking-tight">
             UNDERSTAND<br />MY INSURANCE
           </h1>
           <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
