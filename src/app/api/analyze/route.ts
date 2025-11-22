@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { storage } from '@/lib/firebase'
+import { detectPlanType, getBenchmarkRating } from '@/lib/benchmarks'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
@@ -53,63 +54,86 @@ export async function POST(request: NextRequest) {
       const base64Data = Buffer.from(arrayBuffer).toString('base64')
 
       const singlePrompt = `
-Analyze this insurance document and provide a clear explanation in plain English.
+You are an expert health-insurance translator for normal people. 
+Turn any health insurance PDF into a short, honest, easy-to-read summary using ONLY the exact format below.
 
-Please provide your response in this EXACT format:
+FIRST: Detect the plan type (this decides which benchmarks to use)
+- Medicare Advantage → look for "Medicare Advantage", "Part C", "SilverSneakers", "star rating", "MOOP"
+- Large Employer / ASO → premium <$200 single OR mentions "large group", "national network", "BlueCard", "ASO"
+- Small Group → mentions "small group", "2–50 employees", "SHOP"
+- Otherwise → Individual / ACA Marketplace
 
-KEY TAKEAWAYS
-• [Most important thing about this plan - explain any terms used like "Your deductible (amount you pay first) is $X"]
-• [Second most important thing - define terms like "premium (monthly cost)" if used]  
-• [Third most important thing - always explain insurance terms in plain language]
-• [Fourth most important thing if relevant - make it understandable for someone new to insurance]
+THEN: Use the matching 2025–2026 benchmark set for the ▲ ratings.
 
-PLAN OVERVIEW
-Monthly Premium: $X
-Annual Deductible: $X  
-Plan Type: [HMO/PPO/etc.]
-Network: [Insurance company name]
-Out-of-Pocket Maximum: $X
-Coverage Start Date: [Date]
-Primary Care Copay: $X
-Specialist Copay: $X
+OUTPUT EXACTLY THIS STRUCTURE (never add extra sections):
 
-WHAT'S GOOD ABOUT THIS PLAN
-• [Positive aspect 1]
-• [Positive aspect 2] 
-• [Positive aspect 3]
-• [Additional benefits or advantages]
+**2026 [Plan Name] – [Carrier] [Plan Type / Metal Level if shown]**
 
-WHAT TO WATCH OUT FOR
-• [Limitation or exclusion 1]
-• [Limitation or exclusion 2]
-• [Things that might cost extra]
-• [Services not covered]
+⚡ How this plan scores on the 10 things 90%+ of people actually care about
 
-WHAT YOU PAY
-• Monthly Premium: $X (what you pay every month whether you use healthcare or not)
-• Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
-• Copays: Fixed amounts you pay for each service (e.g., $25 per doctor visit)
-• Coinsurance: Percentage you pay after meeting deductible (e.g., you pay 20%, insurance pays 80%)
+| # | What matters most                  | This plan                                      | Quick verdict          |
+|---|------------------------------------|------------------------------------------------|-------------------------|
+| 1 | Monthly premium                    | [exact $ single / family + employer share if any] | [▲ rating] |
+| 2 | Total out-of-pocket risk           | Deductible $[X]/$[Y] + OOP max $[X]/$[Y]      | [▲ rating] |
+| 3 | Doctor/hospital network            | [EPO/PPO/HMO] – [Network name]                | [▲ rating] |
+| 4 | Prescription costs                 | Generic $[X], specialty [X]% etc.             | [▲ rating] |
+| 5 | Out-of-pocket maximum (single)     | $[exact]                                       | [▲ rating] |
+| 6 | Doctor visit copays                | Primary $[X] / Specialist $[X]                | [▲ rating] |
+| 7 | Referral rules                     | [No referral needed / Referral required]      | [▲ rating] |
+| 8 | ER cost                            | $[X] copay (waived if admitted?)             | [▲ rating] |
+| 9 | Kids dental & vision (under 19)    | [100% preventive + basic / preventive only / limited] | [▲ rating] |
+|10 | Adult dental & vision              | [Bundled / Rich rider / Limited / Separate policy needed] | [▲ rating] |
 
-NETWORK DETAILS
-• In-Network: [Which doctors and hospitals you can use for lower costs]
-• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
+⚡ At-a-Glance
 
-WHAT YOU'RE COVERED FOR
-• Primary care doctor visits
-• Specialist visits
-• Hospital stays (inpatient and outpatient)
-• Emergency room visits
-• Prescription medications
-• Preventive care (checkups, screenings)
-• [Other specific services covered]
+**Monthly Premium** (what you pay every month to have insurance)  
+[exact numbers + employer contribution if mentioned]
 
-IMPORTANT DATES AND DEADLINES
-• [Coverage start/end dates]
-• [Enrollment periods]
-• [Any important deadlines]
+**Deductible** (amount you pay 100% before insurance helps on most services)  
+$[X] single | $[Y] family  
+→ Doctor visits & preventive care [do / do not] count toward this
 
-Format with clear headers and bullet points. Explain insurance terms simply. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
+**Out-of-Pocket Maximum** (your "I'm done paying" cap for the year)  
+$[X] single | $[Y] family
+
+**Doctor Visits**  
+Primary care: $[X] copay (flat fee) · Specialist: $[X] copay · [No referral needed / Referral required]
+
+**Prescriptions** (quick tier summary)
+
+**Emergency Room** $[X] copay ([waived if admitted])
+
+**Kids Dental & Vision** [summary]
+
+**Adult Dental & Vision** [summary]
+
+**Best Parts** (4–6 short bullets)
+
+**Biggest Gotchas** (4–6 short bullets)
+
+📋 A Little More Detail
+
+**How the Money Works** (step-by-step)  
+**100% Free** (no cost, no deductible)  
+**Fixed Copays** (deductible doesn't apply)  
+**After Deductible** (you pay coinsurance %)  
+**Major Exclusions**  
+**Network Rules**
+
+Keep total summary under 600 words. Be friendly, direct, and brutally concise.
+
+Benchmark ratings for Individual/ACA plans:
+- Monthly premium: ▲▲▲▲▲ ≤$400 | ▲▲▲▲□ $401-500 | ▲▲▲□□ $501-600 | ▲▲□□□ $601-700 | ▲□□□□ ≥$701
+- OOP max: ▲▲▲▲▲ ≤$7k | ▲▲▲▲□ $7-8.5k | ▲▲▲□□ $8.5-9.45k | ▲▲□□□ $9.45k+ 
+- Doctor visits: ▲▲▲▲▲ ≤$25 prim/≤$50 spec | ▲▲▲▲□ ≤$35/≤$70 | ▲▲▲□□ ≤$50/≤$100 | ▲▲□□□ after deductible | ▲□□□□ full cost until deductible
+- ER cost: ▲▲▲▲▲ ≤$300 | ▲▲▲▲□ $301-500 | ▲▲▲□□ $501-750 | ▲▲□□□ >$750 | ▲□□□□ after deductible
+- Referrals: ▲▲▲▲▲ no referral | ▲□□□□ referral required
+- Network: ▲▲▲▲▲ broad national PPO | ▲▲▲▲□ large regional | ▲▲▲□□ medium regional | ▲▲□□□ narrow | ▲□□□□ very narrow
+- Rx costs: ▲▲▲▲▲ generic ≤$10, specialty ≤25% | ▲▲▲▲□ ≤$15, ≤30% | ▲▲▲□□ $15-25, 30-40% | ▲▲□□□ high tier copays | ▲□□□□ 40-50% specialty
+- Kids dental/vision: ▲▲▲▲▲ 100% preventive + basic | ▲▲▲▲□ preventive only | ▲▲▲□□ limited
+- Adult dental/vision: ▲▲▲▲▲ bundled/rich rider | ▲▲▲▲□ limited rider | ▲▲▲□□ separate policy needed | ▲□□□□ none
+
+Use similar benchmarks for other plan types, adjusting thresholds as appropriate.
 `
 
       const result = await model.generateContent([
