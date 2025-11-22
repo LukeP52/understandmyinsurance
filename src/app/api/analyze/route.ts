@@ -58,10 +58,10 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format:
 
 KEY TAKEAWAYS
-• [Most important thing about this plan - explain any terms used like "Your deductible (amount you pay first) is $X"]
-• [Second most important thing - define terms like "premium (monthly cost)" if used]  
-• [Third most important thing - always explain insurance terms in plain language]
-• [Fourth most important thing if relevant - make it understandable for someone new to insurance]
+• This plan would be good for [describe ideal user/situation]
+• [Key highlight with term explanation - e.g. "Low deductible (amount you pay first) of $X"]
+• [Key highlight with term explanation - e.g. "High premium (monthly cost) but good coverage"]
+• [Key highlight with term explanation - keep sentences short and define insurance terms]
 
 PLAN OVERVIEW
 Monthly Premium: $X
