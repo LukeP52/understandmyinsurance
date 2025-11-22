@@ -92,18 +92,14 @@ WHAT TO WATCH OUT FOR
 • [Services not covered]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Let's say you need [common medical scenario - e.g., "to see a specialist for back pain"]:
+Example: [common medical scenario - e.g., "Seeing a specialist for back pain"]
 
-STEP 1: Primary Care Visit → STEP 2: Specialist Referral
-You pay: $X copay                You pay: $X specialist copay
-Insurance covers the rest         Insurance covers the rest
-        ↓                                ↓
-STEP 3: MRI/Testing              STEP 4: Treatment/Therapy
-You pay: $X toward deductible    You pay: $X per session
-Insurance pays rest after met    Insurance covers the rest
-
-TOTAL SCENARIO COST: Approximately $X
-This example shows how your deductible, copays, and coinsurance work together in a typical care situation.
+Step 1 - Primary Care Visit: You pay $X copay, insurance covers the rest
+Step 2 - Specialist Referral: You pay $X specialist copay, insurance covers the rest  
+Step 3 - Diagnostic Test (MRI): You pay $X toward deductible (or X% coinsurance), insurance pays rest
+Step 4 - Treatment Sessions: You pay $X per session, insurance covers the rest
+Total Out-of-Pocket Cost: Approximately $X for this complete scenario
+How Costs Work Together: This shows your deductible, copays, and coinsurance in action
 
 ADDITIONAL PLAN DETAILS
 
