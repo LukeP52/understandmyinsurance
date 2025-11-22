@@ -58,22 +58,26 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format:
 
 KEY TAKEAWAYS
-• This plan would be good for [describe ideal user/situation]
+• This plan would be good for [describe ideal user/situation in 10 words or less]
 • [Key highlight with term explanation - e.g. "Low deductible (amount you pay first) of $X"]
 • [Key highlight with term explanation - e.g. "High premium (monthly cost) but good coverage"]
-• [Key highlight with term explanation - keep sentences short and define insurance terms]
+• [Key highlight with term explanation - KEEP EACH BULLET TO 15 WORDS OR LESS]
 
-HOW THIS PLAN MEASURES UP: YOUR TOP 10 PRIORITIES
-• Monthly Premium: $X - what you pay every month just to have insurance
-• Total Out-of-Pocket Costs: Deductible ($X) + copays + coinsurance, capped at $X maximum
-• Doctor/Hospital Network: [Network details] - can you keep your current doctors?
-• Prescription Coverage: [Coverage details] - are your medications covered and at what cost?
-• Out-of-Pocket Maximum: $X - your "I'm done paying" cap for the year
-• Doctor Visit Copays: Primary care $X, Specialist $X - flat fees for office visits
-• Plan Type & Referrals: [HMO/PPO/etc.] - do you need permission to see specialists?
-• Emergency & Urgent Care: ER $X, Urgent care $X - costs when you need immediate help
-• Kids' Dental & Vision: [Included/Not included] - coverage for children under 19
-• Adult Dental & Vision: [Add-on options/costs] - optional coverage you can purchase
+IMPORTANT: Keep all KEY TAKEAWAYS bullets very short (15 words max). Use simple language and define insurance terms in parentheses.
+
+PLAN OVERVIEW
+Monthly Premium: $X (what you pay every month just to have insurance)
+Annual Deductible: $X (amount you pay before insurance starts helping)
+Out-of-Pocket Maximum: $X (the "I'm done paying" cap for the year)
+Plan Type: [HMO/PPO/etc.] (affects referral rules and specialist access)
+Network: [Insurance company name] (which doctors/hospitals you can use)
+Primary Care Copay: $X (flat fee for doctor visits)
+Specialist Copay: $X (flat fee for specialist visits)
+Emergency Room Cost: $X (cost for ER visits)
+Urgent Care Cost: $X (cost for urgent care visits)
+Prescription Drug Coverage: [Formulary tier/coverage details]
+Pediatric Dental & Vision: [Included/Not included for kids under 19]
+Adult Dental & Vision: [Add-on options available/costs]
 
 WHAT'S GOOD ABOUT THIS PLAN
 • [Positive aspect 1]
