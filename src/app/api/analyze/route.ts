@@ -89,6 +89,28 @@ WHAT TO WATCH OUT FOR
 • [Things that might cost extra]
 • [Services not covered]
 
+REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
+Let's say you need [common medical scenario - e.g., "to see a specialist for back pain"]:
+
+1. First, you visit your primary care doctor
+   • You pay: $X copay
+   • Insurance covers the rest
+
+2. Your doctor refers you to an orthopedic specialist
+   • You pay: $X specialist copay
+   • Insurance covers the rest
+
+3. The specialist orders an MRI
+   • You pay: $X toward your deductible (if not met) or X% coinsurance
+   • Insurance pays the rest once deductible is met
+
+4. You need physical therapy (12 sessions)
+   • You pay: $X per session copay or coinsurance
+   • Insurance covers the rest
+
+Total out-of-pocket for this scenario: Approximately $X
+This example shows how your deductible, copays, and coinsurance work together in a typical care situation.
+
 WHAT YOU PAY
 • Monthly Premium: $X (what you pay every month whether you use healthcare or not)
 • Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
