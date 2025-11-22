@@ -2,7 +2,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { storage } from '@/lib/firebase'
-import { detectPlanType, getBenchmarkRating } from '@/lib/benchmarks'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
@@ -52,58 +51,67 @@ export async function POST(request: NextRequest) {
 
       const arrayBuffer = await response.arrayBuffer()
       const base64Data = Buffer.from(arrayBuffer).toString('base64')
-      
-      console.log('PDF processing debug info:')
-      console.log('- File URL:', fileUrl)
-      console.log('- File name:', fileName)
-      console.log('- Array buffer size:', arrayBuffer.byteLength, 'bytes')
-      console.log('- Base64 data length:', base64Data.length, 'characters')
-      console.log('- Base64 data start:', base64Data.substring(0, 100))
 
       const singlePrompt = `
-Analyze this insurance PDF document and tell me exactly what you can see.
+Analyze this insurance document and provide a clear explanation in plain English.
 
-First, can you read this PDF? Tell me the plan name, insurance company, and any specific dollar amounts you can find for:
-- Monthly premium cost
-- Deductible amount  
-- Out-of-pocket maximum
-- Doctor visit copays
-- Emergency room costs
+Please provide your response in this EXACT format:
 
-Then organize the information like this:
+KEY TAKEAWAYS
+• [Most important thing about this plan - explain any terms used like "Your deductible (amount you pay first) is $X"]
+• [Second most important thing - define terms like "premium (monthly cost)" if used]  
+• [Third most important thing - always explain insurance terms in plain language]
+• [Fourth most important thing if relevant - make it understandable for someone new to insurance]
 
-**Plan Name & Details**
-[Extract the actual plan name and insurance company from the PDF]
+PLAN OVERVIEW
+Monthly Premium: $X
+Annual Deductible: $X  
+Plan Type: [HMO/PPO/etc.]
+Network: [Insurance company name]
+Out-of-Pocket Maximum: $X
+Coverage Start Date: [Date]
+Primary Care Copay: $X
+Specialist Copay: $X
 
-**Key Costs (exact amounts from PDF)**
-• Monthly Premium: [actual dollar amount you see in the PDF]
-• Deductible: [actual dollar amount you see in the PDF] 
-• Out-of-Pocket Max: [actual dollar amount you see in the PDF]
-• Primary Care Visit: [actual dollar amount you see in the PDF]
-• Specialist Visit: [actual dollar amount you see in the PDF]
-• Emergency Room: [actual dollar amount you see in the PDF]
+WHAT'S GOOD ABOUT THIS PLAN
+• [Positive aspect 1]
+• [Positive aspect 2] 
+• [Positive aspect 3]
+• [Additional benefits or advantages]
 
-**Network & Plan Type**
-[What type of plan is this - HMO, PPO, EPO? What network or insurance company?]
+WHAT TO WATCH OUT FOR
+• [Limitation or exclusion 1]
+• [Limitation or exclusion 2]
+• [Things that might cost extra]
+• [Services not covered]
 
-**What's Good About This Plan**
-• [List actual benefits mentioned in the PDF]
-• [Focus on what the PDF specifically says is covered or beneficial]
+WHAT YOU PAY
+• Monthly Premium: $X (what you pay every month whether you use healthcare or not)
+• Deductible: $X (amount you must pay out-of-pocket before insurance starts helping)
+• Copays: Fixed amounts you pay for each service (e.g., $25 per doctor visit)
+• Coinsurance: Percentage you pay after meeting deductible (e.g., you pay 20%, insurance pays 80%)
 
-**What to Watch Out For**
-• [List actual limitations or exclusions mentioned in the PDF]
-• [Focus on what the PDF specifically says is NOT covered or has restrictions]
+NETWORK DETAILS
+• In-Network: [Which doctors and hospitals you can use for lower costs]
+• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
 
-**Additional Details**
-[Any other important information you can extract from the PDF]
+WHAT YOU'RE COVERED FOR
+• Primary care doctor visits
+• Specialist visits
+• Hospital stays (inpatient and outpatient)
+• Emergency room visits
+• Prescription medications
+• Preventive care (checkups, screenings)
+• [Other specific services covered]
 
-BE SPECIFIC - use the exact dollar amounts and details you can read from the PDF document. If you cannot read certain information, say "Not specified in PDF" rather than making up placeholder text.
+IMPORTANT DATES AND DEADLINES
+• [Coverage start/end dates]
+• [Enrollment periods]
+• [Any important deadlines]
+
+Format with clear headers and bullet points. Explain insurance terms simply. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
 
-      console.log('Sending to Gemini API...')
-      console.log('- Prompt length:', singlePrompt.length)
-      console.log('- Model:', 'gemini-2.5-flash')
-      
       const result = await model.generateContent([
         singlePrompt,
         {
@@ -115,8 +123,6 @@ BE SPECIFIC - use the exact dollar amounts and details you can read from the PDF
       ])
 
       analysisText = result.response.text()
-      console.log('Gemini response length:', analysisText.length)
-      console.log('Gemini response preview:', analysisText.substring(0, 200))
 
     } else {
       // Multiple file comparison
