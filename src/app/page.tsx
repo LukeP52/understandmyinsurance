@@ -5,6 +5,62 @@ import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
 import AuthModal from './components/Auth/AuthModal'
+import FlowchartScenario from './components/FlowchartScenario'
+
+// Function to parse real-world scenario for flowchart
+function parseRealWorldScenario(content: string) {
+  const lines = content.split('\n').filter(line => line.trim())
+  
+  const scenarioMatch = lines[0]?.includes('Let\'s say') ? lines[0] : ''
+  const steps = []
+  let currentStep: any = null
+  let totalCost = ''
+  let explanation = ''
+  
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim()
+    
+    if (line.match(/^\d+\./)) {
+      // Save previous step
+      if (currentStep) {
+        steps.push(currentStep)
+      }
+      // Start new step
+      const stepNumber = parseInt(line.match(/^(\d+)\./)![1])
+      const title = line.replace(/^\d+\.\s*/, '').replace(/^(First,|Your doctor|The specialist|You need)/, '').trim()
+      currentStep = {
+        stepNumber,
+        title: title.charAt(0).toUpperCase() + title.slice(1),
+        userPays: '',
+        details: ''
+      }
+    } else if (line.startsWith('• You pay:')) {
+      if (currentStep) {
+        currentStep.userPays = line.replace('• You pay:', '').trim()
+      }
+    } else if (line.startsWith('• Insurance')) {
+      if (currentStep) {
+        currentStep.details = line.replace('• Insurance', 'Insurance').trim()
+      }
+    } else if (line.startsWith('Total out-of-pocket')) {
+      totalCost = line.replace('Total out-of-pocket for this scenario:', '').trim()
+    } else if (line.startsWith('This example shows')) {
+      explanation = line
+    }
+  }
+  
+  // Save last step
+  if (currentStep) {
+    steps.push(currentStep)
+  }
+  
+  return {
+    scenario: scenarioMatch,
+    steps,
+    totalCost,
+    explanation
+  }
+}
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -525,8 +581,24 @@ export default function Home() {
                           
                           // Check if this line looks like a section header
                           const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT')
+                          const isRealWorldScenario = title.startsWith('REAL-WORLD SCENARIO')
                           
-                          if (isHeader) {
+                          if (isRealWorldScenario) {
+                            const scenarioData = parseRealWorldScenario(content)
+                            return (
+                              <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                  {title}
+                                </h4>
+                                <FlowchartScenario
+                                  scenario={scenarioData.scenario}
+                                  steps={scenarioData.steps}
+                                  totalCost={scenarioData.totalCost}
+                                  explanation={scenarioData.explanation}
+                                />
+                              </div>
+                            )
+                          } else if (isHeader) {
                             return (
                               <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                 <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">

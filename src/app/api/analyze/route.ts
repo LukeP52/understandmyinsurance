@@ -94,39 +94,24 @@ WHAT TO WATCH OUT FOR
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Let's say you need [common medical scenario - e.g., "to see a specialist for back pain"]:
 
-┌─────────────────────────────────────┐
-│ STEP 1: Primary Care Visit          │
-│ You pay: $X copay                   │
-│ Insurance covers the rest           │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│ STEP 2: Specialist Referral         │
-│ You pay: $X specialist copay        │
-│ Insurance covers the rest           │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│ STEP 3: MRI Ordered                 │
-│ You pay: $X toward deductible       │
-│ (or X% coinsurance if met)          │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│ STEP 4: Physical Therapy (12 visits)│
-│ You pay: $X per session             │
-│ Insurance covers the rest           │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│ TOTAL COST: Approximately $X        │
-│ This shows how deductible, copays,  │
-│ and coinsurance work together       │
-└─────────────────────────────────────┘
+1. First, you visit your primary care doctor
+   • You pay: $X copay
+   • Insurance covers the rest
+
+2. Your doctor refers you to an orthopedic specialist
+   • You pay: $X specialist copay
+   • Insurance covers the rest
+
+3. The specialist orders an MRI
+   • You pay: $X toward your deductible (if not met) or X% coinsurance
+   • Insurance pays the rest once deductible is met
+
+4. You need physical therapy (12 sessions)
+   • You pay: $X per session copay or coinsurance
+   • Insurance covers the rest
+
+Total out-of-pocket for this scenario: Approximately $X
+This example shows how your deductible, copays, and coinsurance work together in a typical care situation.
 
 ADDITIONAL PLAN DETAILS
 
