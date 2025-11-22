@@ -64,14 +64,18 @@ KEY TAKEAWAYS
 • [Key highlight with term explanation - keep sentences short and define insurance terms]
 
 PLAN OVERVIEW
-Monthly Premium: $X
-Annual Deductible: $X  
-Plan Type: [HMO/PPO/etc.]
-Network: [Insurance company name]
-Out-of-Pocket Maximum: $X
-Coverage Start Date: [Date]
-Primary Care Copay: $X
-Specialist Copay: $X
+Monthly Premium: $X (what you pay every month just to have insurance)
+Annual Deductible: $X (amount you pay before insurance starts helping)
+Out-of-Pocket Maximum: $X (the "I'm done paying" cap for the year)
+Plan Type: [HMO/PPO/etc.] (affects referral rules and specialist access)
+Network: [Insurance company name] (which doctors/hospitals you can use)
+Primary Care Copay: $X (flat fee for doctor visits)
+Specialist Copay: $X (flat fee for specialist visits)
+Emergency Room Cost: $X (cost for ER visits)
+Urgent Care Cost: $X (cost for urgent care visits)
+Prescription Drug Coverage: [Formulary tier/coverage details]
+Pediatric Dental & Vision: [Included/Not included for kids under 19]
+Adult Dental & Vision: [Add-on options available/costs]
 
 WHAT'S GOOD ABOUT THIS PLAN
 • [Positive aspect 1]
@@ -161,10 +165,16 @@ ${fileData.length > 3 ? `Plan D (${fileData[3].name}): This plan would be good t
 SIDE-BY-SIDE OVERVIEW
 Monthly Premium: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
 Annual Deductible: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Plan Type: Plan A: [Type] | Plan B: [Type] ${fileData.length > 2 ? '| Plan C: [Type]' : ''} ${fileData.length > 3 ? '| Plan D: [Type]' : ''}
 Out-of-Pocket Max: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Plan Type & Referrals: Plan A: [Type] | Plan B: [Type] ${fileData.length > 2 ? '| Plan C: [Type]' : ''} ${fileData.length > 3 ? '| Plan D: [Type]' : ''}
+Network: Plan A: [Network] | Plan B: [Network] ${fileData.length > 2 ? '| Plan C: [Network]' : ''} ${fileData.length > 3 ? '| Plan D: [Network]' : ''}
 Primary Care Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
 Specialist Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Emergency Room: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Urgent Care: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
+Prescription Coverage: Plan A: [Coverage] | Plan B: [Coverage] ${fileData.length > 2 ? '| Plan C: [Coverage]' : ''} ${fileData.length > 3 ? '| Plan D: [Coverage]' : ''}
+Pediatric Dental/Vision: Plan A: [Y/N] | Plan B: [Y/N] ${fileData.length > 2 ? '| Plan C: [Y/N]' : ''} ${fileData.length > 3 ? '| Plan D: [Y/N]' : ''}
+Adult Dental/Vision: Plan A: [Available/Cost] | Plan B: [Available/Cost] ${fileData.length > 2 ? '| Plan C: [Available/Cost]' : ''} ${fileData.length > 3 ? '| Plan D: [Available/Cost]' : ''}
 
 DETAILED COMPARISON
 Cost Winner: [Which plan has the lowest overall costs and why]
