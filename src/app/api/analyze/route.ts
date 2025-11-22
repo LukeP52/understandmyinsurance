@@ -52,78 +52,58 @@ export async function POST(request: NextRequest) {
 
       const arrayBuffer = await response.arrayBuffer()
       const base64Data = Buffer.from(arrayBuffer).toString('base64')
+      
+      console.log('PDF processing debug info:')
+      console.log('- File URL:', fileUrl)
+      console.log('- File name:', fileName)
+      console.log('- Array buffer size:', arrayBuffer.byteLength, 'bytes')
+      console.log('- Base64 data length:', base64Data.length, 'characters')
+      console.log('- Base64 data start:', base64Data.substring(0, 100))
 
       const singlePrompt = `
-You are an expert health-insurance translator for normal people. 
-Extract key details from this insurance PDF and explain them in plain English using the format below.
+Analyze this insurance PDF document and tell me exactly what you can see.
 
-**Plan Name & Type**
-Start with the plan name, carrier, and plan type (HMO/PPO/EPO) from the PDF.
+First, can you read this PDF? Tell me the plan name, insurance company, and any specific dollar amounts you can find for:
+- Monthly premium cost
+- Deductible amount  
+- Out-of-pocket maximum
+- Doctor visit copays
+- Emergency room costs
 
-**The 8 Things That Matter Most**
-Explain these categories first (based on what 75%+ of people actually care about):
+Then organize the information like this:
 
-1. **Monthly Premium** (what you pay every month just to have insurance)
-   • Single: $[amount] | Family: $[amount] (+ employer contribution if mentioned)
+**Plan Name & Details**
+[Extract the actual plan name and insurance company from the PDF]
 
-2. **Total Out-of-Pocket Risk** (deductible + out-of-pocket max)
-   • Deductible: $[amount] single / $[amount] family
-   • Out-of-pocket maximum: $[amount] single / $[amount] family
-   • Doctor visits [do/don't] count toward deductible
+**Key Costs (exact amounts from PDF)**
+• Monthly Premium: [actual dollar amount you see in the PDF]
+• Deductible: [actual dollar amount you see in the PDF] 
+• Out-of-Pocket Max: [actual dollar amount you see in the PDF]
+• Primary Care Visit: [actual dollar amount you see in the PDF]
+• Specialist Visit: [actual dollar amount you see in the PDF]
+• Emergency Room: [actual dollar amount you see in the PDF]
 
-3. **Doctor/Hospital Network** (can you keep your doctors?)
-   • Network type: [HMO/PPO/EPO] 
-   • Network name: [actual network name]
-   • Key network highlights: [mention major hospital systems if listed]
-
-4. **Prescription Costs**
-   • Generic: $[amount] copay
-   • Brand name: $[amount] or [%] coinsurance  
-   • Specialty drugs: [%] coinsurance
-
-5. **Doctor Visit Copays**
-   • Primary care: $[amount]
-   • Specialist: $[amount]
-   • Referrals: [Required/Not required]
-
-6. **Emergency Room Costs**
-   • ER copay: $[amount] (waived if admitted: [yes/no])
-
-7. **Kids Dental & Vision** (under 19 - always included)
-   • [Brief summary of pediatric coverage]
-
-8. **Adult Dental & Vision** 
-   • [Usually "Separate policy needed" or brief summary if bundled]
+**Network & Plan Type**
+[What type of plan is this - HMO, PPO, EPO? What network or insurance company?]
 
 **What's Good About This Plan**
-• [4-6 actual benefits from the PDF]
-• [Focus on standout features, low costs, broad networks, etc.]
+• [List actual benefits mentioned in the PDF]
+• [Focus on what the PDF specifically says is covered or beneficial]
 
 **What to Watch Out For**
-• [4-6 actual limitations from the PDF]  
-• [High deductibles, narrow networks, excluded services, etc.]
+• [List actual limitations or exclusions mentioned in the PDF]
+• [Focus on what the PDF specifically says is NOT covered or has restrictions]
 
-**Detailed Plan Info**
-Get into the specifics for people who want to dig deeper:
+**Additional Details**
+[Any other important information you can extract from the PDF]
 
-**How the Money Works**
-• 100% Free: [services with no cost/deductible]
-• Fixed Copays: [services with flat fees regardless of deductible]  
-• After Deductible: [coinsurance percentages you pay]
-
-**Coverage Details**
-• [Specific benefits, exclusions, and coverage rules]
-• [Prior authorization requirements]
-• [Geographic restrictions]
-
-**Network Rules**
-• [In-network vs out-of-network details]
-• [Referral requirements]
-• [Emergency care rules]
-
-Extract actual dollar amounts and percentages from the PDF. Be honest about costs and limitations. Keep total response under 600 words.
+BE SPECIFIC - use the exact dollar amounts and details you can read from the PDF document. If you cannot read certain information, say "Not specified in PDF" rather than making up placeholder text.
 `
 
+      console.log('Sending to Gemini API...')
+      console.log('- Prompt length:', singlePrompt.length)
+      console.log('- Model:', 'gemini-2.5-flash')
+      
       const result = await model.generateContent([
         singlePrompt,
         {
@@ -135,6 +115,8 @@ Extract actual dollar amounts and percentages from the PDF. Be honest about cost
       ])
 
       analysisText = result.response.text()
+      console.log('Gemini response length:', analysisText.length)
+      console.log('Gemini response preview:', analysisText.substring(0, 200))
 
     } else {
       // Multiple file comparison
