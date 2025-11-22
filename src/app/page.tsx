@@ -529,24 +529,25 @@ export default function Home() {
                           
                           if (isRealWorldScenario) {
                             // Parse the scenario content to group steps in pairs
-                            const contentLines = content.split('\n')
+                            const contentLines = content.split('\n').map(line => line.trim()).filter(line => line)
                             const scenarioIntro = contentLines.find(line => line.includes("Let's say"))
                             const steps: any[] = []
                             let currentStep: any = null
                             let nonStepContent: string[] = []
                             
                             contentLines.forEach(line => {
-                              if (line.match(/^\d+\./)) {
+                              const trimmedLine = line.trim()
+                              if (trimmedLine.match(/^\d+\./)) {
                                 if (currentStep) steps.push(currentStep)
                                 currentStep = {
-                                  number: line.match(/^(\d+)\./)![1],
-                                  title: line.replace(/^\d+\.\s*/, ''),
+                                  number: trimmedLine.match(/^(\d+)\./)![1],
+                                  title: trimmedLine.replace(/^\d+\.\s*/, ''),
                                   bullets: []
                                 }
-                              } else if (line.startsWith('•') && currentStep) {
-                                currentStep.bullets.push(line.replace('• ', ''))
-                              } else if (line.trim() && !line.includes("Let's say")) {
-                                nonStepContent.push(line.trim())
+                              } else if (trimmedLine.startsWith('• ') && currentStep) {
+                                currentStep.bullets.push(trimmedLine.replace('• ', ''))
+                              } else if (trimmedLine.startsWith('Total out-of-pocket') || trimmedLine.startsWith('This example shows')) {
+                                nonStepContent.push(trimmedLine)
                               }
                             })
                             if (currentStep) steps.push(currentStep)
@@ -561,16 +562,16 @@ export default function Home() {
                                 )}
                                 
                                 {/* Grid layout for steps - 2 columns */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 max-w-none">
                                   {steps.map((step, stepIndex) => (
-                                    <div key={stepIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    <div key={stepIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-4 w-full">
                                       <h5 className="font-bold text-gray-800 mb-2">
                                         {step.number}. {step.title}
                                       </h5>
                                       <div className="space-y-1">
                                         {step.bullets.map((bullet: string, bulletIndex: number) => (
                                           <div key={bulletIndex} className="flex items-start text-sm">
-                                            <span className="text-blue-500 mr-2 mt-1">•</span>
+                                            <span className="text-blue-500 mr-2 mt-1 flex-shrink-0">•</span>
                                             <span className="text-gray-600">{bullet}</span>
                                           </div>
                                         ))}
