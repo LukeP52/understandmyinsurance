@@ -477,86 +477,41 @@ export default function Home() {
                           const analysisText = uploadResults.data.analysis.text
                           const sections = analysisText.split('\n\n')
                           
-                          // Check if this uses the new format with scoring table
-                          const hasScoreTable = analysisText.includes('| # | What matters most |') || analysisText.includes('⚡ How this plan scores')
+                          // Check if this uses the new simplified format
+                          const hasNewFormat = analysisText.includes('**The 8 Things That Matter Most**') || analysisText.includes('**What\'s Good About This Plan**')
                           
-                          if (hasScoreTable) {
-                            // Parse new format sections
-                            const planTitle = sections.find((s: string) => s.startsWith('**2026') || s.startsWith('**2025'))?.trim() || 'Insurance Plan Analysis'
-                            const scoreTableSection = sections.find((s: string) => s.includes('| # | What matters most |'))?.split('\n') || []
-                            const atGlanceSection = sections.find((s: string) => s.includes('⚡ At-a-Glance'))?.replace('⚡ At-a-Glance\n', '') || ''
-                            const detailSection = sections.find((s: string) => s.includes('📋 A Little More Detail'))?.replace('📋 A Little More Detail\n', '') || ''
-                            
-                            // Parse score table
-                            const tableRows = scoreTableSection.filter((line: string) => 
-                              line.includes('|') && 
-                              !line.includes('What matters most') && 
-                              !line.includes('---') &&
-                              line.trim() !== ''
-                            ).map((row: string) => {
-                              const cells = row.split('|').map(cell => cell.trim()).filter(cell => cell !== '')
-                              return cells
-                            })
+                          if (hasNewFormat) {
+                            // Parse new simplified format sections
+                            const planTitle = sections.find((s: string) => s.startsWith('**Plan Name & Type**'))?.replace('**Plan Name & Type**\n', '').trim() || 'Insurance Plan Analysis'
+                            const eightThingsSection = sections.find((s: string) => s.includes('**The 8 Things That Matter Most**'))?.replace('**The 8 Things That Matter Most**\n', '') || ''
+                            const goodSection = sections.find((s: string) => s.includes('**What\'s Good About This Plan**'))?.replace('**What\'s Good About This Plan**\n', '') || ''
+                            const watchSection = sections.find((s: string) => s.includes('**What to Watch Out For**'))?.replace('**What to Watch Out For**\n', '') || ''
+                            const detailSection = sections.find((s: string) => s.includes('**Detailed Plan Info**'))?.replace('**Detailed Plan Info**\n', '') || ''
                             
                             return (
                               <>
                                 {/* Plan Title */}
                                 <div className="text-center mb-8">
                                   <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                                    {planTitle.replace(/\*\*/g, '')}
+                                    {planTitle}
                                   </h3>
                                 </div>
 
-                                {/* Scoring Table */}
-                                <div className="bg-white border-2 border-blue-200 rounded-xl p-6 shadow-lg mb-8">
+                                {/* The 8 Things That Matter Most */}
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg mb-8">
                                   <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-                                    <span className="mr-3">⚡</span>
-                                    How this plan scores on the 10 things 90%+ of people care about
-                                  </h4>
-                                  <div className="overflow-x-auto">
-                                    <table className="w-full border-collapse">
-                                      <thead>
-                                        <tr className="border-b-2 border-gray-300 bg-gray-50">
-                                          <th className="text-left py-4 px-4 font-bold text-gray-900">#</th>
-                                          <th className="text-left py-4 px-4 font-bold text-gray-900">What matters most</th>
-                                          <th className="text-left py-4 px-4 font-bold text-gray-900">This plan</th>
-                                          <th className="text-center py-4 px-4 font-bold text-gray-900">Quick verdict</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {tableRows.map((row: string[], rowIndex: number) => {
-                                          if (row.length >= 4) {
-                                            return (
-                                              <tr key={rowIndex} className="border-b border-gray-200 hover:bg-gray-50">
-                                                <td className="py-4 px-4 font-medium text-gray-900">{row[0]}</td>
-                                                <td className="py-4 px-4 text-gray-700">{row[1]}</td>
-                                                <td className="py-4 px-4 text-gray-700">{row[2]}</td>
-                                                <td className="py-4 px-4 text-center text-lg font-bold text-blue-600">{row[3]}</td>
-                                              </tr>
-                                            )
-                                          }
-                                          return null
-                                        })}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
-
-                                {/* At-a-Glance Section */}
-                                <div className="bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-6 shadow-lg mb-8">
-                                  <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-                                    <span className="mr-3">⚡</span>
-                                    At-a-Glance
+                                    <span className="mr-3">💡</span>
+                                    The 8 Things That Matter Most
                                   </h4>
                                   <div className="space-y-4 text-gray-700">
-                                    {atGlanceSection.split('\n\n').map((paragraph: string, pIndex: number) => {
-                                      if (paragraph.trim()) {
-                                        const lines = paragraph.split('\n')
-                                        const title = lines[0]?.replace(/\*\*/g, '')
+                                    {eightThingsSection.split('\n\n').map((item: string, pIndex: number) => {
+                                      if (item.trim() && item.includes('**')) {
+                                        const lines = item.split('\n')
+                                        const title = lines[0]?.replace(/\*\*/g, '').replace(/^\d+\.\s*/, '')
                                         const content = lines.slice(1).join('\n')
                                         
                                         return (
-                                          <div key={pIndex} className="bg-white p-4 rounded-lg border border-green-200">
+                                          <div key={pIndex} className="bg-white p-4 rounded-lg border border-blue-200">
                                             <h5 className="font-bold text-gray-900 mb-2">{title}</h5>
                                             <div className="text-sm whitespace-pre-wrap">{content}</div>
                                           </div>
@@ -567,16 +522,61 @@ export default function Home() {
                                   </div>
                                 </div>
 
-                                {/* Detailed Section */}
+                                {/* Good and Watch Out Sections */}
+                                <div className="grid md:grid-cols-2 gap-6 mb-8">
+                                  {/* What's Good */}
+                                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 shadow-lg">
+                                    <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                      <span className="mr-2">✅</span>
+                                      What's Good About This Plan
+                                    </h4>
+                                    <div className="space-y-2">
+                                      {goodSection.split('\n').map((item: string, index: number) => {
+                                        if (item.trim() && item.startsWith('•')) {
+                                          return (
+                                            <div key={index} className="flex items-start">
+                                              <span className="text-green-600 mr-3 mt-1 font-bold">•</span>
+                                              <span className="text-sm text-gray-700">{item.replace('• ', '')}</span>
+                                            </div>
+                                          )
+                                        }
+                                        return null
+                                      })}
+                                    </div>
+                                  </div>
+
+                                  {/* What to Watch Out For */}
+                                  <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg">
+                                    <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                      <span className="mr-2">⚠️</span>
+                                      What to Watch Out For
+                                    </h4>
+                                    <div className="space-y-2">
+                                      {watchSection.split('\n').map((item: string, index: number) => {
+                                        if (item.trim() && item.startsWith('•')) {
+                                          return (
+                                            <div key={index} className="flex items-start">
+                                              <span className="text-orange-600 mr-3 mt-1 font-bold">•</span>
+                                              <span className="text-sm text-gray-700">{item.replace('• ', '')}</span>
+                                            </div>
+                                          )
+                                        }
+                                        return null
+                                      })}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Detailed Plan Info */}
                                 {detailSection && (
                                   <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
                                     <h4 className="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
                                       <span className="mr-3">📋</span>
-                                      A Little More Detail
+                                      Detailed Plan Info
                                     </h4>
                                     <div className="space-y-4 text-gray-700">
                                       {detailSection.split('\n\n').map((paragraph: string, pIndex: number) => {
-                                        if (paragraph.trim()) {
+                                        if (paragraph.trim() && paragraph.includes('**')) {
                                           const lines = paragraph.split('\n')
                                           const title = lines[0]?.replace(/\*\*/g, '')
                                           const content = lines.slice(1).join('\n')
