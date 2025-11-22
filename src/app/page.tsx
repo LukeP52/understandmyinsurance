@@ -525,8 +525,73 @@ export default function Home() {
                           
                           // Check if this line looks like a section header
                           const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT')
+                          const isRealWorldScenario = title.startsWith('REAL-WORLD SCENARIO')
                           
-                          if (isHeader) {
+                          if (isRealWorldScenario) {
+                            // Parse the scenario content to group steps in pairs
+                            const contentLines = content.split('\n')
+                            const scenarioIntro = contentLines.find(line => line.includes("Let's say"))
+                            const steps: any[] = []
+                            let currentStep: any = null
+                            let nonStepContent: string[] = []
+                            
+                            contentLines.forEach(line => {
+                              if (line.match(/^\d+\./)) {
+                                if (currentStep) steps.push(currentStep)
+                                currentStep = {
+                                  number: line.match(/^(\d+)\./)![1],
+                                  title: line.replace(/^\d+\.\s*/, ''),
+                                  bullets: []
+                                }
+                              } else if (line.startsWith('•') && currentStep) {
+                                currentStep.bullets.push(line.replace('• ', ''))
+                              } else if (line.trim() && !line.includes("Let's say")) {
+                                nonStepContent.push(line.trim())
+                              }
+                            })
+                            if (currentStep) steps.push(currentStep)
+                            
+                            return (
+                              <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                  {title}
+                                </h4>
+                                {scenarioIntro && (
+                                  <p className="text-gray-700 mb-6 text-lg">{scenarioIntro}</p>
+                                )}
+                                
+                                {/* Grid layout for steps - 2 columns */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                  {steps.map((step, stepIndex) => (
+                                    <div key={stepIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                      <h5 className="font-bold text-gray-800 mb-2">
+                                        {step.number}. {step.title}
+                                      </h5>
+                                      <div className="space-y-1">
+                                        {step.bullets.map((bullet: string, bulletIndex: number) => (
+                                          <div key={bulletIndex} className="flex items-start text-sm">
+                                            <span className="text-blue-500 mr-2 mt-1">•</span>
+                                            <span className="text-gray-600">{bullet}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                
+                                {/* Non-step content (total cost, explanation) */}
+                                {nonStepContent.length > 0 && (
+                                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    {nonStepContent.map((line, lineIndex) => (
+                                      <p key={lineIndex} className="text-gray-700 mb-2 last:mb-0">
+                                        {line}
+                                      </p>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          } else if (isHeader) {
                             return (
                               <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                 <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
