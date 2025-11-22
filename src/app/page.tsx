@@ -516,6 +516,35 @@ export default function Home() {
                             </div>
                           )
                         }
+
+                        // Check if this is the REAL-WORLD SCENARIO section (show as chart)
+                        if (section.startsWith('REAL-WORLD SCENARIO')) {
+                          const scenarioLines = section.split('\n').filter(line => line.trim() && line.includes(':'))
+                          const exampleLine = section.split('\n').find(line => line.startsWith('Example:'))
+                          
+                          return (
+                            <div key={index} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 shadow-lg">
+                              <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                <span className="mr-2">🏥</span>
+                                Real-World Scenario
+                              </h4>
+                              {exampleLine && (
+                                <p className="text-center text-gray-700 mb-6 font-medium">{exampleLine.replace('Example:', '').trim()}</p>
+                              )}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {scenarioLines.map((line: string, lineIndex: number) => {
+                                  const [label, value] = line.split(':').map(s => s.trim())
+                                  return (
+                                    <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                      <div className="text-xs text-green-600 font-bold uppercase tracking-wide mb-2">{label}</div>
+                                      <div className="text-lg text-gray-900 font-bold">{value}</div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        }
                         
                         // Handle all other sections with enhanced formatting
                         if (section.trim()) {
