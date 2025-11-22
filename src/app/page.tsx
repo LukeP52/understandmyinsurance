@@ -519,8 +519,12 @@ export default function Home() {
 
                         // Check if this is the REAL-WORLD SCENARIO section (show as chart)
                         if (section.startsWith('REAL-WORLD SCENARIO')) {
-                          const scenarioLines = section.split('\n').filter(line => line.trim() && line.includes(':'))
-                          const exampleLine = section.split('\n').find(line => line.startsWith('Example:'))
+                          const allLines = section.split('\n').filter(line => line.trim())
+                          const exampleLine = allLines.find(line => line.startsWith('Example:'))
+                          const scenarioLines = allLines.filter(line => 
+                            (line.startsWith('Step ') || line.includes('Total ') || line.includes('How ')) && 
+                            line.includes(':')
+                          )
                           
                           return (
                             <div key={index} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 shadow-lg">
