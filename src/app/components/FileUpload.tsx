@@ -27,10 +27,7 @@ export default function FileUpload({ onFileUpload, onAuthRequired }: FileUploadP
     e.preventDefault()
     setIsDragOver(false)
     
-    if (!user) {
-      onAuthRequired()
-      return
-    }
+    // Allow all users to upload files
     
     const files = Array.from(e.dataTransfer.files).filter(file => {
       const validTypes = [
@@ -65,10 +62,7 @@ export default function FileUpload({ onFileUpload, onAuthRequired }: FileUploadP
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!user) {
-      onAuthRequired()
-      return
-    }
+    // Allow all users to select files
     
     const files = Array.from(e.target.files || [])
     if (files.length > 0) {
@@ -77,10 +71,7 @@ export default function FileUpload({ onFileUpload, onAuthRequired }: FileUploadP
   }
 
   const openFileDialog = () => {
-    if (!user) {
-      onAuthRequired()
-      return
-    }
+    // Allow all users to open file dialog
     fileInputRef.current?.click()
   }
 

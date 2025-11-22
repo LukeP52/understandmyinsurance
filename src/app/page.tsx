@@ -21,10 +21,8 @@ export default function Home() {
 
 
   const handleUpload = async () => {
-    if (!user) {
-      setShowAuthModal(true)
-      return
-    }
+    // Allow both authenticated and unauthenticated users
+    // Use user ID if available, otherwise use anonymous ID
 
     // Validate file count before processing
     if (analysisMode === 'single' && uploadedFiles.length > 1) {
@@ -59,7 +57,7 @@ export default function Home() {
         setIsAnalyzing(true)
       }
 
-      const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
+      const result = await uploadDocuments(uploadedFiles, [], user?.uid || 'anonymous-user', analysisMode)
       
       setUploadResults({
         success: true,

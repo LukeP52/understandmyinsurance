@@ -25,23 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Temporary: Skip authentication for testing
-    // Create a mock user for development/testing purposes
-    const mockUser = {
-      uid: 'demo-user-123',
-      email: 'demo@example.com',
-      displayName: 'Demo User'
-    } as User;
-    
-    setUser(mockUser);
-    setLoading(false);
-    
-    // Original Firebase auth listener - commented out for testing
-    // const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //   setUser(user);
-    //   setLoading(false);
-    // });
-    // return unsubscribe;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
   const signIn = async (email: string, password: string) => {
