@@ -58,12 +58,12 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format:
 
 KEY TAKEAWAYS
-• This plan would be good for [describe ideal user/situation in 10 words or less]
+• This plan would be good for [describe ideal user/situation]
 • [Key highlight with term explanation - e.g. "Low deductible (amount you pay first) of $X"]
 • [Key highlight with term explanation - e.g. "High premium (monthly cost) but good coverage"]
-• [Key highlight with term explanation - KEEP EACH BULLET TO 15 WORDS OR LESS]
+• [Key highlight with term explanation - keep sentences short and define insurance terms]
 
-IMPORTANT: Keep all KEY TAKEAWAYS bullets very short (15 words max). Use simple language and define insurance terms in parentheses.
+IMPORTANT: Keep all KEY TAKEAWAYS bullets to 30 words or less. Use simple language and define insurance terms in parentheses.
 
 PLAN OVERVIEW
 Monthly Premium: $X (what you pay every month just to have insurance)
@@ -94,24 +94,39 @@ WHAT TO WATCH OUT FOR
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Let's say you need [common medical scenario - e.g., "to see a specialist for back pain"]:
 
-1. First, you visit your primary care doctor
-   • You pay: $X copay
-   • Insurance covers the rest
-
-2. Your doctor refers you to an orthopedic specialist
-   • You pay: $X specialist copay
-   • Insurance covers the rest
-
-3. The specialist orders an MRI
-   • You pay: $X toward your deductible (if not met) or X% coinsurance
-   • Insurance pays the rest once deductible is met
-
-4. You need physical therapy (12 sessions)
-   • You pay: $X per session copay or coinsurance
-   • Insurance covers the rest
-
-Total out-of-pocket for this scenario: Approximately $X
-This example shows how your deductible, copays, and coinsurance work together in a typical care situation.
+┌─────────────────────────────────────┐
+│ STEP 1: Primary Care Visit          │
+│ You pay: $X copay                   │
+│ Insurance covers the rest           │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│ STEP 2: Specialist Referral         │
+│ You pay: $X specialist copay        │
+│ Insurance covers the rest           │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│ STEP 3: MRI Ordered                 │
+│ You pay: $X toward deductible       │
+│ (or X% coinsurance if met)          │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│ STEP 4: Physical Therapy (12 visits)│
+│ You pay: $X per session             │
+│ Insurance covers the rest           │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│ TOTAL COST: Approximately $X        │
+│ This shows how deductible, copays,  │
+│ and coinsurance work together       │
+└─────────────────────────────────────┘
 
 ADDITIONAL PLAN DETAILS
 
