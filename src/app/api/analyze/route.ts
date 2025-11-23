@@ -84,14 +84,7 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Example: [common medical scenario - e.g., "Seeing a specialist for back pain"]
-
-Step 1 - Primary Care Visit: You pay $X copay, insurance covers the rest
-Step 2 - Specialist Referral: You pay $X specialist copay, insurance covers the rest  
-Step 3 - Diagnostic Test (MRI): You pay $X toward deductible (or X% coinsurance), insurance pays rest
-Step 4 - Treatment Sessions: You pay $X per session, insurance covers the rest
-Total Out-of-Pocket Cost: Approximately $X for this complete scenario
-How Costs Work Together: This shows your deductible, copays, and coinsurance in action
+Create a realistic medical scenario that shows how this specific plan works. Use a common medical situation that demonstrates the plan's key costs (deductible, copays, coinsurance). Include at least 4 steps showing the patient journey from initial care through treatment, with specific dollar amounts based on this plan's actual benefits. End with the total estimated out-of-pocket cost and a brief explanation of how the different cost-sharing elements work together.
 
 IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
