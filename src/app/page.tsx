@@ -570,26 +570,32 @@ export default function Home() {
                             
                             // Real-World Scenario section
                             if (section.startsWith('REAL-WORLD SCENARIO')) {
+                              // Remove the header and get the content
+                              const content = section.replace(/^REAL-WORLD SCENARIO[^\n]*\n?/, '').trim()
+                              
                               return (
                                 <div key={index} className="mb-8">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4">
                                     Real-World Scenario
                                   </h4>
                                   <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').split('\n').map((line: string, lineIndex: number) => (
-                                      line.trim() && (
+                                    {content.split('\n').map((line: string, lineIndex: number) => {
+                                      const trimmedLine = line.trim()
+                                      if (!trimmedLine) return null
+                                      
+                                      return (
                                         <div key={lineIndex}>
-                                          {line.startsWith('•') ? (
+                                          {trimmedLine.startsWith('•') ? (
                                             <div className="flex items-start mb-2">
                                               <span className="text-gray-600 mr-3 mt-1">•</span>
-                                              <span>{line.replace('• ', '')}</span>
+                                              <span>{trimmedLine.replace('• ', '')}</span>
                                             </div>
                                           ) : (
-                                            <div className="mb-2">{line}</div>
+                                            <div className="mb-2">{trimmedLine}</div>
                                           )}
                                         </div>
                                       )
-                                    ))}
+                                    })}
                                   </div>
                                 </div>
                               )
