@@ -58,14 +58,14 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format with ONLY these 4 sections:
 
 WHAT'S GOOD ABOUT THIS PLAN
-• [Positive aspect 1 - max 30 words]
-• [Positive aspect 2 - max 30 words] 
-• [Positive aspect 3 - max 30 words]
+• This plan would be good for you if [describe ideal user situation - max 30 words]
+• [Positive aspect 1 - max 30 words] 
+• [Positive aspect 2 - max 30 words]
 • [Additional benefits or advantages - max 30 words]
 
 WHAT TO WATCH OUT FOR
+• Avoid getting this plan if [describe who should not choose this plan - max 30 words]
 • [Limitation or exclusion 1 - max 30 words]
-• [Limitation or exclusion 2 - max 30 words]
 • [Things that might cost extra - max 30 words]
 • [Services not covered - max 30 words]
 
@@ -84,14 +84,20 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Example: [common medical scenario - e.g., "Seeing a specialist for back pain"]
+Create a detailed walkthrough showing how this plan's key features work in practice. Use a realistic medical scenario that demonstrates:
+- How deductibles, copays, and coinsurance work together
+- What the patient pays at each step
+- How network restrictions affect costs
+- The total out-of-pocket expense for the complete scenario
 
-Step 1 - Primary Care Visit: You pay $X copay, insurance covers the rest
-Step 2 - Specialist Referral: You pay $X specialist copay, insurance covers the rest  
-Step 3 - Diagnostic Test (MRI): You pay $X toward deductible (or X% coinsurance), insurance pays rest
-Step 4 - Treatment Sessions: You pay $X per session, insurance covers the rest
-Total Out-of-Pocket Cost: Approximately $X for this complete scenario
-How Costs Work Together: This shows your deductible, copays, and coinsurance in action
+Example Format:
+Scenario: [Choose realistic scenario like "annual checkup plus specialist visit" or "emergency room visit plus follow-up"]
+
+Step 1 - [First medical service]: You pay $X [copay/deductible], insurance covers $X
+Step 2 - [Second service]: You pay $X [type of cost], insurance covers $X  
+Step 3 - [Additional service if needed]: You pay $X [toward deductible/coinsurance], insurance covers $X
+Total Patient Cost: $X for this complete medical scenario
+Key Takeaway: [Explain how this shows the plan's main cost structure in 30 words or less]
 
 IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
