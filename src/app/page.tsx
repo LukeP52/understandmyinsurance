@@ -483,6 +483,12 @@ export default function Home() {
                           
                           const orderedSections = [whatsGoodSection, watchOutSection, planOverviewSection, realWorldSection].filter(Boolean)
                           
+                          // Temporary debug
+                          if (!realWorldSection) {
+                            console.log('MISSING REAL WORLD SCENARIO!')
+                            console.log('Available sections:', sections.map(s => s.substring(0, 50) + '...'))
+                          }
+                          
                           return orderedSections.map((section: string, index: number) => {
                             // What's Good section
                             if (section.startsWith("WHAT'S GOOD ABOUT THIS PLAN")) {
