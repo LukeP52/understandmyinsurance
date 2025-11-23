@@ -486,7 +486,7 @@ export default function Home() {
                           // Temporary debug
                           if (!realWorldSection) {
                             console.log('MISSING REAL WORLD SCENARIO!')
-                            console.log('Available sections:', sections.map(s => s.substring(0, 50) + '...'))
+                            console.log('Available sections:', sections.map((s: string) => s.substring(0, 50) + '...'))
                           }
                           
                           return orderedSections.map((section: string, index: number) => {
