@@ -84,7 +84,7 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic medical scenario that shows how this specific plan works. Use a common medical situation that demonstrates the plan's key costs (deductible, copays, coinsurance). Include at least 4 steps showing the patient journey from initial care through treatment, with specific dollar amounts based on this plan's actual benefits. End with: 1) Total estimated out-of-pocket cost for this scenario, 2) Summary of how the different cost-sharing elements worked together in this example, and 3) What typical ongoing costs would look like with this plan for future medical care.
+Create a realistic medical scenario showing how this plan works. Include 4+ steps of a patient journey with specific costs. End with total out-of-pocket cost and what future costs typically look like with this plan.
 
 IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
