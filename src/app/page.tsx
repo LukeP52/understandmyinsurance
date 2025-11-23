@@ -568,29 +568,34 @@ export default function Home() {
                               )
                             }
                             
-                            // Real-World Scenario section
+                            // Check if this is the REAL-WORLD SCENARIO section (show as chart)
                             if (section.startsWith('REAL-WORLD SCENARIO')) {
+                              const allLines = section.split('\n').filter(line => line.trim())
+                              const exampleLine = allLines.find(line => line.startsWith('Example:'))
+                              const scenarioLines = allLines.filter(line => 
+                                (line.startsWith('Step ') || line.includes('Total ') || line.includes('How ')) && 
+                                line.includes(':')
+                              )
+                              
                               return (
-                                <div key={index} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-yellow-100">
+                                <div key={index} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                    <span className="mr-2">🏥</span>
                                     Real-World Scenario
                                   </h4>
-                                  <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').split('\n').map((line: string, lineIndex: number) => (
-                                      line.trim() && (
-                                        <div key={lineIndex} className="flex items-start">
-                                          {line.match(/^Step \d+/) ? (
-                                            <span className="font-bold text-yellow-700">{line}</span>
-                                          ) : line.startsWith('Total Out-of-Pocket') || line.startsWith('How Costs Work') ? (
-                                            <span className="font-bold text-gray-900">{line}</span>
-                                          ) : line.startsWith('Example:') ? (
-                                            <span className="italic text-gray-600">{line}</span>
-                                          ) : (
-                                            <span>{line}</span>
-                                          )}
+                                  {exampleLine && (
+                                    <p className="text-center text-gray-700 mb-6 font-medium">{exampleLine.replace('Example:', '').trim()}</p>
+                                  )}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {scenarioLines.map((line: string, lineIndex: number) => {
+                                      const [label, value] = line.split(':').map(s => s.trim())
+                                      return (
+                                        <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                          <div className="text-xs text-green-600 font-bold uppercase tracking-wide mb-2">{label}</div>
+                                          <div className="text-lg text-gray-900 font-bold">{value}</div>
                                         </div>
                                       )
-                                    ))}
+                                    })}
                                   </div>
                                 </div>
                               )
