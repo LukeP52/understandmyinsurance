@@ -55,15 +55,19 @@ export async function POST(request: NextRequest) {
       const singlePrompt = `
 Analyze this insurance document and provide a clear explanation in plain English.
 
-Please provide your response in this EXACT format:
+Please provide your response in this EXACT format with ONLY these 4 sections:
 
-KEY TAKEAWAYS
-• This plan would be good for [describe ideal user/situation]
-• [Key highlight with term explanation - e.g. "Low deductible (amount you pay first) of $X"]
-• [Key highlight with term explanation - e.g. "High premium (monthly cost) but good coverage"]
-• [Key highlight with term explanation - keep sentences short and define insurance terms]
+WHAT'S GOOD ABOUT THIS PLAN
+• [Positive aspect 1 - max 30 words]
+• [Positive aspect 2 - max 30 words] 
+• [Positive aspect 3 - max 30 words]
+• [Additional benefits or advantages - max 30 words]
 
-IMPORTANT: Keep all KEY TAKEAWAYS bullets to 30 words or less. Use simple language and define insurance terms in parentheses.
+WHAT TO WATCH OUT FOR
+• [Limitation or exclusion 1 - max 30 words]
+• [Limitation or exclusion 2 - max 30 words]
+• [Things that might cost extra - max 30 words]
+• [Services not covered - max 30 words]
 
 PLAN OVERVIEW
 Monthly Premium: $X (what you pay every month just to have insurance)
@@ -79,18 +83,6 @@ Prescription Drug Coverage: [Formulary tier/coverage details]
 Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
-WHAT'S GOOD ABOUT THIS PLAN
-• [Positive aspect 1]
-• [Positive aspect 2] 
-• [Positive aspect 3]
-• [Additional benefits or advantages]
-
-WHAT TO WATCH OUT FOR
-• [Limitation or exclusion 1]
-• [Limitation or exclusion 2]
-• [Things that might cost extra]
-• [Services not covered]
-
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Example: [common medical scenario - e.g., "Seeing a specialist for back pain"]
 
@@ -101,27 +93,7 @@ Step 4 - Treatment Sessions: You pay $X per session, insurance covers the rest
 Total Out-of-Pocket Cost: Approximately $X for this complete scenario
 How Costs Work Together: This shows your deductible, copays, and coinsurance in action
 
-ADDITIONAL PLAN DETAILS
-
-NETWORK DETAILS
-• In-Network: [Which doctors and hospitals you can use for lower costs]
-• Out-of-Network: [What happens if you go outside the network - higher costs or not covered]
-
-WHAT YOU'RE COVERED FOR
-• Primary care doctor visits
-• Specialist visits
-• Hospital stays (inpatient and outpatient)
-• Emergency room visits
-• Prescription medications
-• Preventive care (checkups, screenings)
-• [Other specific services covered]
-
-IMPORTANT DATES AND DEADLINES
-• [Coverage start/end dates]
-• [Enrollment periods]
-• [Any important deadlines]
-
-Format with clear headers and bullet points. Explain insurance terms simply. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
+IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
 
       const result = await model.generateContent([

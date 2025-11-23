@@ -470,101 +470,117 @@ export default function Home() {
                           )
                         })()
                       ) : (
-                        // Render single plan format (existing logic)
-                        uploadResults.data.analysis.text.split('\n\n').map((section: string, index: number) => {
-                        // Check if this is the KEY TAKEAWAYS section (show first)
-                        if (section.startsWith('KEY TAKEAWAYS')) {
-                          return (
-                            <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                              <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
-                                Key Takeaways
-                              </h4>
-                              <div className="space-y-3">
-                                {section.replace('KEY TAKEAWAYS\n', '').split('\n').map((line: string, lineIndex: number) => (
-                                  line.trim() && (
-                                    <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                      <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
-                                      <span className="font-medium">{line.replace('• ', '')}</span>
-                                    </div>
-                                  )
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        }
-                        
-                        // Check if this is the PLAN OVERVIEW section (show as chart)
-                        if (section.startsWith('PLAN OVERVIEW')) {
-                          const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
-                          return (
-                            <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
-                              <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-                                <span className="mr-2">📊</span>
-                                Plan Overview
-                              </h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {overviewLines.map((line: string, lineIndex: number) => {
-                                  const [label, value] = line.split(':').map(s => s.trim())
-                                  return (
-                                    <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
-                                      <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{label}</div>
-                                      <div className="text-lg text-gray-900 font-bold">{value}</div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          )
-                        }
-
-                        
-                        // Handle all other sections with enhanced formatting
-                        if (section.trim()) {
-                          const lines = section.split('\n')
-                          const title = lines[0]
-                          const content = lines.slice(1).join('\n')
+                        // Render single plan format - only 4 sections in specified order
+                        (() => {
+                          const analysisText = uploadResults.data.analysis.text
+                          const sections = analysisText.split('\n\n')
                           
-                          // Check if this line looks like a section header
-                          const isHeader = title.match(/^[A-Z\s]+$/) || title.startsWith('DOCUMENT') || title.startsWith('WHAT') || title.startsWith('NETWORK') || title.startsWith('IMPORTANT')
+                          // Find and order only the 4 specified sections
+                          const whatsGoodSection = sections.find((s: string) => s.startsWith("WHAT'S GOOD ABOUT THIS PLAN"))
+                          const watchOutSection = sections.find((s: string) => s.startsWith('WHAT TO WATCH OUT FOR'))
+                          const planOverviewSection = sections.find((s: string) => s.startsWith('PLAN OVERVIEW'))
+                          const realWorldSection = sections.find((s: string) => s.startsWith('REAL-WORLD SCENARIO'))
                           
-                          if (isHeader) {
-                            return (
-                              <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                <h4 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
-                                  {title}
-                                </h4>
-                                <div className="text-gray-700 leading-relaxed space-y-2">
-                                  {content.split('\n').map((line: string, lineIndex: number) => (
-                                    line.trim() && (
-                                      <div key={lineIndex} className="flex items-start">
-                                        {line.startsWith('•') ? (
-                                          <>
-                                            <span className="text-blue-500 mr-3 mt-1 font-bold">•</span>
-                                            <span>{line.replace('• ', '')}</span>
-                                          </>
-                                        ) : line.match(/^\d+\./) ? (
-                                          <span className="font-bold">{line}</span>
-                                        ) : (
-                                          <span>{line}</span>
-                                        )}
-                                      </div>
-                                    )
-                                  ))}
+                          const orderedSections = [whatsGoodSection, watchOutSection, planOverviewSection, realWorldSection].filter(Boolean)
+                          
+                          return orderedSections.map((section: string, index: number) => {
+                            // What's Good section
+                            if (section.startsWith("WHAT'S GOOD ABOUT THIS PLAN")) {
+                              return (
+                                <div key={index} className="bg-green-50 border-2 border-green-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-green-100">
+                                    What's Good About This Plan
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {section.replace("WHAT'S GOOD ABOUT THIS PLAN\n", '').split('\n').map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
+                                          <span className="text-green-600 mr-3 mt-1 font-bold">•</span>
+                                          <span className="font-medium">{line.replace('• ', '')}</span>
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
-                            )
-                          }
-                          
-                          return (
-                            <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                {section}
-                              </div>
-                            </div>
-                          )
-                        }
-                        return null
-                      })
+                              )
+                            }
+                            
+                            // What to Watch Out For section
+                            if (section.startsWith('WHAT TO WATCH OUT FOR')) {
+                              return (
+                                <div key={index} className="bg-red-50 border-2 border-red-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-red-100">
+                                    What to Watch Out For
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {section.replace('WHAT TO WATCH OUT FOR\n', '').split('\n').map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
+                                          <span className="text-red-600 mr-3 mt-1 font-bold">•</span>
+                                          <span className="font-medium">{line.replace('• ', '')}</span>
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            }
+                            
+                            // Plan Overview section
+                            if (section.startsWith('PLAN OVERVIEW')) {
+                              const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
+                              return (
+                                <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                    <span className="mr-2">📊</span>
+                                    Plan Details
+                                  </h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {overviewLines.map((line: string, lineIndex: number) => {
+                                      const [label, value] = line.split(':').map(s => s.trim())
+                                      return (
+                                        <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
+                                          <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{label}</div>
+                                          <div className="text-lg text-gray-900 font-bold">{value}</div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              )
+                            }
+                            
+                            // Real-World Scenario section
+                            if (section.startsWith('REAL-WORLD SCENARIO')) {
+                              return (
+                                <div key={index} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-yellow-100">
+                                    Real-World Scenario
+                                  </h4>
+                                  <div className="text-gray-700 leading-relaxed space-y-2">
+                                    {section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').split('\n').map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex} className="flex items-start">
+                                          {line.match(/^Step \d+/) ? (
+                                            <span className="font-bold text-yellow-700">{line}</span>
+                                          ) : line.startsWith('Total Out-of-Pocket') || line.startsWith('How Costs Work') ? (
+                                            <span className="font-bold text-gray-900">{line}</span>
+                                          ) : line.startsWith('Example:') ? (
+                                            <span className="italic text-gray-600">{line}</span>
+                                          ) : (
+                                            <span>{line}</span>
+                                          )}
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
+                                </div>
+                              )
+                            }
+                            
+                            return null
+                          })
+                        })()
                       )}
                     </div>
                   </div>
