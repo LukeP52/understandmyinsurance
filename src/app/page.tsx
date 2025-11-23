@@ -570,24 +570,21 @@ export default function Home() {
                             
                             // Real-World Scenario section
                             if (section.startsWith('REAL-WORLD SCENARIO')) {
-                              // Remove the header and any empty lines, keep all content
-                              const content = section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').trim()
-                              
                               return (
                                 <div key={index} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-yellow-100">
                                     Real-World Scenario
                                   </h4>
                                   <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {content.split('\n').map((line: string, lineIndex: number) => (
+                                    {section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="flex items-start">
                                           {line.match(/^Step \d+/) ? (
                                             <span className="font-bold text-yellow-700">{line}</span>
-                                          ) : line.startsWith('Total Patient Cost') || line.startsWith('Key Takeaway') ? (
+                                          ) : line.startsWith('Total Out-of-Pocket') || line.startsWith('How Costs Work') ? (
                                             <span className="font-bold text-gray-900">{line}</span>
-                                          ) : line.startsWith('Scenario:') ? (
-                                            <span className="italic text-gray-600 font-medium">{line}</span>
+                                          ) : line.startsWith('Example:') ? (
+                                            <span className="italic text-gray-600">{line}</span>
                                           ) : (
                                             <span>{line}</span>
                                           )}

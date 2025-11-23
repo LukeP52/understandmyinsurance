@@ -84,13 +84,14 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Scenario: [Choose realistic scenario like "annual checkup plus specialist visit" or "emergency room visit plus follow-up"]
+Example: [common medical scenario - e.g., "Seeing a specialist for back pain"]
 
-Step 1 - [First medical service]: You pay $X [copay/deductible], insurance covers $X
-Step 2 - [Second service]: You pay $X [type of cost], insurance covers $X  
-Step 3 - [Additional service if needed]: You pay $X [toward deductible/coinsurance], insurance covers $X
-Total Patient Cost: $X for this complete medical scenario
-Key Takeaway: [Explain how this shows the plan's main cost structure in 30 words or less]
+Step 1 - Primary Care Visit: You pay $X copay, insurance covers the rest
+Step 2 - Specialist Referral: You pay $X specialist copay, insurance covers the rest  
+Step 3 - Diagnostic Test (MRI): You pay $X toward deductible (or X% coinsurance), insurance pays rest
+Step 4 - Treatment Sessions: You pay $X per session, insurance covers the rest
+Total Out-of-Pocket Cost: Approximately $X for this complete scenario
+How Costs Work Together: This shows your deductible, copays, and coinsurance in action
 
 IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
