@@ -529,6 +529,23 @@ export default function Home() {
                             // Plan Overview section
                             if (section.startsWith('PLAN OVERVIEW')) {
                               const overviewLines = section.replace('PLAN OVERVIEW\n', '').split('\n').filter(line => line.trim())
+                              
+                              // Define labels with descriptions
+                              const labelDefinitions: Record<string, string> = {
+                                'Monthly Premium': 'Monthly Premium (what you pay every month)',
+                                'Annual Deductible': 'Annual Deductible (amount you pay before insurance helps)',
+                                'Out-of-Pocket Maximum': 'Out-of-Pocket Maximum (your yearly spending cap)',
+                                'Plan Type': 'Plan Type (affects referral rules)',
+                                'Network': 'Network (which doctors/hospitals you can use)',
+                                'Primary Care Copay': 'Primary Care Copay (flat fee for doctor visits)',
+                                'Specialist Copay': 'Specialist Copay (flat fee for specialist visits)',
+                                'Emergency Room Cost': 'Emergency Room Cost (cost for ER visits)',
+                                'Urgent Care Cost': 'Urgent Care Cost (cost for urgent care)',
+                                'Prescription Drug Coverage': 'Prescription Drug Coverage',
+                                'Pediatric Dental & Vision': 'Pediatric Dental & Vision (for kids under 19)',
+                                'Adult Dental & Vision': 'Adult Dental & Vision (add-on options)'
+                              }
+                              
                               return (
                                 <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
                                   <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
@@ -538,9 +555,10 @@ export default function Home() {
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {overviewLines.map((line: string, lineIndex: number) => {
                                       const [label, value] = line.split(':').map(s => s.trim())
+                                      const labelWithDef = labelDefinitions[label] || label
                                       return (
                                         <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
-                                          <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{label}</div>
+                                          <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{labelWithDef}</div>
                                           <div className="text-lg text-gray-900 font-bold">{value}</div>
                                         </div>
                                       )
@@ -552,21 +570,24 @@ export default function Home() {
                             
                             // Real-World Scenario section
                             if (section.startsWith('REAL-WORLD SCENARIO')) {
+                              // Remove the header and any empty lines, keep all content
+                              const content = section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').trim()
+                              
                               return (
                                 <div key={index} className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-yellow-100">
                                     Real-World Scenario
                                   </h4>
                                   <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {section.replace('REAL-WORLD SCENARIO: HOW THIS PLAN WORKS\n', '').split('\n').map((line: string, lineIndex: number) => (
+                                    {content.split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="flex items-start">
                                           {line.match(/^Step \d+/) ? (
                                             <span className="font-bold text-yellow-700">{line}</span>
-                                          ) : line.startsWith('Total Out-of-Pocket') || line.startsWith('How Costs Work') ? (
+                                          ) : line.startsWith('Total Patient Cost') || line.startsWith('Key Takeaway') ? (
                                             <span className="font-bold text-gray-900">{line}</span>
-                                          ) : line.startsWith('Example:') ? (
-                                            <span className="italic text-gray-600">{line}</span>
+                                          ) : line.startsWith('Scenario:') ? (
+                                            <span className="italic text-gray-600 font-medium">{line}</span>
                                           ) : (
                                             <span>{line}</span>
                                           )}

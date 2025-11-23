@@ -70,27 +70,20 @@ WHAT TO WATCH OUT FOR
 • [Services not covered - max 30 words]
 
 PLAN OVERVIEW
-Monthly Premium: $X (what you pay every month just to have insurance)
-Annual Deductible: $X (amount you pay before insurance starts helping)
-Out-of-Pocket Maximum: $X (the "I'm done paying" cap for the year)
-Plan Type: [HMO/PPO/etc.] (affects referral rules and specialist access)
-Network: [Insurance company name] (which doctors/hospitals you can use)
-Primary Care Copay: $X (flat fee for doctor visits)
-Specialist Copay: $X (flat fee for specialist visits)
-Emergency Room Cost: $X (cost for ER visits)
-Urgent Care Cost: $X (cost for urgent care visits)
+Monthly Premium: $X
+Annual Deductible: $X
+Out-of-Pocket Maximum: $X
+Plan Type: [HMO/PPO/etc.]
+Network: [Insurance company name]
+Primary Care Copay: $X
+Specialist Copay: $X
+Emergency Room Cost: $X
+Urgent Care Cost: $X
 Prescription Drug Coverage: [Formulary tier/coverage details]
 Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a detailed walkthrough showing how this plan's key features work in practice. Use a realistic medical scenario that demonstrates:
-- How deductibles, copays, and coinsurance work together
-- What the patient pays at each step
-- How network restrictions affect costs
-- The total out-of-pocket expense for the complete scenario
-
-Example Format:
 Scenario: [Choose realistic scenario like "annual checkup plus specialist visit" or "emergency room visit plus follow-up"]
 
 Step 1 - [First medical service]: You pay $X [copay/deductible], insurance covers $X
