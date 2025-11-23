@@ -548,10 +548,11 @@ export default function Home() {
                               
                               return (
                                 <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-2 text-center flex items-center justify-center">
                                     <span className="mr-2">📊</span>
-                                    Plan Details
+                                    Top Things to Consider when Buying a Health Plan
                                   </h4>
+                                  <p className="text-center text-gray-600 mb-6 font-medium">How this Plan Stacks Up</p>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {overviewLines.map((line: string, lineIndex: number) => {
                                       const [label, value] = line.split(':').map(s => s.trim())
