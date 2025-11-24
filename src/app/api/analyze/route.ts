@@ -59,15 +59,15 @@ Please provide your response in this EXACT format with ONLY these 4 sections:
 
 WHAT'S GOOD ABOUT THIS PLAN
 • This plan would be good for you if [describe ideal user situation - max 40 words]
-• [Positive aspect 1 - max 40 words] 
-• [Positive aspect 2 - max 40 words]
-• [Additional benefits or advantages - max 40 words]
+• [Coverage benefits - max 40 words] 
+• [Cost advantages - max 40 words]
+• [Network or convenience benefits - max 40 words]
 
 WHAT TO WATCH OUT FOR
 • Avoid getting this plan if [describe who should not choose this plan - max 40 words]
-• [Limitation or exclusion 1 - max 40 words]
-• [Things that might cost extra - max 40 words]
-• [Services not covered - max 40 words]
+• [High costs or deductible concerns - max 40 words]
+• [Coverage limitations or exclusions - max 40 words]
+• [Network restrictions or access issues - max 40 words]
 
 PLAN OVERVIEW
 Monthly Premium: $X
@@ -84,9 +84,9 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic medical scenario showing how this plan works. Include 4+ steps of a patient journey with specific costs. End with a summary bullet of the total cost.
+Create a realistic medical scenario showing how this plan works. Include 4+ steps of a patient journey with specific costs. End with a summary bullet of the total cost. Use numbered steps (1. 2. 3. 4.) not asterisks or bullets for this section.
 
-IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
+IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for the first two sections and numbered steps (1. 2. 3.) for the real-world scenario. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
 
       const result = await model.generateContent([
@@ -155,18 +155,18 @@ Coverage Winner: [Which plan has the best coverage and why]
 Network Winner: [Which plan has the best network of doctors/hospitals]
 
 PROS AND CONS
-Plan A Pros: • [Pro 1] • [Pro 2] • [Pro 3]
-Plan A Cons: • [Con 1] • [Con 2] • [Con 3]
+Plan A Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]
+Plan A Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]
 
-Plan B Pros: • [Pro 1] • [Pro 2] • [Pro 3]  
-Plan B Cons: • [Con 1] • [Con 2] • [Con 3]
+Plan B Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]  
+Plan B Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]
 
-${fileData.length > 2 ? `Plan C Pros: • [Pro 1] • [Pro 2] • [Pro 3]\nPlan C Cons: • [Con 1] • [Con 2] • [Con 3]` : ''}
+${fileData.length > 2 ? `Plan C Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]\nPlan C Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]` : ''}
 
 BOTTOM LINE RECOMMENDATION
 [Clear recommendation of which plan is best for different types of people - young/healthy, families, frequent doctor visits, etc.]
 
-Explain all insurance terms clearly. Do NOT use asterisks (*) anywhere - only bullet points (•).
+Explain all insurance terms clearly. NEVER use asterisks (*) anywhere - only bullet points (•). Each bullet point must cover a DIFFERENT topic - no repetition of the same concepts.
 `
 
       // Send all files to Gemini for comparison
