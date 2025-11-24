@@ -122,7 +122,46 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Write one paragraph for each insurance plan explaining who should choose it and what to watch out for. Include the monthly premium and deductible.
+Compare these insurance plans and provide your response in this EXACT format:
+
+PLAN RECOMMENDATIONS
+Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why]
+
+Plan B (${fileData[1]?.name || 'Second Plan'}): This plan would be good to choose if [explain who should choose this and why]
+
+${fileData.length > 2 ? `Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why]` : ''}
+
+${fileData.length > 3 ? `Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why]` : ''}
+
+SIDE-BY-SIDE OVERVIEW
+Monthly Premium: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Annual Deductible: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Out-of-Pocket Max: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+
+DETAILED COMPARISON
+Cost Winner: [Which plan has lowest costs]
+Coverage Winner: [Which plan has best coverage]
+Network Winner: [Which plan has best provider network]
+
+PROS AND CONS
+Plan A Pros:
+• [Pro 1]
+• [Pro 2]
+Plan A Cons:
+• [Con 1]
+• [Con 2]
+
+Plan B Pros:
+• [Pro 1]
+• [Pro 2]
+Plan B Cons:
+• [Con 1]
+• [Con 2]
+
+BOTTOM LINE RECOMMENDATION
+[Which plan is best for different types of people - young/healthy, families, frequent doctor visits, etc.]
+
+Use simple language. Keep sentences under 40 words.
 `
 
       // Send all files to Gemini for comparison
