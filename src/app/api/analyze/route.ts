@@ -122,42 +122,26 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Analyze these ${files.length} insurance plans and provide clear explanations for each plan in plain English.
+Analyze these ${files.length} insurance plans and explain the key differences and recommendations in simple paragraphs.
 
-Please provide your response in this EXACT format:
+Write exactly ${files.length + 1} paragraphs in this format:
 
-PLAN A: ${fileData[0].name}
-You would want to choose this plan if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words]
-• [Cost advantages - max 40 words]
-• [What to watch out for - max 40 words]
-Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
+PLAN COMPARISON OVERVIEW
+[One paragraph explaining the key differences between all ${files.length} plans at a high level - cost differences, coverage differences, plan types, etc.]
 
-PLAN B: ${fileData[1].name}
-You would want to choose this plan if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words]
-• [Cost advantages - max 40 words]
-• [What to watch out for - max 40 words]
-Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
+${fileData[0].name}
+[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible.]
 
-${fileData.length > 2 ? `PLAN C: ${fileData[2].name}
-You would want to choose this plan if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words]
-• [Cost advantages - max 40 words]
-• [What to watch out for - max 40 words]
-Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
+${fileData[1].name}
+[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from the first plan.]
 
-` : ''}${fileData.length > 3 ? `PLAN D: ${fileData[3].name}
-You would want to choose this plan if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words]
-• [Cost advantages - max 40 words]
-• [What to watch out for - max 40 words]
-Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
+${fileData.length > 2 ? `${fileData[2].name}
+[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from previous plans.]
 
-` : ''}BOTTOM LINE RECOMMENDATION
-[Which plan is best for different situations - young/healthy people, families with children, frequent doctor visits, etc. - max 80 words]
+` : ''}${fileData.length > 3 ? `${fileData[3].name}
+[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from previous plans.]
 
-IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere - only bullet points (•). Each bullet point must cover a DIFFERENT topic - no repetition.
+` : ''}Use simple language. Define insurance terms in parentheses. Keep sentences under 40 words. Do not use asterisks or bullet points.
 `
 
       // Send all files to Gemini for comparison
