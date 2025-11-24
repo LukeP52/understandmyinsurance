@@ -277,7 +277,7 @@ export default function Home() {
                           const analysisText = uploadResults.data.analysis.text
                           
                           // More robust parsing - look for Plan A, Plan B, etc lines
-                          const planLines = analysisText.split('\n').filter(line => 
+                          const planLines = analysisText.split('\n').filter((line: string) => 
                             line.trim() && 
                             (line.startsWith('Plan A') || line.startsWith('Plan B') || line.startsWith('Plan C') || line.startsWith('Plan D')) &&
                             line.includes(':')
