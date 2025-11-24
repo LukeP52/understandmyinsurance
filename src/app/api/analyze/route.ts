@@ -84,7 +84,7 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-A real world care scenario with 4 to 6 bullets that does not use asterisks in the text that shows the key details of the plan in a real life scenario.
+A real world care scenario with 4 to 6 bullets that does not use asterisks in the text that shows the key details of the plan in a real life scenario and have the last bullet be a summary of cost from the example.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
