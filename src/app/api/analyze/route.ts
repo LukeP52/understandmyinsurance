@@ -122,13 +122,7 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Compare these insurance plans and write a simple explanation.
-
-First write a paragraph explaining the main differences between the plans.
-
-Then write one paragraph for each plan explaining who should choose it and what to watch out for. Include the monthly premium and deductible for each plan.
-
-Use simple language and short sentences.
+Write one paragraph for each insurance plan explaining who should choose it and what to watch out for. Include the monthly premium and deductible.
 `
 
       // Send all files to Gemini for comparison
