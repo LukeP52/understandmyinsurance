@@ -84,9 +84,9 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic medical scenario showing how this plan works. Include 4+ steps of a patient journey with specific costs. End with a summary bullet of the total cost. Use numbered steps (1. 2. 3. 4.) not asterisks or bullets for this section.
+A real world care scenario with 4 to 6 bullets that does not use asterisks in the text that shows the key details of the plan in a real life scenario.
 
-IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for the first two sections and numbered steps (1. 2. 3.) for the real-world scenario. Each bullet point must cover a DIFFERENT topic - no repetition.
+IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
 
       const result = await model.generateContent([
