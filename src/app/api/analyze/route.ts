@@ -58,16 +58,16 @@ Analyze this insurance document and provide a clear explanation in plain English
 Please provide your response in this EXACT format with ONLY these 4 sections:
 
 WHAT'S GOOD ABOUT THIS PLAN
-• This plan would be good for you if [describe ideal user situation - max 30 words]
-• [Positive aspect 1 - max 30 words] 
-• [Positive aspect 2 - max 30 words]
-• [Additional benefits or advantages - max 30 words]
+• This plan would be good for you if [describe ideal user situation - max 40 words]
+• [Positive aspect 1 - max 40 words] 
+• [Positive aspect 2 - max 40 words]
+• [Additional benefits or advantages - max 40 words]
 
 WHAT TO WATCH OUT FOR
-• Avoid getting this plan if [describe who should not choose this plan - max 30 words]
-• [Limitation or exclusion 1 - max 30 words]
-• [Things that might cost extra - max 30 words]
-• [Services not covered - max 30 words]
+• Avoid getting this plan if [describe who should not choose this plan - max 40 words]
+• [Limitation or exclusion 1 - max 40 words]
+• [Things that might cost extra - max 40 words]
+• [Services not covered - max 40 words]
 
 PLAN OVERVIEW
 Monthly Premium: $X
@@ -86,7 +86,7 @@ Adult Dental & Vision: [Add-on options available/costs]
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Create a realistic medical scenario showing how this plan works. Include 4+ steps of a patient journey with specific costs. End with a summary bullet of the total cost.
 
-IMPORTANT: Keep ALL sentences to 30 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
+IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. Do NOT use asterisks (*) anywhere in your response - only use bullet points (•).
 `
 
       const result = await model.generateContent([
