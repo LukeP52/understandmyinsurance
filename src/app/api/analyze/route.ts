@@ -122,26 +122,13 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Analyze these ${files.length} insurance plans and explain the key differences and recommendations in simple paragraphs.
+Compare these insurance plans and write a simple explanation.
 
-Write exactly ${files.length + 1} paragraphs in this format:
+First write a paragraph explaining the main differences between the plans.
 
-PLAN COMPARISON OVERVIEW
-[One paragraph explaining the key differences between all ${files.length} plans at a high level - cost differences, coverage differences, plan types, etc.]
+Then write one paragraph for each plan explaining who should choose it and what to watch out for. Include the monthly premium and deductible for each plan.
 
-${fileData[0].name}
-[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible.]
-
-${fileData[1].name}
-[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from the first plan.]
-
-${fileData.length > 2 ? `${fileData[2].name}
-[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from previous plans.]
-
-` : ''}${fileData.length > 3 ? `${fileData[3].name}
-[One paragraph explaining why someone would choose this plan and what to watch out for. Include key costs like premium and deductible. Do not repeat reasons from previous plans.]
-
-` : ''}Use simple language. Define insurance terms in parentheses. Keep sentences under 40 words. Do not use asterisks or bullet points.
+Use simple language and short sentences.
 `
 
       // Send all files to Gemini for comparison
