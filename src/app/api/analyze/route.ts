@@ -122,51 +122,42 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Compare these ${files.length} insurance plans and provide a comprehensive comparison. 
+Analyze these ${files.length} insurance plans and provide clear explanations for each plan in plain English.
 
 Please provide your response in this EXACT format:
 
-PLAN RECOMMENDATIONS
-Plan A (${fileData[0].name}): This plan would be good to choose if [specific scenarios when this plan is better - be specific about costs, coverage, or situations]
+PLAN A: ${fileData[0].name}
+You would want to choose this plan if [describe ideal user situation - max 40 words]
+• [Coverage benefits - max 40 words]
+• [Cost advantages - max 40 words]
+• [What to watch out for - max 40 words]
+Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
 
-Plan B (${fileData[1].name}): This plan would be good to choose if [specific scenarios when this plan is better - be specific about costs, coverage, or situations]
+PLAN B: ${fileData[1].name}
+You would want to choose this plan if [describe ideal user situation - max 40 words]
+• [Coverage benefits - max 40 words]
+• [Cost advantages - max 40 words]
+• [What to watch out for - max 40 words]
+Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
 
-${fileData.length > 2 ? `Plan C (${fileData[2].name}): This plan would be good to choose if [specific scenarios when this plan is better]` : ''}
+${fileData.length > 2 ? `PLAN C: ${fileData[2].name}
+You would want to choose this plan if [describe ideal user situation - max 40 words]
+• [Coverage benefits - max 40 words]
+• [Cost advantages - max 40 words]
+• [What to watch out for - max 40 words]
+Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
 
-${fileData.length > 3 ? `Plan D (${fileData[3].name}): This plan would be good to choose if [specific scenarios when this plan is better]` : ''}
+` : ''}${fileData.length > 3 ? `PLAN D: ${fileData[3].name}
+You would want to choose this plan if [describe ideal user situation - max 40 words]
+• [Coverage benefits - max 40 words]
+• [Cost advantages - max 40 words]
+• [What to watch out for - max 40 words]
+Monthly Premium: $X | Deductible: $X | Out-of-Pocket Max: $X | Plan Type: [HMO/PPO]
 
-SIDE-BY-SIDE OVERVIEW
-Monthly Premium: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Annual Deductible: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Out-of-Pocket Max: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Plan Type & Referrals: Plan A: [Type] | Plan B: [Type] ${fileData.length > 2 ? '| Plan C: [Type]' : ''} ${fileData.length > 3 ? '| Plan D: [Type]' : ''}
-Network: Plan A: [Network] | Plan B: [Network] ${fileData.length > 2 ? '| Plan C: [Network]' : ''} ${fileData.length > 3 ? '| Plan D: [Network]' : ''}
-Primary Care Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Specialist Copay: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Emergency Room: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Urgent Care: Plan A: $X | Plan B: $X ${fileData.length > 2 ? '| Plan C: $X' : ''} ${fileData.length > 3 ? '| Plan D: $X' : ''}
-Prescription Coverage: Plan A: [Coverage] | Plan B: [Coverage] ${fileData.length > 2 ? '| Plan C: [Coverage]' : ''} ${fileData.length > 3 ? '| Plan D: [Coverage]' : ''}
-Pediatric Dental/Vision: Plan A: [Y/N] | Plan B: [Y/N] ${fileData.length > 2 ? '| Plan C: [Y/N]' : ''} ${fileData.length > 3 ? '| Plan D: [Y/N]' : ''}
-Adult Dental/Vision: Plan A: [Available/Cost] | Plan B: [Available/Cost] ${fileData.length > 2 ? '| Plan C: [Available/Cost]' : ''} ${fileData.length > 3 ? '| Plan D: [Available/Cost]' : ''}
+` : ''}BOTTOM LINE RECOMMENDATION
+[Which plan is best for different situations - young/healthy people, families with children, frequent doctor visits, etc. - max 80 words]
 
-DETAILED COMPARISON
-Cost Winner: [Which plan has the lowest overall costs and why]
-Coverage Winner: [Which plan has the best coverage and why]
-Network Winner: [Which plan has the best network of doctors/hospitals]
-
-PROS AND CONS
-Plan A Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]
-Plan A Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]
-
-Plan B Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]  
-Plan B Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]
-
-${fileData.length > 2 ? `Plan C Pros: • [Coverage advantage] • [Cost benefit] • [Network/access benefit]\nPlan C Cons: • [Cost concern] • [Coverage limitation] • [Access restriction]` : ''}
-
-BOTTOM LINE RECOMMENDATION
-[Clear recommendation of which plan is best for different types of people - young/healthy, families, frequent doctor visits, etc.]
-
-Explain all insurance terms clearly. NEVER use asterisks (*) anywhere - only bullet points (•). Each bullet point must cover a DIFFERENT topic - no repetition of the same concepts.
+IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere - only bullet points (•). Each bullet point must cover a DIFFERENT topic - no repetition.
 `
 
       // Send all files to Gemini for comparison
