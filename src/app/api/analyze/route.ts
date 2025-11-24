@@ -125,21 +125,21 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
 Compare these insurance plans and provide your response in this EXACT format:
 
 PLAN RECOMMENDATIONS
-Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why]
+Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 
-Plan B (${fileData[1]?.name || 'Second Plan'}): This plan would be good to choose if [explain who should choose this and why]
+Plan B (${fileData[1]?.name || 'Second Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 `
 
       // Add additional plans only if they exist
       if (fileData.length > 2) {
         comparePrompt += `
-Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why]
+Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 `
       }
       
       if (fileData.length > 3) {
         comparePrompt += `
-Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why]
+Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 `
       }
       
