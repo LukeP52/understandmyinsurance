@@ -136,6 +136,10 @@ Network: Plan A: [Insurance company] | Plan B: [Insurance company]${fileData.len
 Primary Care Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
 Specialist Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
 Emergency Room Cost: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Urgent Care Cost: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Prescription Drug Coverage: Plan A: [Coverage details] | Plan B: [Coverage details]${fileData.length > 2 ? ' | Plan C: [Coverage details]' : ''}${fileData.length > 3 ? ' | Plan D: [Coverage details]' : ''}
+Pediatric Dental & Vision: Plan A: [Y/N] | Plan B: [Y/N]${fileData.length > 2 ? ' | Plan C: [Y/N]' : ''}${fileData.length > 3 ? ' | Plan D: [Y/N]' : ''}
+Adult Dental & Vision: Plan A: [Available/Cost] | Plan B: [Available/Cost]${fileData.length > 2 ? ' | Plan C: [Available/Cost]' : ''}${fileData.length > 3 ? ' | Plan D: [Available/Cost]' : ''}
 
 PLAN RECOMMENDATIONS
 Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
