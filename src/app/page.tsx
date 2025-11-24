@@ -276,6 +276,10 @@ export default function Home() {
                         (() => {
                           const analysisText = uploadResults.data.analysis.text
                           
+                          // Parse summary section
+                          const summaryMatch = analysisText.match(/COMPARISON SUMMARY\n([\s\S]*?)\n\nPLAN RECOMMENDATIONS/)
+                          const summary = summaryMatch ? summaryMatch[1].trim() : ''
+                          
                           // More robust parsing - look for Plan A, Plan B, etc lines
                           const planLines = analysisText.split('\n').filter((line: string) => 
                             line.trim() && 
@@ -285,6 +289,14 @@ export default function Home() {
                           
                           return (
                             <div className="space-y-6">
+                              {/* Summary paragraph */}
+                              {summary && (
+                                <div className="mb-8">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-3">Plan Comparison Overview</h3>
+                                  <p className="text-gray-700 leading-relaxed">{summary}</p>
+                                </div>
+                              )}
+                              
                               {/* Simple plan paragraphs - no colors, no boxes */}
                               {planLines.map((rec: string, index: number) => {
                                 if (rec.includes(':') && rec.trim()) {

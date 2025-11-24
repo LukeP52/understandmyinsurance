@@ -124,6 +124,9 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       let comparePrompt = `
 Compare these insurance plans and provide your response in this EXACT format:
 
+COMPARISON SUMMARY
+[Write a 3-4 sentence paragraph explaining the key differences between these plans and which types of consumers should choose each one. For example: young/healthy people, families with children, people with chronic conditions, budget-conscious consumers, etc.]
+
 PLAN RECOMMENDATIONS
 Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 
