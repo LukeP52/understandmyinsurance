@@ -277,8 +277,12 @@ export default function Home() {
                           const analysisText = uploadResults.data.analysis.text
                           
                           // Parse summary section
-                          const summaryMatch = analysisText.match(/COMPARISON SUMMARY\n([\s\S]*?)\n\nPLAN RECOMMENDATIONS/)
+                          const summaryMatch = analysisText.match(/COMPARISON SUMMARY\n([\s\S]*?)\n\nPLAN COMPARISON TABLE/)
                           const summary = summaryMatch ? summaryMatch[1].trim() : ''
+                          
+                          // Parse comparison table section
+                          const tableMatch = analysisText.match(/PLAN COMPARISON TABLE\n([\s\S]*?)\n\nPLAN RECOMMENDATIONS/)
+                          const tableData = tableMatch ? tableMatch[1].trim().split('\n').filter((line: string) => line.trim()) : []
                           
                           // More robust parsing - look for Plan A, Plan B, etc lines
                           const planLines = analysisText.split('\n').filter((line: string) => 
@@ -294,6 +298,25 @@ export default function Home() {
                                 <div className="mb-8">
                                   <h3 className="text-xl font-bold text-gray-900 mb-3">Plan Comparison Overview</h3>
                                   <p className="text-gray-700 leading-relaxed">{summary}</p>
+                                </div>
+                              )}
+                              
+                              {/* Comparison table */}
+                              {tableData.length > 0 && (
+                                <div className="mb-8">
+                                  <h3 className="text-xl font-bold text-gray-900 mb-4">Side-by-Side Comparison</h3>
+                                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    {tableData.map((line: string, index: number) => {
+                                      const [feature, ...values] = line.split(': ')
+                                      const valueString = values.join(': ')
+                                      return (
+                                        <div key={index} className="flex justify-between py-2 border-b border-gray-200 last:border-b-0">
+                                          <span className="font-medium text-gray-900 w-1/3">{feature}:</span>
+                                          <span className="text-gray-700 w-2/3">{valueString}</span>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
                               )}
                               

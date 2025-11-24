@@ -127,6 +127,16 @@ Compare these insurance plans and provide your response in this EXACT format:
 COMPARISON SUMMARY
 [Write a 3-4 sentence paragraph explaining the key differences between these plans and which types of consumers should choose each one. For example: young/healthy people, families with children, people with chronic conditions, budget-conscious consumers, etc.]
 
+PLAN COMPARISON TABLE
+Monthly Premium: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Annual Deductible: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Out-of-Pocket Maximum: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Plan Type: Plan A: [HMO/PPO] | Plan B: [HMO/PPO]${fileData.length > 2 ? ' | Plan C: [HMO/PPO]' : ''}${fileData.length > 3 ? ' | Plan D: [HMO/PPO]' : ''}
+Network: Plan A: [Insurance company] | Plan B: [Insurance company]${fileData.length > 2 ? ' | Plan C: [Insurance company]' : ''}${fileData.length > 3 ? ' | Plan D: [Insurance company]' : ''}
+Primary Care Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Specialist Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+Emergency Room Cost: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
+
 PLAN RECOMMENDATIONS
 Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
 
