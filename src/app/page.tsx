@@ -275,15 +275,18 @@ export default function Home() {
                         // Render simple comparison format - just plan paragraphs
                         (() => {
                           const analysisText = uploadResults.data.analysis.text
-                          const sections = analysisText.split('\n\n')
                           
-                          // Parse only plan recommendations 
-                          const planRecommendations = sections.find((s: string) => s.startsWith('PLAN RECOMMENDATIONS'))?.replace('PLAN RECOMMENDATIONS\n', '').split('\n').filter((line: string) => line.trim() && line.includes(':')) || []
+                          // More robust parsing - look for Plan A, Plan B, etc lines
+                          const planLines = analysisText.split('\n').filter(line => 
+                            line.trim() && 
+                            (line.startsWith('Plan A') || line.startsWith('Plan B') || line.startsWith('Plan C') || line.startsWith('Plan D')) &&
+                            line.includes(':')
+                          )
                           
                           return (
                             <div className="space-y-6">
                               {/* Simple plan paragraphs - no colors, no boxes */}
-                              {planRecommendations.map((rec: string, index: number) => {
+                              {planLines.map((rec: string, index: number) => {
                                 if (rec.includes(':') && rec.trim()) {
                                   const colonIndex = rec.indexOf(':')
                                   const planName = rec.substring(0, colonIndex).trim()

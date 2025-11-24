@@ -121,18 +121,29 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
         })
       }
 
-      const comparePrompt = `
+      let comparePrompt = `
 Compare these insurance plans and provide your response in this EXACT format:
 
 PLAN RECOMMENDATIONS
 Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why]
 
 Plan B (${fileData[1]?.name || 'Second Plan'}): This plan would be good to choose if [explain who should choose this and why]
+`
 
-${fileData.length > 2 ? `Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why]` : ''}
-
-${fileData.length > 3 ? `Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why]` : ''}
-
+      // Add additional plans only if they exist
+      if (fileData.length > 2) {
+        comparePrompt += `
+Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why]
+`
+      }
+      
+      if (fileData.length > 3) {
+        comparePrompt += `
+Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why]
+`
+      }
+      
+      comparePrompt += `
 Use simple language. Keep sentences under 40 words.
 `
 
