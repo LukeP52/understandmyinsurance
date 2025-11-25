@@ -94,7 +94,7 @@ export default function Home() {
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-green-600">Understand My Insurance</h1>
+          <h1 className="text-xl font-bold text-black">Understand My Insurance</h1>
           <div className="flex items-center space-x-4">
             {user ? (
               <>
