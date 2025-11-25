@@ -84,7 +84,7 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-A real world care scenario with 5 to 6 bullets that shows a step-by-step patient journey. Include specific dollar amounts for each step (copays, deductibles, etc.) and show how the insurance plan handles each part of the process. Make it detailed enough to be helpful but keep language simple. Have the last bullet be a summary of total costs from the example.
+A real world care scenario with 3 to 5 bullets that shows a simple patient journey with specific costs. Include dollar amounts for key steps and have the last bullet be a summary of total costs from the example.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
