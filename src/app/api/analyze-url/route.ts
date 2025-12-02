@@ -1,9 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
+import { convert } from 'html-to-text'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-// Simple in-memory rate limiter
+// Simple in-memory rate limiter (shared concept with main analyze route)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 const RATE_LIMIT = 10 // requests per minute
 const RATE_WINDOW = 60 * 1000 // 1 minute in ms
@@ -25,13 +26,52 @@ function isRateLimited(userId: string): boolean {
   return false
 }
 
-// Validate URL is from Firebase Storage
-function isValidStorageUrl(url: string): boolean {
+// Fetch and convert webpage to text
+async function fetchWebpageContent(url: string): Promise<string> {
+  // Add timeout to prevent hanging on slow/unresponsive servers
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 second timeout
+
   try {
-    const parsed = new URL(url)
-    return parsed.hostname === 'firebasestorage.googleapis.com'
-  } catch {
-    return false
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; InsuranceAnalyzer/1.0)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`)
+    }
+
+    const html = await response.text()
+
+    // Convert HTML to plain text
+    const text = convert(html, {
+      wordwrap: false,
+      selectors: [
+        { selector: 'a', options: { ignoreHref: true } },
+        { selector: 'img', format: 'skip' },
+        { selector: 'script', format: 'skip' },
+        { selector: 'style', format: 'skip' },
+        { selector: 'nav', format: 'skip' },
+        { selector: 'footer', format: 'skip' },
+        { selector: 'header', format: 'skip' },
+      ],
+    })
+
+    // Limit text length to avoid token limits
+    const maxLength = 50000
+    return text.length > maxLength ? text.substring(0, maxLength) + '...[truncated]' : text
+  } catch (error) {
+    clearTimeout(timeoutId)
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timed out. The website took too long to respond.')
+    }
+    throw error
   }
 }
 
@@ -47,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { fileUrl, fileName, userId, files, mode = 'single' } = body
+    const { urls, userId, mode = 'single' } = body
 
     // Check rate limit
     if (!userId || isRateLimited(userId)) {
@@ -57,63 +97,75 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (mode === 'single') {
-      if (!fileUrl || !fileName || !userId) {
-        return NextResponse.json(
-          { error: 'Missing required fields: fileUrl, fileName, userId' },
-          { status: 400 }
-        )
-      }
-      // Validate URL is from Firebase Storage (SSRF protection)
-      if (!isValidStorageUrl(fileUrl)) {
-        return NextResponse.json(
-          { error: 'Invalid file URL' },
-          { status: 400 }
-        )
-      }
-      console.log('Starting single analysis for file:', fileName)
-    } else {
-      if (!files || !userId || !Array.isArray(files)) {
-        return NextResponse.json(
-          { error: 'Missing required fields for comparison: files, userId' },
-          { status: 400 }
-        )
-      }
-      // Validate all URLs are from Firebase Storage (SSRF protection)
-      for (const file of files) {
-        if (!isValidStorageUrl(file.url)) {
+    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+      return NextResponse.json(
+        { error: 'Missing required field: urls' },
+        { status: 400 }
+      )
+    }
+
+    // Validate URLs and check for SSRF
+    for (const url of urls) {
+      try {
+        const parsed = new URL(url)
+
+        // Only allow http/https protocols
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
           return NextResponse.json(
-            { error: 'Invalid file URL' },
+            { error: 'Only http and https URLs are allowed' },
             { status: 400 }
           )
         }
+
+        // Block internal/private IP addresses (SSRF protection)
+        const hostname = parsed.hostname.toLowerCase()
+        const blockedHosts = ['localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]']
+        if (blockedHosts.includes(hostname)) {
+          return NextResponse.json(
+            { error: 'Internal URLs are not allowed' },
+            { status: 400 }
+          )
+        }
+
+        // Block private IP ranges
+        if (/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.|169\.254\.)/.test(hostname)) {
+          return NextResponse.json(
+            { error: 'Private network URLs are not allowed' },
+            { status: 400 }
+          )
+        }
+      } catch {
+        return NextResponse.json(
+          { error: `Invalid URL: ${url}` },
+          { status: 400 }
+        )
       }
-      console.log('Starting comparison analysis for', files.length, 'files')
     }
+
+    console.log('Starting URL analysis for', urls.length, 'URL(s)')
 
     // Initialize Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-    let analysisText
+    let analysisText: string
 
-    if (mode === 'single') {
-      // Single file analysis
-      const response = await fetch(fileUrl)
-      if (!response.ok) {
-        throw new Error('Failed to fetch file from storage')
-      }
-
-      const arrayBuffer = await response.arrayBuffer()
-      const base64Data = Buffer.from(arrayBuffer).toString('base64')
+    if (mode === 'single' || urls.length === 1) {
+      // Single URL analysis
+      const webpageContent = await fetchWebpageContent(urls[0])
 
       const singlePrompt = `
-Analyze this insurance document and provide a clear explanation in plain English.
+Analyze this insurance plan information from a webpage and provide a clear explanation in plain English.
+
+Here is the webpage content:
+---
+${webpageContent}
+---
 
 Please provide your response in this EXACT format with ONLY these 4 sections:
 
 WHAT'S GOOD ABOUT THIS PLAN
 • This plan would be good for you if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words] 
+• [Coverage benefits - max 40 words]
 • [Cost advantages - max 40 words]
 • [Network or convenience benefits - max 40 words]
 
@@ -138,59 +190,44 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic patient journey that shows how costs accumulate. Use this format as a guide:
+Create a realistic patient journey that shows how costs accumulate. Use 3-5 bullet points showing:
+• A typical doctor visit and what you'd pay
+• What happens if you need a specialist or test
+• How prescriptions work under this plan
+• A summary of total costs in this scenario
 
-• Sarah has met $200 of her $1,500 deductible so far this year. She visits her doctor for persistent headaches and pays her $25 primary care copay.
-
-• Her doctor orders an MRI ($800 billed). Since Sarah has $1,300 remaining on her deductible, she pays the full $800. Her deductible is now $500 away from being met.
-
-• The MRI reveals a minor issue requiring a specialist. Sarah sees a neurologist and pays her $50 specialist copay. The specialist prescribes medication.
-
-• At the pharmacy, her Tier 2 brand-name medication costs $45 copay per month.
-
-• SUMMARY: Sarah paid $920 total ($25 + $800 + $50 + $45). She still has $500 left on her deductible before her plan starts covering 80% of costs. Her monthly prescriptions will continue at $45 until she hits her $6,000 out-of-pocket maximum.
-
-Adapt this style using the ACTUAL numbers and features from this specific plan. Show where the patient starts financially, explain why they pay what they pay at each step, track their deductible progress, and end with a summary of total paid plus what happens going forward.
-
-CRITICAL: Only report information that is EXPLICITLY stated in the document. If a value is not provided (like Monthly Premium), write "Not listed in document" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details.
+CRITICAL: Only report information that is EXPLICITLY stated in the content. If a value is not provided, write "Not listed in document" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
 
-      const result = await model.generateContent([
-        singlePrompt,
-        {
-          inlineData: {
-            mimeType: 'application/pdf',
-            data: base64Data
-          }
-        }
-      ])
-
+      const result = await model.generateContent(singlePrompt)
       analysisText = result.response.text()
 
     } else {
-      // Multiple file comparison
-      const fileData = []
-      
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        const response = await fetch(file.url)
-        if (!response.ok) {
-          throw new Error(`Failed to fetch file from storage: ${file.name}`)
+      // Multiple URL comparison
+      const webpageContents: { url: string; content: string }[] = []
+
+      for (const url of urls) {
+        try {
+          const content = await fetchWebpageContent(url)
+          webpageContents.push({ url, content })
+        } catch (error) {
+          console.error(`Failed to fetch ${url}:`, error)
+          return NextResponse.json(
+            { error: `Failed to fetch content from: ${new URL(url).hostname}` },
+            { status: 400 }
+          )
         }
-        
-        const arrayBuffer = await response.arrayBuffer()
-        const base64Data = Buffer.from(arrayBuffer).toString('base64')
-        
-        fileData.push({
-          name: file.name,
-          data: base64Data
-        })
       }
 
       const comparePrompt = `
-Compare these ${fileData.length} insurance plans and provide your response in this EXACT format with these 3 sections:
+Compare these ${webpageContents.length} insurance plans and provide your response in this EXACT format with these 3 sections:
+
+${webpageContents.map((wc, i) => `
+--- PLAN ${String.fromCharCode(65 + i)} (from ${new URL(wc.url).hostname}) ---
+${wc.content}
+`).join('\n')}
 
 THE BOTTOM LINE
 Write a friendly, conversational summary explaining who should choose each plan. Use full sentences, not bullet points. Use this format as a guide:
@@ -225,7 +262,7 @@ Include all 12 categories above. Use "Not listed" if a value isn't in the docume
 PLAN DETAILS
 For each plan, provide a card with key info:
 
-${fileData.map((f, i) => `PLAN ${String.fromCharCode(65 + i)} (${f.name})
+${webpageContents.map((wc, i) => `PLAN ${String.fromCharCode(65 + i)} (${new URL(wc.url).hostname})
 Best for: [One sentence describing the ideal person for this plan]
 
 Key Numbers:
@@ -253,37 +290,22 @@ CRITICAL: Only report information that is EXPLICITLY stated in the documents. If
 Write in a warm, helpful tone like you're explaining to a friend who doesn't know much about insurance. Use proper terms (like "deductible") but briefly explain what they mean in parentheses the first time. NEVER use asterisks (*) - use bullet points (•) only.
 `
 
-      // Send all files to Gemini for comparison
-      const content: any[] = [comparePrompt]
-      
-      for (let i = 0; i < fileData.length; i++) {
-        content.push({
-          inlineData: {
-            mimeType: 'application/pdf',
-            data: fileData[i].data
-          }
-        })
-      }
-
-      const result = await model.generateContent(content)
+      const result = await model.generateContent(comparePrompt)
       analysisText = result.response.text()
     }
 
     return NextResponse.json({
       success: true,
       analysis: analysisText,
-      fileName: fileName,
       analyzedAt: new Date().toISOString()
     })
 
   } catch (error) {
-    console.error('Analysis error:', error)
-    
-    // Handle specific API errors
+    console.error('URL analysis error:', error)
+
     if (error instanceof Error) {
       console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
-      
+
       if (error.message.includes('API_KEY') || error.message.includes('API key') || error.message.includes('401')) {
         return NextResponse.json(
           { error: 'Invalid Gemini API key. Please check configuration.' },
@@ -296,26 +318,24 @@ Write in a warm, helpful tone like you're explaining to a friend who doesn't kno
           { status: 429 }
         )
       }
-      if (error.message.includes('404') || error.message.includes('model')) {
+      if (error.message.includes('Failed to fetch URL')) {
         return NextResponse.json(
-          { error: 'Gemini model not available. Please try again later.' },
-          { status: 503 }
+          { error: 'Could not access that webpage. The site may be blocking automated access. Try uploading a PDF instead.' },
+          { status: 400 }
         )
       }
-      
-      // Return specific error message for debugging
+
       return NextResponse.json(
-        { 
+        {
           error: 'Analysis failed',
           details: error.message,
-          type: error.constructor.name
         },
         { status: 500 }
       )
     }
 
     return NextResponse.json(
-      { error: 'Failed to analyze document. Please try again.' },
+      { error: 'Failed to analyze URL. Please try again.' },
       { status: 500 }
     )
   }

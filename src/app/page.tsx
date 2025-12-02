@@ -8,6 +8,8 @@ import AuthModal from './components/Auth/AuthModal'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [urlInput, setUrlInput] = useState('')
+  const [addedUrls, setAddedUrls] = useState<string[]>([])
   const [isUploading, setIsUploading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [uploadResults, setUploadResults] = useState<any>(null)
@@ -19,25 +21,49 @@ export default function Home() {
     setUploadedFiles(prev => [...prev, ...files])
   }
 
+  const handleAddUrl = () => {
+    const trimmedUrl = urlInput.trim()
+    if (!trimmedUrl) return
+
+    // Basic URL validation
+    try {
+      new URL(trimmedUrl)
+    } catch {
+      alert('Please enter a valid URL (e.g., https://example.com/plan-details)')
+      return
+    }
+
+    // Check for duplicates
+    if (addedUrls.includes(trimmedUrl)) {
+      alert('This URL has already been added')
+      return
+    }
+
+    setAddedUrls(prev => [...prev, trimmedUrl])
+    setUrlInput('')
+  }
+
 
   const handleUpload = async () => {
     // Allow both authenticated and unauthenticated users
     // Use user ID if available, otherwise use anonymous ID
 
-    // Validate file count before processing
-    if (analysisMode === 'single' && uploadedFiles.length > 1) {
-      alert('Please upload only one PDF for single plan analysis.')
+    const totalItems = uploadedFiles.length + addedUrls.length
+
+    // Validate item count before processing
+    if (analysisMode === 'single' && totalItems > 1) {
+      alert('Please provide only one PDF or URL for single plan analysis.')
       return
     }
-    if (analysisMode === 'compare' && uploadedFiles.length < 2) {
-      alert('Please upload at least 2 PDFs to compare plans.')
+    if (analysisMode === 'compare' && totalItems < 2) {
+      alert('Please provide at least 2 PDFs or URLs to compare plans.')
       return
     }
-    if (uploadedFiles.length > 5) {
-      alert('Maximum 5 PDFs allowed for comparison.')
+    if (totalItems > 5) {
+      alert('Maximum 5 items allowed for comparison.')
       return
     }
-    
+
     // Validate individual file sizes
     for (const file of uploadedFiles) {
       const maxSizeMB = 5
@@ -47,52 +73,88 @@ export default function Home() {
         return
       }
     }
-    
-    setIsUploading(true)
-    
-    try {
-      // Check if we have PDF files that will trigger analysis
-      const hasPdfFiles = uploadedFiles.some(file => file.type === 'application/pdf')
-      if (hasPdfFiles) {
-        setIsAnalyzing(true)
-      }
 
+    setIsUploading(true)
+    setIsAnalyzing(true)
+
+    try {
       // User should always have a UID (either real or anonymous)
       if (!user?.uid) {
         console.error('Auth state:', { user, loading })
         throw new Error('Not authenticated. Please enable Anonymous auth in Firebase Console and refresh.')
       }
-      const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
-      
-      setUploadResults({
-        success: true,
-        data: {
-          id: result.id,
-          files: uploadedFiles.map(file => ({
-            name: file.name,
-            size: file.size,
-            type: file.type
-          })),
-          urls: [],
-          totalItems: uploadedFiles.length,
-          timestamp: new Date().toISOString(),
-          analysis: result.analysis
-        }
-      })
 
-      // Clear the form
-      setUploadedFiles([])
-      
+      // If we have URLs, handle them differently
+      if (addedUrls.length > 0 && uploadedFiles.length === 0) {
+        // URL-only analysis
+        const response = await fetch('/api/analyze-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            urls: addedUrls,
+            userId: user.uid,
+            mode: analysisMode
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to analyze URL')
+        }
+
+        const result = await response.json()
+
+        setUploadResults({
+          success: true,
+          data: {
+            id: 'url-analysis',
+            files: [],
+            urls: addedUrls,
+            totalItems: addedUrls.length,
+            timestamp: new Date().toISOString(),
+            analysis: {
+              text: result.analysis,
+              analyzedAt: result.analyzedAt
+            }
+          }
+        })
+
+        // Clear the form
+        setAddedUrls([])
+      } else {
+        // File upload (existing logic)
+        const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
+
+        setUploadResults({
+          success: true,
+          data: {
+            id: result.id,
+            files: uploadedFiles.map(file => ({
+              name: file.name,
+              size: file.size,
+              type: file.type
+            })),
+            urls: [],
+            totalItems: uploadedFiles.length,
+            timestamp: new Date().toISOString(),
+            analysis: result.analysis
+          }
+        })
+
+        // Clear the form
+        setUploadedFiles([])
+      }
+
     } catch (error) {
       console.error('Upload failed:', error)
-      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      alert(`Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsUploading(false)
       setIsAnalyzing(false)
     }
   }
 
-  const canUpload = uploadedFiles.length > 0
+  const canUpload = uploadedFiles.length > 0 || addedUrls.length > 0
 
   return (
     <div className="min-h-screen bg-beige-100">
@@ -176,26 +238,59 @@ export default function Home() {
             {/* Upload Instructions */}
             <div className="text-center mb-6">
               <p className="text-gray-600">
-                {analysisMode === 'single' 
-                  ? 'Upload one PDF to get a detailed analysis of your insurance plan'
-                  : 'Upload 2-5 PDFs to compare different insurance plans side by side'
+                {analysisMode === 'single'
+                  ? 'Upload a PDF or paste a URL to get a detailed analysis of your insurance plan'
+                  : 'Upload 2-5 PDFs or URLs to compare different insurance plans side by side'
                 }
               </p>
             </div>
-            
-            <div className="mb-8">
+
+            <div className="mb-6">
               <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
             </div>
 
-            {/* Uploaded Files Summary */}
-            {uploadedFiles.length > 0 && (
+            {/* URL Input Section */}
+            <div className="mb-8">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">or paste a URL</span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                  placeholder="https://example.com/insurance-plan-details"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+                <button
+                  onClick={handleAddUrl}
+                  disabled={!urlInput.trim()}
+                  className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Add
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Paste a link to your insurance plan's Summary of Benefits page
+              </p>
+            </div>
+
+            {/* Uploaded Files & URLs Summary */}
+            {(uploadedFiles.length > 0 || addedUrls.length > 0) && (
               <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <h3 className="font-semibold text-black mb-2">
-                  {analysisMode === 'single' ? 'Ready to Analyze:' : `Ready to Compare (${uploadedFiles.length} plans):`}
+                  {analysisMode === 'single' ? 'Ready to Analyze:' : `Ready to Compare (${uploadedFiles.length + addedUrls.length} plans):`}
                 </h3>
                 <div className="space-y-1 text-sm text-gray-700">
                   {uploadedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between">
+                    <div key={`file-${index}`} className="flex items-center justify-between">
                       <span>📄 {file.name}</span>
                       <div className="flex items-center space-x-2">
                         {analysisMode === 'compare' && (
@@ -205,6 +300,24 @@ export default function Home() {
                         )}
                         <button
                           onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}
+                          className="text-xs text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {addedUrls.map((url, index) => (
+                    <div key={`url-${index}`} className="flex items-center justify-between">
+                      <span className="truncate max-w-xs">🔗 {new URL(url).hostname}</span>
+                      <div className="flex items-center space-x-2">
+                        {analysisMode === 'compare' && (
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                            Plan {uploadedFiles.length + index + 1}
+                          </span>
+                        )}
+                        <button
+                          onClick={() => setAddedUrls(prev => prev.filter((_, i) => i !== index))}
                           className="text-xs text-red-600 hover:text-red-800"
                         >
                           Remove
@@ -330,18 +443,55 @@ export default function Home() {
                               )}
 
                               {/* Side-by-Side Numbers */}
-                              {sideBySideSection && (
-                                <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
-                                    Side-by-Side Numbers
-                                  </h4>
-                                  <div className="overflow-x-auto">
-                                    <pre className="text-sm text-gray-700 font-mono whitespace-pre leading-relaxed">
-                                      {sideBySideSection}
-                                    </pre>
+                              {sideBySideSection && (() => {
+                                // Parse the pipe-separated table format
+                                const lines = sideBySideSection.split('\n').filter((l: string) => l.includes('|'))
+                                const headerLine = lines[0]
+                                const dataLines = lines.slice(1)
+
+                                // Extract plan names from header (e.g., "Category | Plan A | Plan B")
+                                const headers = headerLine ? headerLine.split('|').map((h: string) => h.trim()) : []
+                                const planNames = headers.slice(1) // Skip "Category"
+
+                                return (
+                                  <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                    <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                      Side-by-Side Numbers
+                                    </h4>
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-sm">
+                                        <thead>
+                                          <tr className="border-b-2 border-gray-300">
+                                            <th className="text-left py-2 pr-4 font-semibold text-gray-600"></th>
+                                            {planNames.map((name: string, i: number) => (
+                                              <th key={i} className="text-left py-2 px-4 font-bold text-gray-900">
+                                                {name}
+                                              </th>
+                                            ))}
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {dataLines.map((line: string, rowIndex: number) => {
+                                            const cells = line.split('|').map((c: string) => c.trim())
+                                            const category = cells[0]
+                                            const values = cells.slice(1)
+                                            return (
+                                              <tr key={rowIndex} className="border-b border-gray-200">
+                                                <td className="py-2 pr-4 font-medium text-gray-700">{category}</td>
+                                                {values.map((value: string, colIndex: number) => (
+                                                  <td key={colIndex} className="py-2 px-4 text-gray-900">
+                                                    {value}
+                                                  </td>
+                                                ))}
+                                              </tr>
+                                            )
+                                          })}
+                                        </tbody>
+                                      </table>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )
+                              })()}
 
                               {/* Plan Details Cards */}
                               {planCards.length > 0 && (
