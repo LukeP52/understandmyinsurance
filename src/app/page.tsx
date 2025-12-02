@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
@@ -15,7 +15,26 @@ export default function Home() {
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
+  const resultsRef = useRef<HTMLDivElement>(null)
   const { user, loading, signOut } = useAuth()
+
+  const handleDownloadPDF = async () => {
+    if (!resultsRef.current || !uploadResults) return
+
+    const html2pdf = (await import('html2pdf.js')).default
+
+    const filename = uploadResults.data.files?.length > 0
+      ? `insurance-analysis-${uploadResults.data.files[0].name.replace('.pdf', '')}.pdf`
+      : `insurance-analysis-${new Date().toISOString().split('T')[0]}.pdf`
+
+    html2pdf().set({
+      margin: [10, 10, 10, 10],
+      filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+    }).from(resultsRef.current).save()
+  }
 
   const handleFileUpload = (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files])
@@ -414,14 +433,20 @@ export default function Home() {
         {/* AI Analysis Results */}
         {uploadResults && uploadResults.data.analysis && (
           <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+            <div ref={resultsRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                     <div className="text-center mb-8">
                       <h3 className="text-2xl font-bold text-gray-900 mb-2">
                         Your Insurance Plan Explained
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 mb-4">
                         Analyzed {new Date(uploadResults.data.analysis.analyzedAt).toLocaleString()}
                       </p>
+                      <button
+                        onClick={handleDownloadPDF}
+                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors inline-flex items-center gap-2"
+                      >
+                        <span>Download PDF</span>
+                      </button>
                     </div>
                     <div className="space-y-8">
                       {/* Check if this is a comparison result */}
