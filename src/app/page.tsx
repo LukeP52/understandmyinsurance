@@ -604,13 +604,19 @@ export default function Home() {
                         (() => {
                           const analysisText = uploadResults.data.analysis.text
                           const sections = analysisText.split('\n\n')
-                          
+
                           // Find and order only the 4 specified sections
                           const whatsGoodSection = sections.find((s: string) => s.startsWith("WHAT'S GOOD ABOUT THIS PLAN"))
                           const watchOutSection = sections.find((s: string) => s.startsWith('WHAT TO WATCH OUT FOR'))
                           const planOverviewSection = sections.find((s: string) => s.startsWith('PLAN OVERVIEW'))
-                          const realWorldSection = sections.find((s: string) => s.startsWith('REAL-WORLD SCENARIO'))
-                          
+
+                          // Real-World Scenario needs special handling - capture everything from header to end
+                          // because it contains multiple paragraphs separated by \n\n
+                          const realWorldStart = analysisText.indexOf('REAL-WORLD SCENARIO')
+                          const realWorldSection = realWorldStart !== -1
+                            ? analysisText.substring(realWorldStart)
+                            : null
+
                           const orderedSections = [whatsGoodSection, watchOutSection, planOverviewSection, realWorldSection].filter(Boolean)
                           
                           return orderedSections.map((section: string, index: number) => {
@@ -677,22 +683,26 @@ export default function Home() {
                               }
                               
                               return (
-                                <div key={index} className="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
-                                    <span className="mr-2">📊</span>
+                                <div key={index} className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     Plan Details
                                   </h4>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {overviewLines.map((line: string, lineIndex: number) => {
-                                      const [label, value] = line.split(':').map(s => s.trim())
-                                      const labelWithDef = labelDefinitions[label] || label
-                                      return (
-                                        <div key={lineIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                                          <div className="text-xs text-gray-500 font-bold uppercase tracking-wide mb-2">{labelWithDef}</div>
-                                          <div className="text-lg text-gray-900 font-bold">{value}</div>
-                                        </div>
-                                      )
-                                    })}
+                                  <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                      <tbody>
+                                        {overviewLines.map((line: string, lineIndex: number) => {
+                                          const [label, ...rest] = line.split(':')
+                                          const value = rest.join(':').trim()
+                                          const labelWithDef = labelDefinitions[label.trim()] || label.trim()
+                                          return (
+                                            <tr key={lineIndex} className="border-b border-gray-200">
+                                              <td className="py-2 pr-4 font-medium text-gray-700">{labelWithDef}</td>
+                                              <td className="py-2 px-4 text-gray-900">{value}</td>
+                                            </tr>
+                                          )
+                                        })}
+                                      </tbody>
+                                    </table>
                                   </div>
                                 </div>
                               )
