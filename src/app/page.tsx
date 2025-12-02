@@ -21,8 +21,8 @@ export default function Home() {
     setUploadedFiles(prev => [...prev, ...files])
   }
 
-  const handleAddUrl = () => {
-    const trimmedUrl = urlInput.trim()
+  const handleAddUrl = (url?: string) => {
+    const trimmedUrl = (url || urlInput).trim()
     if (!trimmedUrl) return
 
     // Basic URL validation
@@ -41,6 +41,20 @@ export default function Home() {
 
     setAddedUrls(prev => [...prev, trimmedUrl])
     setUrlInput('')
+  }
+
+  const handleUrlPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = e.clipboardData.getData('text').trim()
+
+    // Check if it looks like a URL
+    try {
+      new URL(pastedText)
+      // It's a valid URL - add it automatically
+      e.preventDefault() // Prevent the paste from filling the input
+      handleAddUrl(pastedText)
+    } catch {
+      // Not a valid URL - let normal paste behavior happen
+    }
   }
 
 
@@ -103,6 +117,27 @@ export default function Home() {
         }
 
         const result = await response.json()
+
+        // Check if the analysis contains mostly "not listed/not provided" - indicates JS-rendered page
+        const analysisText = result.analysis.toLowerCase()
+        const emptyIndicators = [
+          'not detailed here',
+          'not provided in the document',
+          'not mentioned in the information',
+          'not listed',
+          'not available',
+          'information about potential high costs or the deductible is not available',
+          'the document does not specify'
+        ]
+        const emptyCount = emptyIndicators.filter(phrase => analysisText.includes(phrase)).length
+
+        if (emptyCount >= 4) {
+          // Most fields are empty - likely a JavaScript-rendered page
+          throw new Error(
+            'This website uses JavaScript to load its content, which we cannot read directly. ' +
+            'Please try downloading the plan\'s PDF (usually called "Summary of Benefits" or "Plan Details") and uploading it instead.'
+          )
+        }
 
         setUploadResults({
           success: true,
@@ -266,11 +301,12 @@ export default function Home() {
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                  onPaste={handleUrlPaste}
                   placeholder="https://example.com/insurance-plan-details"
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 />
                 <button
-                  onClick={handleAddUrl}
+                  onClick={() => handleAddUrl()}
                   disabled={!urlInput.trim()}
                   className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -426,8 +462,8 @@ export default function Home() {
                             <div className="space-y-8">
                               {/* The Bottom Line */}
                               {bottomLineSection && (
-                                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-blue-100">
+                                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     The Bottom Line
                                   </h4>
                                   <div className="space-y-4 text-gray-700 leading-relaxed">
@@ -581,15 +617,15 @@ export default function Home() {
                             // What's Good section
                             if (section.startsWith("WHAT'S GOOD ABOUT THIS PLAN")) {
                               return (
-                                <div key={index} className="bg-green-50 border-2 border-green-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-green-100">
+                                <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     What's Good About This Plan
                                   </h4>
                                   <div className="space-y-3">
                                     {section.replace("WHAT'S GOOD ABOUT THIS PLAN\n", '').split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                          <span className="text-green-600 mr-3 mt-1 font-bold">•</span>
+                                          <span className="text-gray-400 mr-3 mt-1 font-bold">•</span>
                                           <span className="font-medium">{line.replace('• ', '')}</span>
                                         </div>
                                       )
@@ -602,15 +638,15 @@ export default function Home() {
                             // What to Watch Out For section
                             if (section.startsWith('WHAT TO WATCH OUT FOR')) {
                               return (
-                                <div key={index} className="bg-red-50 border-2 border-red-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-red-100">
+                                <div key={index} className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     What to Watch Out For
                                   </h4>
                                   <div className="space-y-3">
                                     {section.replace('WHAT TO WATCH OUT FOR\n', '').split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                          <span className="text-red-600 mr-3 mt-1 font-bold">•</span>
+                                          <span className="text-gray-400 mr-3 mt-1 font-bold">•</span>
                                           <span className="font-medium">{line.replace('• ', '')}</span>
                                         </div>
                                       )
@@ -641,7 +677,7 @@ export default function Home() {
                               }
                               
                               return (
-                                <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 shadow-lg">
+                                <div key={index} className="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-lg">
                                   <h4 className="text-xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
                                     <span className="mr-2">📊</span>
                                     Plan Details
@@ -651,8 +687,8 @@ export default function Home() {
                                       const [label, value] = line.split(':').map(s => s.trim())
                                       const labelWithDef = labelDefinitions[label] || label
                                       return (
-                                        <div key={lineIndex} className="bg-white p-4 rounded-lg border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200">
-                                          <div className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-2">{labelWithDef}</div>
+                                        <div key={lineIndex} className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                                          <div className="text-xs text-gray-500 font-bold uppercase tracking-wide mb-2">{labelWithDef}</div>
                                           <div className="text-lg text-gray-900 font-bold">{value}</div>
                                         </div>
                                       )
