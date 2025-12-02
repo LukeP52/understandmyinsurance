@@ -330,7 +330,7 @@ export default function Home() {
             UNDERSTAND<br />MY INSURANCE
           </h1>
           <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Upload your insurance plan documents and links to organize and store them in one place.
+            Upload your insurance documents or paste a link, and get a clear, plain-English breakdown of your coverage, costs, and what to watch out for.
           </p>
         </div>
 
@@ -849,35 +849,35 @@ export default function Home() {
         {/* How It Works */}
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-black text-center mb-12">How It Works</h2>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">1</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Upload Documents</h3>
+              <h3 className="text-xl font-bold text-black mb-3">Upload or Paste</h3>
               <p className="text-gray-700">
-                Upload PDFs, documents, or paste links to your insurance plan details.
+                Upload a PDF of your insurance plan or paste a link to your plan's details page.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">2</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Secure Processing</h3>
+              <h3 className="text-xl font-bold text-black mb-3">We Translate It</h3>
               <p className="text-gray-700">
-                Your documents are validated and processed securely in our system.
+                We read your plan and translate the insurance jargon into plain English you can actually understand.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">3</span>
               </div>
-              <h3 className="text-xl font-bold text-black mb-3">Organized Storage</h3>
+              <h3 className="text-xl font-bold text-black mb-3">Get Your Report</h3>
               <p className="text-gray-700">
-                Keep all your insurance documents organized and accessible in one place.
+                See what's good, what to watch out for, and real-world examples of how your costs work.
               </p>
             </div>
           </div>
