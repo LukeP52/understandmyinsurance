@@ -59,7 +59,8 @@ export default function Home() {
 
       // User should always have a UID (either real or anonymous)
       if (!user?.uid) {
-        throw new Error('Not authenticated. Please refresh the page.')
+        console.error('Auth state:', { user, loading })
+        throw new Error('Not authenticated. Please enable Anonymous auth in Firebase Console and refresh.')
       }
       const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
       
