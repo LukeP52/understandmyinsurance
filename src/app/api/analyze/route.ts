@@ -152,6 +152,8 @@ Create a realistic patient journey that shows how costs accumulate. Use this for
 
 Adapt this style using the ACTUAL numbers and features from this specific plan. Show where the patient starts financially, explain why they pay what they pay at each step, track their deductible progress, and end with a summary of total paid plus what happens going forward.
 
+CRITICAL: Only report information that is EXPLICITLY stated in the document. If a value is not provided (like Monthly Premium), write "Not listed in document" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details.
+
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
 
@@ -259,6 +261,8 @@ WATCH OUT:
 • [Higher cost area]
 • [Coverage gap]
 `).join('\n')}
+
+CRITICAL: Only report information that is EXPLICITLY stated in the documents. If a value is not provided (like Monthly Premium), write "Not listed" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details. Facts only.
 
 IMPORTANT: Use simple language. Keep sentences under 40 words. NEVER use asterisks (*) - use bullet points (•) only. Include specific dollar amounts throughout.
 `
