@@ -210,17 +210,18 @@ Category | Plan A | Plan B
 Monthly Premium | $180 | $320
 Annual Deductible | $2,000 | $500
 Out-of-Pocket Maximum | $6,500 | $4,000
+Coinsurance | 20% after deductible | 10% after deductible
 Plan Type | PPO | HMO
 Network | Cigna | Kaiser
-Primary Care Copay | $40 | $20
-Specialist Copay | $60 | $35
-Emergency Room | $300 | $150
-Urgent Care | $50 | $30
-Prescription Drugs | Higher copays | Lower copays
+Primary Care | $40 copay | $20 copay
+Specialist | $60 copay | 20% coinsurance
+Emergency Room | $300 + 20% | $150 copay
+Urgent Care | $50 copay | $30 copay
+Prescription Drugs | $15/$45/$80 tiers | $10/$30/$60 tiers
 Pediatric Dental & Vision | Included | Included
 Adult Dental & Vision | Add-on available | Not included
 
-Include all 12 categories above. Use "Not listed" if a value isn't in the document. Each row MUST have the category name, then |, then Plan A value, then |, then Plan B value.
+Include all 13 categories above. For costs, include copays ($X), coinsurance (X%), or both (e.g., "$300 + 20%") - whatever the plan specifies. Use "Not listed" if a value isn't in the document.
 
 PLAN DETAILS
 For each plan, provide a card with key info:
