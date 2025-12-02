@@ -16,6 +16,7 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
   const resultsRef = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef<HTMLDivElement>(null)
   const { user, loading, signOut } = useAuth()
 
   const handleDownloadPDF = async () => {
@@ -147,6 +148,11 @@ export default function Home() {
 
     setIsUploading(true)
     setIsAnalyzing(true)
+
+    // Scroll to loading section after a brief delay for state to update
+    setTimeout(() => {
+      loadingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
 
     try {
       // User should always have a UID (either real or anonymous)
@@ -441,7 +447,7 @@ export default function Home() {
 
         {/* Analysis Loading Display */}
         {isAnalyzing && (
-          <div className="max-w-4xl mx-auto mb-12">
+          <div ref={loadingRef} className="max-w-4xl mx-auto mb-12">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="text-center">
                 <div className="mb-6">
@@ -450,7 +456,7 @@ export default function Home() {
                   </div>
                   <h2 className="text-2xl font-bold text-black mb-2">Generating Your Report</h2>
                   <p className="text-gray-600 max-w-md mx-auto">
-                    Our AI is reading your insurance document and creating a personalized analysis. 
+                    We're reading your insurance document and creating a personalized analysis.
                     This usually takes 10-30 seconds.
                   </p>
                 </div>
@@ -780,14 +786,14 @@ export default function Home() {
 
                                       return (
                                         <div key={stepIndex}>
-                                          <div className={`p-4 rounded-lg ${isSummary ? 'bg-green-50 border border-green-200' : 'bg-gray-50'}`}>
-                                            <p className={`text-gray-700 ${isSummary ? 'font-semibold' : ''}`}>
+                                          <div className={`px-3 py-2 rounded-lg ${isSummary ? 'bg-green-50 border border-green-200' : 'bg-gray-50'}`}>
+                                            <p className={`text-sm text-gray-700 ${isSummary ? 'font-semibold' : ''}`}>
                                               {trimmedLine}
                                             </p>
                                           </div>
                                           {!isLastStep && (
-                                            <div className="flex justify-center py-1">
-                                              <span className="text-gray-400 text-xl">↓</span>
+                                            <div className="flex justify-center py-0.5">
+                                              <span className="text-gray-400 text-sm">↓</span>
                                             </div>
                                           )}
                                         </div>
