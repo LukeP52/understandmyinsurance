@@ -192,15 +192,17 @@ Pediatric Dental & Vision: [exact value from content, or "Not listed in document
 Adult Dental & Vision: [exact value from content, or "Not listed in document"]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Using ONLY the actual numbers found in this content, create a realistic patient journey. If deductible, copays, or coinsurance values aren't specified, state "cost details not provided in document" for those steps.
+Create a realistic patient journey showing how costs accumulate, using ONLY values from this content.
 
-• [Patient visits doctor - use the content's primary care copay, or state "copay not listed"]
-• [Patient needs a test/procedure - explain deductible impact using content's deductible, or state "deductible not listed"]
-• [Specialist visit - use content's specialist copay, or state "specialist copay not listed"]
-• [Prescription - use content's drug tier costs, or state "prescription costs not listed"]
-• SUMMARY: Total costs based ONLY on values explicitly stated in the content
+Structure your scenario like this:
+• Start with a patient who has met some of their deductible (use the content's actual deductible amount)
+• Show a primary care visit (use the content's actual copay)
+• Show a procedure/test that applies to the deductible (use actual coinsurance if listed)
+• Show a specialist visit (use actual specialist copay)
+• Show a prescription (use actual drug tier costs)
+• End with a SUMMARY totaling what the patient paid
 
-DO NOT invent any dollar amounts. If the content doesn't specify a cost, say "not listed in document" for that item.
+IMPORTANT: Only include steps where you have real numbers from the content. Skip any step where the cost isn't specified - don't write "not listed" in the middle of the scenario. If most costs are missing, write a shorter scenario using only what's available. NEVER invent or estimate dollar amounts.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
