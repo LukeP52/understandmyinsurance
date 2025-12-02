@@ -190,81 +190,63 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
-Compare these ${fileData.length} insurance plans and provide your response in this EXACT format with these 4 sections:
+Compare these ${fileData.length} insurance plans and provide your response in this EXACT format with these 3 sections:
 
-WHICH PLAN FITS YOU?
-Match user types to specific plans. Use this format as a guide:
+THE BOTTOM LINE
+Write a friendly, conversational summary explaining who should choose each plan. Use full sentences, not bullet points. Use this format as a guide:
 
-• Young & healthy, want lowest monthly cost → Plan A ($180/month, but $2,000 deductible)
-• Family with kids needing regular checkups → Plan B (lower copays, pediatric dental included)
-• Chronic condition or lots of prescriptions → Plan B (lower drug costs, $500 deductible)
-• Want balance of cost and coverage → Plan A (mid-range premium, decent coverage)
+"These plans have different trade-offs. Here's who should pick each:
 
-Write 3-5 bullets matching real user situations to specific plans with key numbers.
+Choose Plan A if you're young, healthy, and rarely visit the doctor. You'll pay less each month ($180 premium) but more out of pocket if something happens. This plan rewards people who don't use much healthcare.
 
-CATEGORY WINNERS
-Show which plan wins in each important category. Use this format:
+Choose Plan B if you have kids, ongoing prescriptions, or see doctors regularly. You'll pay more monthly ($320 premium) but your visits and medications cost less. This plan is better if you actually use your insurance."
 
-• Lowest Monthly Premium: Plan A ($180/month)
-• Lowest Deductible: Plan B ($500 vs $2,000)
-• Lowest Out-of-Pocket Max: Plan B ($4,000 vs $6,500)
-• Best for Doctor Visits: Plan B ($20 copay vs $40)
-• Best for Prescriptions: Plan B (Tier 1: $10, Tier 2: $35)
-• Best for Emergencies: Plan B ($150 ER copay vs $300)
+Write 1 paragraph per plan explaining who it's best for and why, using specific dollar amounts. Be warm and helpful, like you're explaining to a friend.
 
-Include 6-8 categories with the winning plan and specific dollar amounts. Always show the comparison.
+SIDE-BY-SIDE NUMBERS
+Create a simple comparison table. Use this exact format:
 
-SAME SCENARIO, DIFFERENT COSTS
-Pick a realistic medical scenario relevant to these plans (minor injury, managing a condition, having a baby, etc.) and show what each plan would cost. Use this format as a guide:
+                            Plan A          Plan B
+Monthly Premium:            $180            $320
+Annual Deductible:          $2,000          $500
+Out-of-Pocket Maximum:      $6,500          $4,000
+Primary Care Visit:         $40             $20
+Specialist Visit:           $60             $35
+Emergency Room:             $300            $150
+Urgent Care:                $50             $30
+Prescriptions:              Higher copays   Lower copays
 
-Scenario: Treating a Sprained Ankle
-(Urgent care visit + X-ray + follow-up appointment + prescription pain medication)
-
-• Plan A: $850 total out of pocket
-  - Urgent care: $75 copay
-  - X-ray: $400 (applied to $2,000 deductible)
-  - Follow-up: $40 copay
-  - Medication: $35 (Tier 2)
-
-• Plan B: $185 total out of pocket ← Best for this scenario
-  - Urgent care: $50 copay
-  - X-ray: $45 (already met $500 deductible, 10% coinsurance)
-  - Follow-up: $20 copay
-  - Medication: $25 (Tier 2)
-
-Why the difference: Plan A's higher deductible means the X-ray cost hits you directly, while Plan B's lower deductible was already met.
-
-Choose a scenario that highlights meaningful differences between these specific plans. Show the math for each plan.
+Include all key cost categories. Use "Not listed" if a value isn't in the document.
 
 PLAN DETAILS
-For each plan, provide a scannable card format:
+For each plan, provide a card with key info:
 
 ${fileData.map((f, i) => `PLAN ${String.fromCharCode(65 + i)} (${f.name})
-Best for: [One line describing ideal user]
+Best for: [One sentence describing the ideal person for this plan]
 
 Key Numbers:
-• Monthly Premium: $X
-• Annual Deductible: $X
-• Out-of-Pocket Max: $X
-• Primary Care: $X copay
-• Specialist: $X copay
-• ER: $X
+• Monthly Premium (what you pay every month): $X
+• Annual Deductible (what you pay before insurance kicks in): $X
+• Out-of-Pocket Max (the most you'd pay in a year): $X
+• Primary Care Visit: $X
+• Specialist Visit: $X
+• Emergency Room: $X
 • Urgent Care: $X
 
-CHOOSE IF:
-• [Specific situation where this plan wins]
-• [Another advantage]
-• [Cost benefit]
+CHOOSE THIS PLAN IF:
+• [Specific life situation where this plan wins]
+• [Another good reason to pick this plan]
+• [Who benefits most from this plan's structure]
 
-WATCH OUT:
-• [Main downside or limitation]
-• [Higher cost area]
-• [Coverage gap]
+WATCH OUT FOR:
+• [Main downside or limitation in plain language]
+• [Situations where this plan costs more]
+• [Important coverage gaps to know about]
 `).join('\n')}
 
-CRITICAL: Only report information that is EXPLICITLY stated in the documents. If a value is not provided (like Monthly Premium), write "Not listed" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details. Facts only.
+CRITICAL: Only report information that is EXPLICITLY stated in the documents. If a value is not provided, write "Not listed" instead of estimating. NEVER guess or make up numbers.
 
-IMPORTANT: Use simple language. Keep sentences under 40 words. NEVER use asterisks (*) - use bullet points (•) only. Include specific dollar amounts throughout.
+Write in a warm, helpful tone like you're explaining to a friend who doesn't know much about insurance. Use proper terms (like "deductible") but briefly explain what they mean in parentheses the first time. NEVER use asterisks (*) - use bullet points (•) only.
 `
 
       // Send all files to Gemini for comparison

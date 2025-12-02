@@ -276,8 +276,8 @@ export default function Home() {
                     </div>
                     <div className="space-y-8">
                       {/* Check if this is a comparison result */}
-                      {uploadResults.data.analysis.text.includes('WHICH PLAN FITS YOU?') || uploadResults.data.analysis.text.includes('PLAN RECOMMENDATIONS') ? (
-                        // Render comparison format with 4 sections
+                      {uploadResults.data.analysis.text.includes('THE BOTTOM LINE') || uploadResults.data.analysis.text.includes('SIDE-BY-SIDE NUMBERS') ? (
+                        // Render comparison format with 3 sections
                         (() => {
                           const analysisText = uploadResults.data.analysis.text
 
@@ -294,10 +294,9 @@ export default function Home() {
                             return analysisText.substring(startIndex + start.length, endIndex).trim()
                           }
 
-                          // Parse the 4 new sections
-                          const whichPlanSection = extractSection('WHICH PLAN FITS YOU?', ['CATEGORY WINNERS', 'SAME SCENARIO'])
-                          const categoryWinnersSection = extractSection('CATEGORY WINNERS', ['SAME SCENARIO', 'PLAN DETAILS'])
-                          const scenarioSection = extractSection('SAME SCENARIO, DIFFERENT COSTS', ['PLAN DETAILS'])
+                          // Parse the 3 sections
+                          const bottomLineSection = extractSection('THE BOTTOM LINE', ['SIDE-BY-SIDE NUMBERS', 'PLAN DETAILS'])
+                          const sideBySideSection = extractSection('SIDE-BY-SIDE NUMBERS', ['PLAN DETAILS'])
                           const planDetailsSection = extractSection('PLAN DETAILS', [])
 
                           // Parse individual plan cards from PLAN DETAILS
@@ -312,73 +311,34 @@ export default function Home() {
 
                           return (
                             <div className="space-y-8">
-                              {/* Which Plan Fits You? */}
-                              {whichPlanSection && (
+                              {/* The Bottom Line */}
+                              {bottomLineSection && (
                                 <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-blue-100">
-                                    Which Plan Fits You?
+                                    The Bottom Line
                                   </h4>
-                                  <div className="space-y-3">
-                                    {whichPlanSection.split('\n').map((line: string, lineIndex: number) => (
-                                      line.trim() && (
-                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                          <span className="text-blue-600 mr-3 mt-1 font-bold">→</span>
-                                          <span className="font-medium">{line.replace(/^[•→]\s*/, '')}</span>
-                                        </div>
+                                  <div className="space-y-4 text-gray-700 leading-relaxed">
+                                    {bottomLineSection.split('\n\n').map((paragraph: string, pIndex: number) => (
+                                      paragraph.trim() && (
+                                        <p key={pIndex} className="text-gray-700">
+                                          {paragraph.trim()}
+                                        </p>
                                       )
                                     ))}
                                   </div>
                                 </div>
                               )}
 
-                              {/* Category Winners */}
-                              {categoryWinnersSection && (
-                                <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-amber-100">
-                                    Category Winners
+                              {/* Side-by-Side Numbers */}
+                              {sideBySideSection && (
+                                <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                    Side-by-Side Numbers
                                   </h4>
-                                  <div className="space-y-2">
-                                    {categoryWinnersSection.split('\n').map((line: string, lineIndex: number) => {
-                                      if (!line.trim()) return null
-                                      const cleanLine = line.replace(/^[•]\s*/, '')
-                                      return (
-                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start py-1 border-b border-amber-100 last:border-b-0">
-                                          <span className="text-amber-600 mr-3 font-bold">🏆</span>
-                                          <span className="font-medium">{cleanLine}</span>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Same Scenario, Different Costs */}
-                              {scenarioSection && (
-                                <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-purple-100">
-                                    Same Scenario, Different Costs
-                                  </h4>
-                                  <div className="space-y-2 whitespace-pre-line text-gray-700 leading-relaxed">
-                                    {scenarioSection.split('\n').map((line: string, lineIndex: number) => {
-                                      if (!line.trim()) return <br key={lineIndex} />
-                                      // Highlight the "best for this scenario" line
-                                      if (line.includes('← Best') || line.includes('←')) {
-                                        return (
-                                          <div key={lineIndex} className="font-bold text-purple-700 bg-purple-100 px-2 py-1 rounded">
-                                            {line}
-                                          </div>
-                                        )
-                                      }
-                                      // Style the "Why the difference" explanation
-                                      if (line.toLowerCase().startsWith('why')) {
-                                        return (
-                                          <div key={lineIndex} className="mt-4 italic text-gray-600 border-l-4 border-purple-300 pl-3">
-                                            {line}
-                                          </div>
-                                        )
-                                      }
-                                      return <div key={lineIndex}>{line}</div>
-                                    })}
+                                  <div className="overflow-x-auto">
+                                    <pre className="text-sm text-gray-700 font-mono whitespace-pre leading-relaxed">
+                                      {sideBySideSection}
+                                    </pre>
                                   </div>
                                 </div>
                               )}
@@ -390,7 +350,7 @@ export default function Home() {
                                   {planCards.map((card, index) => {
                                     const lines = card.content.split('\n').filter((l: string) => l.trim())
                                     const bestFor = lines.find((l: string) => l.toLowerCase().startsWith('best for'))
-                                    const chooseIfStart = lines.findIndex((l: string) => l.includes('CHOOSE IF'))
+                                    const chooseIfStart = lines.findIndex((l: string) => l.includes('CHOOSE THIS PLAN IF'))
                                     const watchOutStart = lines.findIndex((l: string) => l.includes('WATCH OUT'))
 
                                     return (
@@ -405,7 +365,7 @@ export default function Home() {
                                           <div className="bg-gray-50 rounded-lg p-4">
                                             <h6 className="font-semibold text-gray-800 mb-2">Key Numbers</h6>
                                             {lines.filter((l: string) =>
-                                              l.includes('$') && !l.includes('CHOOSE') && !l.includes('WATCH')
+                                              (l.includes('$') || l.includes('Not listed')) && !l.includes('CHOOSE') && !l.includes('WATCH')
                                             ).slice(0, 7).map((l: string, i: number) => (
                                               <div key={i} className="text-sm text-gray-700 py-1 border-b border-gray-200 last:border-b-0">
                                                 {l.replace(/^[•]\s*/, '')}
@@ -417,7 +377,7 @@ export default function Home() {
                                           <div className="space-y-4">
                                             {chooseIfStart !== -1 && (
                                               <div className="bg-green-50 rounded-lg p-4">
-                                                <h6 className="font-semibold text-green-800 mb-2">✓ Choose If</h6>
+                                                <h6 className="font-semibold text-green-800 mb-2">Choose This Plan If</h6>
                                                 {lines.slice(chooseIfStart + 1, watchOutStart !== -1 ? watchOutStart : undefined)
                                                   .filter((l: string) => l.trim() && !l.includes('WATCH'))
                                                   .slice(0, 3)
@@ -431,7 +391,7 @@ export default function Home() {
                                             )}
                                             {watchOutStart !== -1 && (
                                               <div className="bg-red-50 rounded-lg p-4">
-                                                <h6 className="font-semibold text-red-800 mb-2">⚠ Watch Out</h6>
+                                                <h6 className="font-semibold text-red-800 mb-2">Watch Out For</h6>
                                                 {lines.slice(watchOutStart + 1)
                                                   .filter((l: string) => l.trim())
                                                   .slice(0, 3)
