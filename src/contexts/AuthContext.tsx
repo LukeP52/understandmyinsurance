@@ -26,9 +26,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
+    let isMounted = true;
+
+    // Timeout to ensure we don't stay in loading state forever
+    const loadingTimeout = setTimeout(() => {
+      if (isMounted) {
+        console.warn('Auth loading timeout - setting loading to false');
+        setLoading(false);
+      }
+    }, 5000);
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!isMounted) return;
+
+      if (currentUser) {
+        setUser(currentUser);
         setLoading(false);
       } else {
         // No user signed in - sign in anonymously
@@ -37,12 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // onAuthStateChanged will fire again with the anonymous user
         } catch (error) {
           console.error('Anonymous sign-in failed:', error);
-          setLoading(false);
+          if (isMounted) setLoading(false);
         }
       }
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted = false;
+      clearTimeout(loadingTimeout);
+      unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
