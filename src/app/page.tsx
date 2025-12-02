@@ -462,8 +462,8 @@ export default function Home() {
                             <div className="space-y-8">
                               {/* The Bottom Line */}
                               {bottomLineSection && (
-                                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                <div className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                     The Bottom Line
                                   </h4>
                                   <div className="space-y-4 text-gray-700 leading-relaxed">
@@ -490,8 +490,8 @@ export default function Home() {
                                 const planNames = headers.slice(1) // Skip "Category"
 
                                 return (
-                                  <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
-                                    <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                  <div className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                    <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                       Side-by-Side Numbers
                                     </h4>
                                     <div className="overflow-x-auto">
@@ -532,7 +532,7 @@ export default function Home() {
                               {/* Plan Details Cards */}
                               {planCards.length > 0 && (
                                 <div className="space-y-6">
-                                  <h4 className="text-xl font-bold text-gray-900">Plan Details</h4>
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900">Plan Details</h4>
                                   {planCards.map((card, index) => {
                                     const lines = card.content.split('\n').filter((l: string) => l.trim())
                                     const bestFor = lines.find((l: string) => l.toLowerCase().startsWith('best for'))
@@ -540,8 +540,8 @@ export default function Home() {
                                     const watchOutStart = lines.findIndex((l: string) => l.includes('WATCH OUT'))
 
                                     return (
-                                      <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
-                                        <h5 className="text-lg font-bold text-gray-900 mb-2">{card.name}</h5>
+                                      <div key={index} className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                        <h5 className="text-xl font-black tracking-tight text-gray-900 mb-2">{card.name}</h5>
                                         {bestFor && (
                                           <p className="text-gray-600 italic mb-4">{bestFor.replace(/^best for:\s*/i, 'Best for: ')}</p>
                                         )}
