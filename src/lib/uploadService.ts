@@ -1,6 +1,7 @@
 import { storage, db } from './firebase'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore'
+import { InsuranceType } from './prompts'
 
 interface UploadResult {
   id: string
@@ -17,10 +18,11 @@ interface UploadResult {
 }
 
 export async function uploadDocuments(
-  files: File[], 
+  files: File[],
   urls: string[],
   userId: string,
-  analysisMode: 'single' | 'compare' = 'single'
+  analysisMode: 'single' | 'compare' = 'single',
+  insuranceType: InsuranceType = 'health'
 ): Promise<UploadResult> {
   
   // Create a document record first
@@ -78,7 +80,8 @@ export async function uploadDocuments(
               fileUrl: downloadURL,
               fileName: file.name,
               userId: userId,
-              mode: 'single'
+              mode: 'single',
+              insuranceType
             })
           })
 
@@ -140,7 +143,8 @@ export async function uploadDocuments(
           body: JSON.stringify({
             files: fileUrls,
             userId: userId,
-            mode: 'compare'
+            mode: 'compare',
+            insuranceType
           })
         })
 

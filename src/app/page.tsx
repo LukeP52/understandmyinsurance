@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
 import AuthModal from './components/Auth/AuthModal'
+import { InsuranceType } from '@/lib/prompts'
 
 export default function Home() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
@@ -15,6 +16,7 @@ export default function Home() {
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
+  const [insuranceType, setInsuranceType] = useState<InsuranceType>('health')
   const resultsRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
   const { user, loading, signOut } = useAuth()
@@ -170,7 +172,8 @@ export default function Home() {
           body: JSON.stringify({
             urls: addedUrls,
             userId: user.uid,
-            mode: analysisMode
+            mode: analysisMode,
+            insuranceType
           })
         })
 
@@ -221,7 +224,7 @@ export default function Home() {
         setAddedUrls([])
       } else {
         // File upload (existing logic)
-        const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
+        const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode, insuranceType)
 
         setUploadResults({
           success: true,
@@ -290,6 +293,35 @@ export default function Home() {
           </div>
         </div>
       </nav>
+
+      {/* Insurance Type Tabs */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-center">
+            <div className="bg-gray-100 rounded-lg p-1 inline-flex flex-wrap justify-center gap-1">
+              {[
+                { id: 'health', label: 'Health' },
+                { id: 'auto', label: 'Auto' },
+                { id: 'home', label: 'Home' },
+                { id: 'life', label: 'Life' },
+                { id: 'other', label: 'Other' }
+              ].map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setInsuranceType(type.id as InsuranceType)}
+                  className={`px-4 py-2 rounded-md font-medium transition-all duration-200 text-sm md:text-base ${
+                    insuranceType === type.id
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                  }`}
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Header */}

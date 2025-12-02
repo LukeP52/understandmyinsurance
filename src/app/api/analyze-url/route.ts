@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 import { convert } from 'html-to-text'
+import { getSingleUrlAnalysisPrompt, getCompareUrlAnalysisPrompt, InsuranceType } from '@/lib/prompts'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
@@ -87,7 +88,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { urls, userId, mode = 'single' } = body
+    const { urls, userId, mode = 'single', insuranceType = 'health' } = body
+    const validInsuranceType = insuranceType as InsuranceType
 
     // Check rate limit
     if (!userId || isRateLimited(userId)) {
@@ -153,59 +155,13 @@ export async function POST(request: NextRequest) {
       // Single URL analysis
       const webpageContent = await fetchWebpageContent(urls[0])
 
-      const singlePrompt = `
-CRITICAL RULE - READ THIS FIRST: Only report information EXPLICITLY stated in the content. If ANY value is not provided, you MUST write "Not listed in document" for that field. NEVER estimate, guess, or infer any costs, premiums, copays, or plan details. When in doubt, write "Not listed in document".
-
-Analyze this insurance plan information from a webpage and provide a clear explanation in plain English.
+      const basePrompt = getSingleUrlAnalysisPrompt(validInsuranceType)
+      const singlePrompt = `${basePrompt}
 
 Here is the webpage content:
 ---
 ${webpageContent}
----
-
-Please provide your response in this EXACT format with ONLY these 4 sections:
-
-WHAT'S GOOD ABOUT THIS PLAN
-• This plan would be good for you if [describe ideal user situation - max 40 words]
-• [Coverage benefits - max 40 words]
-• [Cost advantages - max 40 words]
-• [Network or convenience benefits - max 40 words]
-
-WHAT TO WATCH OUT FOR
-• Avoid getting this plan if [describe who should not choose this plan - max 40 words]
-• [High costs or deductible concerns - max 40 words]
-• [Coverage limitations or exclusions - max 40 words]
-• [Network restrictions or access issues - max 40 words]
-
-PLAN OVERVIEW
-Monthly Premium: [exact value from content, or "Not listed in document"]
-Annual Deductible: [exact value from content, or "Not listed in document"]
-Out-of-Pocket Maximum: [exact value from content, or "Not listed in document"]
-Plan Type: [exact value from content, or "Not listed in document"]
-Network: [exact value from content, or "Not listed in document"]
-Primary Care Copay: [exact value from content, or "Not listed in document"]
-Specialist Copay: [exact value from content, or "Not listed in document"]
-Emergency Room Cost: [exact value from content, or "Not listed in document"]
-Urgent Care Cost: [exact value from content, or "Not listed in document"]
-Prescription Drug Coverage: [exact value from content, or "Not listed in document"]
-Pediatric Dental & Vision: [exact value from content, or "Not listed in document"]
-Adult Dental & Vision: [exact value from content, or "Not listed in document"]
-
-REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic patient journey showing how costs accumulate, using ONLY values from this content.
-
-Structure your scenario like this:
-• Start with a patient who has met some of their deductible (use the content's actual deductible amount)
-• Show a primary care visit (use the content's actual copay)
-• Show a procedure/test that applies to the deductible (use actual coinsurance if listed)
-• Show a specialist visit (use actual specialist copay)
-• Show a prescription (use actual drug tier costs)
-• End with a SUMMARY totaling what the patient paid
-
-IMPORTANT: Only include steps where you have real numbers from the content. Skip any step where the cost isn't specified - don't write "not listed" in the middle of the scenario. If most costs are missing, write a shorter scenario using only what's available. NEVER invent or estimate dollar amounts.
-
-IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
-`
+---`
 
       const result = await model.generateContent(singlePrompt)
       analysisText = result.response.text()
@@ -227,67 +183,13 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
         }
       }
 
-      const comparePrompt = `
-CRITICAL RULE - READ THIS FIRST: Only report information EXPLICITLY stated in the content. If ANY value is not provided, you MUST write "Not listed" for that field. NEVER estimate, guess, or infer any costs, premiums, copays, or plan details. When in doubt, write "Not listed".
-
-Compare these ${webpageContents.length} insurance plans and provide your response in this EXACT format with these 3 sections:
+      const basePrompt = getCompareUrlAnalysisPrompt(validInsuranceType, webpageContents)
+      const comparePrompt = `${basePrompt}
 
 ${webpageContents.map((wc, i) => `
 --- PLAN ${String.fromCharCode(65 + i)} (from ${new URL(wc.url).hostname}) ---
 ${wc.content}
-`).join('\n')}
-
-THE BOTTOM LINE
-Write a friendly, conversational summary explaining who should choose each plan. Use full sentences, not bullet points. Write 1 paragraph per plan explaining who it's best for and why. Only mention specific dollar amounts that are EXPLICITLY stated in the content. If a cost isn't listed, don't mention it.
-
-SIDE-BY-SIDE NUMBERS
-Create a comparison table with one row per line. Use this EXACT format with | as separator:
-
-Category | Plan A | Plan B
-Monthly Premium | [value or "Not listed"] | [value or "Not listed"]
-Annual Deductible | [value or "Not listed"] | [value or "Not listed"]
-Out-of-Pocket Maximum | [value or "Not listed"] | [value or "Not listed"]
-Coinsurance | [value or "Not listed"] | [value or "Not listed"]
-Plan Type | [value or "Not listed"] | [value or "Not listed"]
-Network | [value or "Not listed"] | [value or "Not listed"]
-Primary Care | [value or "Not listed"] | [value or "Not listed"]
-Specialist | [value or "Not listed"] | [value or "Not listed"]
-Emergency Room | [value or "Not listed"] | [value or "Not listed"]
-Urgent Care | [value or "Not listed"] | [value or "Not listed"]
-Prescription Drugs | [value or "Not listed"] | [value or "Not listed"]
-Pediatric Dental & Vision | [value or "Not listed"] | [value or "Not listed"]
-Adult Dental & Vision | [value or "Not listed"] | [value or "Not listed"]
-
-Include all 13 categories above. For costs, include copays ($X), coinsurance (X%), or both (e.g., "$300 + 20%") - whatever the plan specifies. Use "Not listed" if a value isn't in the content. DO NOT estimate or guess any values. Each row MUST have the category name, then |, then Plan A value, then |, then Plan B value.
-
-PLAN DETAILS
-For each plan, provide a card with key info:
-
-${webpageContents.map((wc, i) => `PLAN ${String.fromCharCode(65 + i)} (${new URL(wc.url).hostname})
-Best for: [One sentence describing the ideal person for this plan]
-
-Key Numbers:
-• Monthly Premium (what you pay every month): [exact value from content, or "Not listed"]
-• Annual Deductible (what you pay before insurance kicks in): [exact value from content, or "Not listed"]
-• Out-of-Pocket Max (the most you'd pay in a year): [exact value from content, or "Not listed"]
-• Primary Care Visit: [exact value from content, or "Not listed"]
-• Specialist Visit: [exact value from content, or "Not listed"]
-• Emergency Room: [exact value from content, or "Not listed"]
-• Urgent Care: [exact value from content, or "Not listed"]
-
-CHOOSE THIS PLAN IF:
-• [Specific life situation where this plan wins]
-• [Another good reason to pick this plan]
-• [Who benefits most from this plan's structure]
-
-WATCH OUT FOR:
-• [Main downside or limitation in plain language]
-• [Situations where this plan costs more]
-• [Important coverage gaps to know about]
-`).join('\n')}
-
-Write in a warm, helpful tone like you're explaining to a friend who doesn't know much about insurance. Use proper terms (like "deductible") but briefly explain what they mean in parentheses the first time. NEVER use asterisks (*) - use bullet points (•) only.
-`
+`).join('\n')}`
 
       const result = await model.generateContent(comparePrompt)
       analysisText = result.response.text()
