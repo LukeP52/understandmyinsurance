@@ -445,7 +445,7 @@ export default function Home() {
                         onClick={handleDownloadPDF}
                         className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors inline-flex items-center gap-2"
                       >
-                        <span>Download PDF</span>
+                        <span>Download Analysis</span>
                       </button>
                     </div>
                     <div className="space-y-8">
