@@ -623,15 +623,15 @@ export default function Home() {
                             // What's Good section
                             if (section.startsWith("WHAT'S GOOD ABOUT THIS PLAN")) {
                               return (
-                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                <div key={index} className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                     What's Good About This Plan
                                   </h4>
                                   <div className="space-y-3">
                                     {section.replace("WHAT'S GOOD ABOUT THIS PLAN\n", '').split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                          <span className="text-gray-400 mr-3 mt-1 font-bold">•</span>
+                                          <span className="text-black mr-3 mt-0.5 text-lg">•</span>
                                           <span className="font-medium">{line.replace('• ', '')}</span>
                                         </div>
                                       )
@@ -644,15 +644,15 @@ export default function Home() {
                             // What to Watch Out For section
                             if (section.startsWith('WHAT TO WATCH OUT FOR')) {
                               return (
-                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                <div key={index} className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                     What to Watch Out For
                                   </h4>
                                   <div className="space-y-3">
                                     {section.replace('WHAT TO WATCH OUT FOR\n', '').split('\n').map((line: string, lineIndex: number) => (
                                       line.trim() && (
                                         <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
-                                          <span className="text-gray-400 mr-3 mt-1 font-bold">•</span>
+                                          <span className="text-black mr-3 mt-0.5 text-lg">•</span>
                                           <span className="font-medium">{line.replace('• ', '')}</span>
                                         </div>
                                       )
@@ -683,8 +683,8 @@ export default function Home() {
                               }
                               
                               return (
-                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                                <div key={index} className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                     Plan Details
                                   </h4>
                                   <div className="overflow-x-auto">
