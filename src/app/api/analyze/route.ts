@@ -129,15 +129,18 @@ PLAN OVERVIEW
 Monthly Premium: [exact value from document, or "Not listed in document"]
 Annual Deductible: [exact value from document, or "Not listed in document"]
 Out-of-Pocket Maximum: [exact value from document, or "Not listed in document"]
+Coinsurance: [exact value from document, or "Not listed in document"]
 Plan Type: [exact value from document, or "Not listed in document"]
 Network: [exact value from document, or "Not listed in document"]
-Primary Care Copay: [exact value from document, or "Not listed in document"]
-Specialist Copay: [exact value from document, or "Not listed in document"]
-Emergency Room Cost: [exact value from document, or "Not listed in document"]
-Urgent Care Cost: [exact value from document, or "Not listed in document"]
-Prescription Drug Coverage: [exact value from document, or "Not listed in document"]
+Primary Care: [exact value from document, or "Not listed in document"]
+Specialist: [exact value from document, or "Not listed in document"]
+Emergency Room: [exact value from document, or "Not listed in document"]
+Urgent Care: [exact value from document, or "Not listed in document"]
+Prescription Drugs: [exact value from document, or "Not listed in document"]
 Pediatric Dental & Vision: [exact value from document, or "Not listed in document"]
 Adult Dental & Vision: [exact value from document, or "Not listed in document"]
+
+For costs, include copays ($X), coinsurance (X%), or both (e.g., "$20 copay + 10% coinsurance") - whatever the plan specifies. Use "Not listed in document" only if a value truly isn't in the document.
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Create a realistic patient journey showing how costs accumulate, using ONLY values from this document.
