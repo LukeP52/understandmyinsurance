@@ -154,6 +154,8 @@ export async function POST(request: NextRequest) {
       const webpageContent = await fetchWebpageContent(urls[0])
 
       const singlePrompt = `
+CRITICAL RULE - READ THIS FIRST: Only report information EXPLICITLY stated in the content. If ANY value is not provided, you MUST write "Not listed in document" for that field. NEVER estimate, guess, or infer any costs, premiums, copays, or plan details. When in doubt, write "Not listed in document".
+
 Analyze this insurance plan information from a webpage and provide a clear explanation in plain English.
 
 Here is the webpage content:
@@ -176,27 +178,29 @@ WHAT TO WATCH OUT FOR
 • [Network restrictions or access issues - max 40 words]
 
 PLAN OVERVIEW
-Monthly Premium: $X
-Annual Deductible: $X
-Out-of-Pocket Maximum: $X
-Plan Type: [HMO/PPO/etc.]
-Network: [Insurance company name]
-Primary Care Copay: $X
-Specialist Copay: $X
-Emergency Room Cost: $X
-Urgent Care Cost: $X
-Prescription Drug Coverage: [Formulary tier/coverage details]
-Pediatric Dental & Vision: [Included/Not included for kids under 19]
-Adult Dental & Vision: [Add-on options available/costs]
+Monthly Premium: [exact value from content, or "Not listed in document"]
+Annual Deductible: [exact value from content, or "Not listed in document"]
+Out-of-Pocket Maximum: [exact value from content, or "Not listed in document"]
+Plan Type: [exact value from content, or "Not listed in document"]
+Network: [exact value from content, or "Not listed in document"]
+Primary Care Copay: [exact value from content, or "Not listed in document"]
+Specialist Copay: [exact value from content, or "Not listed in document"]
+Emergency Room Cost: [exact value from content, or "Not listed in document"]
+Urgent Care Cost: [exact value from content, or "Not listed in document"]
+Prescription Drug Coverage: [exact value from content, or "Not listed in document"]
+Pediatric Dental & Vision: [exact value from content, or "Not listed in document"]
+Adult Dental & Vision: [exact value from content, or "Not listed in document"]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-Create a realistic patient journey that shows how costs accumulate. Use 3-5 bullet points showing:
-• A typical doctor visit and what you'd pay
-• What happens if you need a specialist or test
-• How prescriptions work under this plan
-• A summary of total costs in this scenario
+Using ONLY the actual numbers found in this content, create a realistic patient journey. If deductible, copays, or coinsurance values aren't specified, state "cost details not provided in document" for those steps.
 
-CRITICAL: Only report information that is EXPLICITLY stated in the content. If a value is not provided, write "Not listed in document" instead of estimating or making up a number. NEVER guess or estimate any costs, copays, or plan details.
+• [Patient visits doctor - use the content's primary care copay, or state "copay not listed"]
+• [Patient needs a test/procedure - explain deductible impact using content's deductible, or state "deductible not listed"]
+• [Specialist visit - use content's specialist copay, or state "specialist copay not listed"]
+• [Prescription - use content's drug tier costs, or state "prescription costs not listed"]
+• SUMMARY: Total costs based ONLY on values explicitly stated in the content
+
+DO NOT invent any dollar amounts. If the content doesn't specify a cost, say "not listed in document" for that item.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
@@ -222,6 +226,8 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
       }
 
       const comparePrompt = `
+CRITICAL RULE - READ THIS FIRST: Only report information EXPLICITLY stated in the content. If ANY value is not provided, you MUST write "Not listed" for that field. NEVER estimate, guess, or infer any costs, premiums, copays, or plan details. When in doubt, write "Not listed".
+
 Compare these ${webpageContents.length} insurance plans and provide your response in this EXACT format with these 3 sections:
 
 ${webpageContents.map((wc, i) => `
@@ -230,35 +236,27 @@ ${wc.content}
 `).join('\n')}
 
 THE BOTTOM LINE
-Write a friendly, conversational summary explaining who should choose each plan. Use full sentences, not bullet points. Use this format as a guide:
-
-"These plans have different trade-offs. Here's who should pick each:
-
-Choose Plan A if you're young, healthy, and rarely visit the doctor. You'll pay less each month ($180 premium) but more out of pocket if something happens. This plan rewards people who don't use much healthcare.
-
-Choose Plan B if you have kids, ongoing prescriptions, or see doctors regularly. You'll pay more monthly ($320 premium) but your visits and medications cost less. This plan is better if you actually use your insurance."
-
-Write 1 paragraph per plan explaining who it's best for and why, using specific dollar amounts. Be warm and helpful, like you're explaining to a friend.
+Write a friendly, conversational summary explaining who should choose each plan. Use full sentences, not bullet points. Write 1 paragraph per plan explaining who it's best for and why. Only mention specific dollar amounts that are EXPLICITLY stated in the content. If a cost isn't listed, don't mention it.
 
 SIDE-BY-SIDE NUMBERS
 Create a comparison table with one row per line. Use this EXACT format with | as separator:
 
 Category | Plan A | Plan B
-Monthly Premium | $180 | $320
-Annual Deductible | $2,000 | $500
-Out-of-Pocket Maximum | $6,500 | $4,000
-Coinsurance | 20% after deductible | 10% after deductible
-Plan Type | PPO | HMO
-Network | Cigna | Kaiser
-Primary Care | $40 copay | $20 copay
-Specialist | $60 copay | 20% coinsurance
-Emergency Room | $300 + 20% | $150 copay
-Urgent Care | $50 copay | $30 copay
-Prescription Drugs | $15/$45/$80 tiers | $10/$30/$60 tiers
-Pediatric Dental & Vision | Included | Included
-Adult Dental & Vision | Add-on available | Not included
+Monthly Premium | [value or "Not listed"] | [value or "Not listed"]
+Annual Deductible | [value or "Not listed"] | [value or "Not listed"]
+Out-of-Pocket Maximum | [value or "Not listed"] | [value or "Not listed"]
+Coinsurance | [value or "Not listed"] | [value or "Not listed"]
+Plan Type | [value or "Not listed"] | [value or "Not listed"]
+Network | [value or "Not listed"] | [value or "Not listed"]
+Primary Care | [value or "Not listed"] | [value or "Not listed"]
+Specialist | [value or "Not listed"] | [value or "Not listed"]
+Emergency Room | [value or "Not listed"] | [value or "Not listed"]
+Urgent Care | [value or "Not listed"] | [value or "Not listed"]
+Prescription Drugs | [value or "Not listed"] | [value or "Not listed"]
+Pediatric Dental & Vision | [value or "Not listed"] | [value or "Not listed"]
+Adult Dental & Vision | [value or "Not listed"] | [value or "Not listed"]
 
-Include all 13 categories above. For costs, include copays ($X), coinsurance (X%), or both (e.g., "$300 + 20%") - whatever the plan specifies. Use "Not listed" if a value isn't in the document. Each row MUST have the category name, then |, then Plan A value, then |, then Plan B value.
+Include all 13 categories above. For costs, include copays ($X), coinsurance (X%), or both (e.g., "$300 + 20%") - whatever the plan specifies. Use "Not listed" if a value isn't in the content. DO NOT estimate or guess any values. Each row MUST have the category name, then |, then Plan A value, then |, then Plan B value.
 
 PLAN DETAILS
 For each plan, provide a card with key info:
@@ -267,13 +265,13 @@ ${webpageContents.map((wc, i) => `PLAN ${String.fromCharCode(65 + i)} (${new URL
 Best for: [One sentence describing the ideal person for this plan]
 
 Key Numbers:
-• Monthly Premium (what you pay every month): $X
-• Annual Deductible (what you pay before insurance kicks in): $X
-• Out-of-Pocket Max (the most you'd pay in a year): $X
-• Primary Care Visit: $X
-• Specialist Visit: $X
-• Emergency Room: $X
-• Urgent Care: $X
+• Monthly Premium (what you pay every month): [exact value from content, or "Not listed"]
+• Annual Deductible (what you pay before insurance kicks in): [exact value from content, or "Not listed"]
+• Out-of-Pocket Max (the most you'd pay in a year): [exact value from content, or "Not listed"]
+• Primary Care Visit: [exact value from content, or "Not listed"]
+• Specialist Visit: [exact value from content, or "Not listed"]
+• Emergency Room: [exact value from content, or "Not listed"]
+• Urgent Care: [exact value from content, or "Not listed"]
 
 CHOOSE THIS PLAN IF:
 • [Specific life situation where this plan wins]
@@ -285,8 +283,6 @@ WATCH OUT FOR:
 • [Situations where this plan costs more]
 • [Important coverage gaps to know about]
 `).join('\n')}
-
-CRITICAL: Only report information that is EXPLICITLY stated in the documents. If a value is not provided, write "Not listed" instead of estimating. NEVER guess or make up numbers.
 
 Write in a warm, helpful tone like you're explaining to a friend who doesn't know much about insurance. Use proper terms (like "deductible") but briefly explain what they mean in parentheses the first time. NEVER use asterisks (*) - use bullet points (•) only.
 `
