@@ -13,7 +13,7 @@ export default function Home() {
   const [uploadResults, setUploadResults] = useState<any>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
-  const { user, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
 
   const handleFileUpload = (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files])
@@ -57,7 +57,11 @@ export default function Home() {
         setIsAnalyzing(true)
       }
 
-      const result = await uploadDocuments(uploadedFiles, [], user?.uid || 'anonymous-user', analysisMode)
+      // User should always have a UID (either real or anonymous)
+      if (!user?.uid) {
+        throw new Error('Not authenticated. Please refresh the page.')
+      }
+      const result = await uploadDocuments(uploadedFiles, [], user.uid, analysisMode)
       
       setUploadResults({
         success: true,
@@ -215,7 +219,7 @@ export default function Home() {
             <div className="text-center">
               <button
                 onClick={handleUpload}
-                disabled={!canUpload || isUploading}
+                disabled={!canUpload || isUploading || loading}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-8 py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
 {isAnalyzing 
