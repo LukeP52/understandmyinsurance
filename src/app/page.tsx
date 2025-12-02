@@ -27,13 +27,43 @@ export default function Home() {
       ? `insurance-analysis-${uploadResults.data.files[0].name.replace('.pdf', '')}.pdf`
       : `insurance-analysis-${new Date().toISOString().split('T')[0]}.pdf`
 
+    // Clone the element to add print-specific styles
+    const element = resultsRef.current.cloneNode(true) as HTMLElement
+
+    // Add styles to prevent content from being cut off
+    const style = document.createElement('style')
+    style.textContent = `
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      div, table, tr, p, h1, h2, h3, h4, h5, h6 {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      table {
+        page-break-before: auto !important;
+      }
+      tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+      }
+      .space-y-8 > div {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 20px !important;
+      }
+    `
+    element.prepend(style)
+
     html2pdf().set({
-      margin: [10, 10, 10, 10],
+      margin: [15, 10, 15, 10],
       filename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-    }).from(resultsRef.current).save()
+      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    } as any).from(element).save()
   }
 
   const handleFileUpload = (files: File[]) => {
