@@ -276,68 +276,178 @@ export default function Home() {
                     </div>
                     <div className="space-y-8">
                       {/* Check if this is a comparison result */}
-                      {uploadResults.data.analysis.text.includes('PLAN RECOMMENDATIONS') ? (
-                        // Render simple comparison format - just plan paragraphs
+                      {uploadResults.data.analysis.text.includes('WHICH PLAN FITS YOU?') || uploadResults.data.analysis.text.includes('PLAN RECOMMENDATIONS') ? (
+                        // Render comparison format with 4 sections
                         (() => {
                           const analysisText = uploadResults.data.analysis.text
-                          
-                          // Parse summary section
-                          const summaryMatch = analysisText.match(/COMPARISON SUMMARY\n([\s\S]*?)\n\nPLAN COMPARISON TABLE/)
-                          const summary = summaryMatch ? summaryMatch[1].trim() : ''
-                          
-                          // Parse comparison table section
-                          const tableMatch = analysisText.match(/PLAN COMPARISON TABLE\n([\s\S]*?)\n\nPLAN RECOMMENDATIONS/)
-                          const tableData = tableMatch ? tableMatch[1].trim().split('\n').filter((line: string) => line.trim()) : []
-                          
-                          // More robust parsing - look for Plan A, Plan B, etc lines
-                          const planLines = analysisText.split('\n').filter((line: string) => 
-                            line.trim() && 
-                            (line.startsWith('Plan A') || line.startsWith('Plan B') || line.startsWith('Plan C') || line.startsWith('Plan D')) &&
-                            line.includes(':')
-                          )
-                          
+
+                          // Helper to extract section content
+                          const extractSection = (start: string, possibleEnds: string[]) => {
+                            const startIndex = analysisText.indexOf(start)
+                            if (startIndex === -1) return ''
+
+                            let endIndex = analysisText.length
+                            for (const end of possibleEnds) {
+                              const idx = analysisText.indexOf(end, startIndex + start.length)
+                              if (idx !== -1 && idx < endIndex) endIndex = idx
+                            }
+                            return analysisText.substring(startIndex + start.length, endIndex).trim()
+                          }
+
+                          // Parse the 4 new sections
+                          const whichPlanSection = extractSection('WHICH PLAN FITS YOU?', ['CATEGORY WINNERS', 'SAME SCENARIO'])
+                          const categoryWinnersSection = extractSection('CATEGORY WINNERS', ['SAME SCENARIO', 'PLAN DETAILS'])
+                          const scenarioSection = extractSection('SAME SCENARIO, DIFFERENT COSTS', ['PLAN DETAILS'])
+                          const planDetailsSection = extractSection('PLAN DETAILS', [])
+
+                          // Parse individual plan cards from PLAN DETAILS
+                          const planCards: { name: string; content: string }[] = []
+                          const planMatches = planDetailsSection.matchAll(/PLAN ([A-D]) \(([^)]+)\)([\s\S]*?)(?=PLAN [A-D] \(|$)/g)
+                          for (const match of planMatches) {
+                            planCards.push({
+                              name: `Plan ${match[1]} (${match[2]})`,
+                              content: match[3].trim()
+                            })
+                          }
+
                           return (
-                            <div className="space-y-6">
-                              {/* Summary paragraph */}
-                              {summary && (
-                                <div className="mb-8">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-3">Plan Comparison Overview</h3>
-                                  <p className="text-gray-700 leading-relaxed">{summary}</p>
+                            <div className="space-y-8">
+                              {/* Which Plan Fits You? */}
+                              {whichPlanSection && (
+                                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-blue-100">
+                                    Which Plan Fits You?
+                                  </h4>
+                                  <div className="space-y-3">
+                                    {whichPlanSection.split('\n').map((line: string, lineIndex: number) => (
+                                      line.trim() && (
+                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start">
+                                          <span className="text-blue-600 mr-3 mt-1 font-bold">→</span>
+                                          <span className="font-medium">{line.replace(/^[•→]\s*/, '')}</span>
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
                                 </div>
                               )}
-                              
-                              {/* Simple plan paragraphs - no colors, no boxes */}
-                              {planLines.map((rec: string, index: number) => {
-                                if (rec.includes(':') && rec.trim()) {
-                                  const colonIndex = rec.indexOf(':')
-                                  const planName = rec.substring(0, colonIndex).trim()
-                                  const recommendation = rec.substring(colonIndex + 1).trim()
-                                  return (
-                                    <div key={index} className="mb-6">
-                                      <h3 className="text-xl font-bold text-gray-900 mb-3">{planName}</h3>
-                                      <p className="text-gray-700 leading-relaxed">{recommendation}</p>
-                                    </div>
-                                  )
-                                }
-                                return null
-                              })}
-                              
-                              {/* Comparison table at the end */}
-                              {tableData.length > 0 && (
-                                <div className="mt-8">
-                                  <h3 className="text-xl font-bold text-gray-900 mb-4">Plan Details Comparison</h3>
-                                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                    {tableData.map((line: string, index: number) => {
-                                      const [feature, ...values] = line.split(': ')
-                                      const valueString = values.join(': ')
+
+                              {/* Category Winners */}
+                              {categoryWinnersSection && (
+                                <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-amber-100">
+                                    Category Winners
+                                  </h4>
+                                  <div className="space-y-2">
+                                    {categoryWinnersSection.split('\n').map((line: string, lineIndex: number) => {
+                                      if (!line.trim()) return null
+                                      const cleanLine = line.replace(/^[•]\s*/, '')
                                       return (
-                                        <div key={index} className="flex justify-between py-2 border-b border-gray-200 last:border-b-0">
-                                          <span className="font-medium text-gray-900 w-1/3">{feature}:</span>
-                                          <span className="text-gray-700 w-2/3">{valueString}</span>
+                                        <div key={lineIndex} className="text-gray-700 leading-relaxed flex items-start py-1 border-b border-amber-100 last:border-b-0">
+                                          <span className="text-amber-600 mr-3 font-bold">🏆</span>
+                                          <span className="font-medium">{cleanLine}</span>
                                         </div>
                                       )
                                     })}
                                   </div>
+                                </div>
+                              )}
+
+                              {/* Same Scenario, Different Costs */}
+                              {scenarioSection && (
+                                <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6 shadow-lg">
+                                  <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-purple-100">
+                                    Same Scenario, Different Costs
+                                  </h4>
+                                  <div className="space-y-2 whitespace-pre-line text-gray-700 leading-relaxed">
+                                    {scenarioSection.split('\n').map((line: string, lineIndex: number) => {
+                                      if (!line.trim()) return <br key={lineIndex} />
+                                      // Highlight the "best for this scenario" line
+                                      if (line.includes('← Best') || line.includes('←')) {
+                                        return (
+                                          <div key={lineIndex} className="font-bold text-purple-700 bg-purple-100 px-2 py-1 rounded">
+                                            {line}
+                                          </div>
+                                        )
+                                      }
+                                      // Style the "Why the difference" explanation
+                                      if (line.toLowerCase().startsWith('why')) {
+                                        return (
+                                          <div key={lineIndex} className="mt-4 italic text-gray-600 border-l-4 border-purple-300 pl-3">
+                                            {line}
+                                          </div>
+                                        )
+                                      }
+                                      return <div key={lineIndex}>{line}</div>
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Plan Details Cards */}
+                              {planCards.length > 0 && (
+                                <div className="space-y-6">
+                                  <h4 className="text-xl font-bold text-gray-900">Plan Details</h4>
+                                  {planCards.map((card, index) => {
+                                    const lines = card.content.split('\n').filter((l: string) => l.trim())
+                                    const bestFor = lines.find((l: string) => l.toLowerCase().startsWith('best for'))
+                                    const chooseIfStart = lines.findIndex((l: string) => l.includes('CHOOSE IF'))
+                                    const watchOutStart = lines.findIndex((l: string) => l.includes('WATCH OUT'))
+
+                                    return (
+                                      <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                        <h5 className="text-lg font-bold text-gray-900 mb-2">{card.name}</h5>
+                                        {bestFor && (
+                                          <p className="text-gray-600 italic mb-4">{bestFor.replace(/^best for:\s*/i, 'Best for: ')}</p>
+                                        )}
+
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                          {/* Key Numbers */}
+                                          <div className="bg-gray-50 rounded-lg p-4">
+                                            <h6 className="font-semibold text-gray-800 mb-2">Key Numbers</h6>
+                                            {lines.filter((l: string) =>
+                                              l.includes('$') && !l.includes('CHOOSE') && !l.includes('WATCH')
+                                            ).slice(0, 7).map((l: string, i: number) => (
+                                              <div key={i} className="text-sm text-gray-700 py-1 border-b border-gray-200 last:border-b-0">
+                                                {l.replace(/^[•]\s*/, '')}
+                                              </div>
+                                            ))}
+                                          </div>
+
+                                          {/* Choose If / Watch Out */}
+                                          <div className="space-y-4">
+                                            {chooseIfStart !== -1 && (
+                                              <div className="bg-green-50 rounded-lg p-4">
+                                                <h6 className="font-semibold text-green-800 mb-2">✓ Choose If</h6>
+                                                {lines.slice(chooseIfStart + 1, watchOutStart !== -1 ? watchOutStart : undefined)
+                                                  .filter((l: string) => l.trim() && !l.includes('WATCH'))
+                                                  .slice(0, 3)
+                                                  .map((l: string, i: number) => (
+                                                    <div key={i} className="text-sm text-gray-700 py-1">
+                                                      {l.replace(/^[•]\s*/, '• ')}
+                                                    </div>
+                                                  ))
+                                                }
+                                              </div>
+                                            )}
+                                            {watchOutStart !== -1 && (
+                                              <div className="bg-red-50 rounded-lg p-4">
+                                                <h6 className="font-semibold text-red-800 mb-2">⚠ Watch Out</h6>
+                                                {lines.slice(watchOutStart + 1)
+                                                  .filter((l: string) => l.trim())
+                                                  .slice(0, 3)
+                                                  .map((l: string, i: number) => (
+                                                    <div key={i} className="text-sm text-gray-700 py-1">
+                                                      {l.replace(/^[•]\s*/, '• ')}
+                                                    </div>
+                                                  ))
+                                                }
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
                                 </div>
                               )}
                             </div>

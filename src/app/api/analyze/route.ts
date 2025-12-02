@@ -187,47 +187,80 @@ IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and defin
         })
       }
 
-      let comparePrompt = `
-Compare these insurance plans and provide your response in this EXACT format:
+      const comparePrompt = `
+Compare these ${fileData.length} insurance plans and provide your response in this EXACT format with these 4 sections:
 
-COMPARISON SUMMARY
-[Write a 3-4 sentence paragraph explaining the key differences between these plans and which types of consumers should choose each one. For example: young/healthy people, families with children, people with chronic conditions, budget-conscious consumers, etc.]
+WHICH PLAN FITS YOU?
+Match user types to specific plans. Use this format as a guide:
 
-PLAN COMPARISON TABLE
-Monthly Premium: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Annual Deductible: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Out-of-Pocket Maximum: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Plan Type: Plan A: [HMO/PPO] | Plan B: [HMO/PPO]${fileData.length > 2 ? ' | Plan C: [HMO/PPO]' : ''}${fileData.length > 3 ? ' | Plan D: [HMO/PPO]' : ''}
-Network: Plan A: [Insurance company] | Plan B: [Insurance company]${fileData.length > 2 ? ' | Plan C: [Insurance company]' : ''}${fileData.length > 3 ? ' | Plan D: [Insurance company]' : ''}
-Primary Care Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Specialist Copay: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Emergency Room Cost: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Urgent Care Cost: Plan A: $X | Plan B: $X${fileData.length > 2 ? ' | Plan C: $X' : ''}${fileData.length > 3 ? ' | Plan D: $X' : ''}
-Prescription Drug Coverage: Plan A: [Coverage details] | Plan B: [Coverage details]${fileData.length > 2 ? ' | Plan C: [Coverage details]' : ''}${fileData.length > 3 ? ' | Plan D: [Coverage details]' : ''}
-Pediatric Dental & Vision: Plan A: [Y/N] | Plan B: [Y/N]${fileData.length > 2 ? ' | Plan C: [Y/N]' : ''}${fileData.length > 3 ? ' | Plan D: [Y/N]' : ''}
-Adult Dental & Vision: Plan A: [Available/Cost] | Plan B: [Available/Cost]${fileData.length > 2 ? ' | Plan C: [Available/Cost]' : ''}${fileData.length > 3 ? ' | Plan D: [Available/Cost]' : ''}
+• Young & healthy, want lowest monthly cost → Plan A ($180/month, but $2,000 deductible)
+• Family with kids needing regular checkups → Plan B (lower copays, pediatric dental included)
+• Chronic condition or lots of prescriptions → Plan B (lower drug costs, $500 deductible)
+• Want balance of cost and coverage → Plan A (mid-range premium, decent coverage)
 
-PLAN RECOMMENDATIONS
-Plan A (${fileData[0]?.name || 'First Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
+Write 3-5 bullets matching real user situations to specific plans with key numbers.
 
-Plan B (${fileData[1]?.name || 'Second Plan'}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
-`
+CATEGORY WINNERS
+Show which plan wins in each important category. Use this format:
 
-      // Add additional plans only if they exist
-      if (fileData.length > 2) {
-        comparePrompt += `
-Plan C (${fileData[2].name}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
-`
-      }
-      
-      if (fileData.length > 3) {
-        comparePrompt += `
-Plan D (${fileData[3].name}): This plan would be good to choose if [explain who should choose this and why, include specific costs like premium and deductible]. [Add 2-3 sentences about the main benefits and coverage features]. However, watch out for [describe main downsides, limitations, or higher costs]. [Include total paragraph length of 4-6 sentences with specific details].
-`
-      }
-      
-      comparePrompt += `
-Use simple language. Keep sentences under 40 words.
+• Lowest Monthly Premium: Plan A ($180/month)
+• Lowest Deductible: Plan B ($500 vs $2,000)
+• Lowest Out-of-Pocket Max: Plan B ($4,000 vs $6,500)
+• Best for Doctor Visits: Plan B ($20 copay vs $40)
+• Best for Prescriptions: Plan B (Tier 1: $10, Tier 2: $35)
+• Best for Emergencies: Plan B ($150 ER copay vs $300)
+
+Include 6-8 categories with the winning plan and specific dollar amounts. Always show the comparison.
+
+SAME SCENARIO, DIFFERENT COSTS
+Pick a realistic medical scenario relevant to these plans (minor injury, managing a condition, having a baby, etc.) and show what each plan would cost. Use this format as a guide:
+
+Scenario: Treating a Sprained Ankle
+(Urgent care visit + X-ray + follow-up appointment + prescription pain medication)
+
+• Plan A: $850 total out of pocket
+  - Urgent care: $75 copay
+  - X-ray: $400 (applied to $2,000 deductible)
+  - Follow-up: $40 copay
+  - Medication: $35 (Tier 2)
+
+• Plan B: $185 total out of pocket ← Best for this scenario
+  - Urgent care: $50 copay
+  - X-ray: $45 (already met $500 deductible, 10% coinsurance)
+  - Follow-up: $20 copay
+  - Medication: $25 (Tier 2)
+
+Why the difference: Plan A's higher deductible means the X-ray cost hits you directly, while Plan B's lower deductible was already met.
+
+Choose a scenario that highlights meaningful differences between these specific plans. Show the math for each plan.
+
+PLAN DETAILS
+For each plan, provide a scannable card format:
+
+${fileData.map((f, i) => `PLAN ${String.fromCharCode(65 + i)} (${f.name})
+Best for: [One line describing ideal user]
+
+Key Numbers:
+• Monthly Premium: $X
+• Annual Deductible: $X
+• Out-of-Pocket Max: $X
+• Primary Care: $X copay
+• Specialist: $X copay
+• ER: $X
+• Urgent Care: $X
+
+CHOOSE IF:
+• [Specific situation where this plan wins]
+• [Another advantage]
+• [Cost benefit]
+
+WATCH OUT:
+• [Main downside or limitation]
+• [Higher cost area]
+• [Coverage gap]
+`).join('\n')}
+
+IMPORTANT: Use simple language. Keep sentences under 40 words. NEVER use asterisks (*) - use bullet points (•) only. Include specific dollar amounts throughout.
 `
 
       // Send all files to Gemini for comparison
