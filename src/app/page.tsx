@@ -30,12 +30,16 @@ export default function Home() {
     // Clone the element to add print-specific styles
     const element = resultsRef.current.cloneNode(true) as HTMLElement
 
-    // Add styles to prevent content from being cut off
+    // Add styles to prevent content from being cut off and fix text rendering
     const style = document.createElement('style')
     style.textContent = `
       * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+      }
+      h1, h2, h3, h4, h5, h6, p, span, div {
+        letter-spacing: normal !important;
+        word-spacing: normal !important;
       }
       div, table, tr, p, h1, h2, h3, h4, h5, h6 {
         page-break-inside: avoid !important;
@@ -52,6 +56,9 @@ export default function Home() {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
         margin-bottom: 20px !important;
+      }
+      button {
+        display: none !important;
       }
     `
     element.prepend(style)
@@ -602,49 +609,37 @@ export default function Home() {
                                         )}
 
                                         <div className="grid md:grid-cols-2 gap-4">
-                                          {/* Key Numbers */}
-                                          <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="font-semibold text-gray-800 mb-2">Key Numbers</h6>
-                                            {lines.filter((l: string) =>
-                                              (l.includes('$') || l.includes('Not listed')) && !l.includes('CHOOSE') && !l.includes('WATCH')
-                                            ).slice(0, 7).map((l: string, i: number) => (
-                                              <div key={i} className="text-sm text-gray-700 py-1 border-b border-gray-200 last:border-b-0">
-                                                {l.replace(/^[•]\s*/, '')}
-                                              </div>
-                                            ))}
-                                          </div>
+                                          {/* Choose This Plan If */}
+                                          {chooseIfStart !== -1 && (
+                                            <div className="bg-green-50 rounded-lg p-4">
+                                              <h6 className="font-semibold text-green-800 mb-2">Choose This Plan If</h6>
+                                              {lines.slice(chooseIfStart + 1, watchOutStart !== -1 ? watchOutStart : undefined)
+                                                .filter((l: string) => l.trim() && !l.includes('WATCH'))
+                                                .slice(0, 3)
+                                                .map((l: string, i: number) => (
+                                                  <div key={i} className="text-sm text-gray-700 py-1">
+                                                    {l.replace(/^[•]\s*/, '• ')}
+                                                  </div>
+                                                ))
+                                              }
+                                            </div>
+                                          )}
 
-                                          {/* Choose If / Watch Out */}
-                                          <div className="space-y-4">
-                                            {chooseIfStart !== -1 && (
-                                              <div className="bg-green-50 rounded-lg p-4">
-                                                <h6 className="font-semibold text-green-800 mb-2">Choose This Plan If</h6>
-                                                {lines.slice(chooseIfStart + 1, watchOutStart !== -1 ? watchOutStart : undefined)
-                                                  .filter((l: string) => l.trim() && !l.includes('WATCH'))
-                                                  .slice(0, 3)
-                                                  .map((l: string, i: number) => (
-                                                    <div key={i} className="text-sm text-gray-700 py-1">
-                                                      {l.replace(/^[•]\s*/, '• ')}
-                                                    </div>
-                                                  ))
-                                                }
-                                              </div>
-                                            )}
-                                            {watchOutStart !== -1 && (
-                                              <div className="bg-red-50 rounded-lg p-4">
-                                                <h6 className="font-semibold text-red-800 mb-2">Watch Out For</h6>
-                                                {lines.slice(watchOutStart + 1)
-                                                  .filter((l: string) => l.trim())
-                                                  .slice(0, 3)
-                                                  .map((l: string, i: number) => (
-                                                    <div key={i} className="text-sm text-gray-700 py-1">
-                                                      {l.replace(/^[•]\s*/, '• ')}
-                                                    </div>
-                                                  ))
-                                                }
-                                              </div>
-                                            )}
-                                          </div>
+                                          {/* Watch Out For */}
+                                          {watchOutStart !== -1 && (
+                                            <div className="bg-red-50 rounded-lg p-4">
+                                              <h6 className="font-semibold text-red-800 mb-2">Watch Out For</h6>
+                                              {lines.slice(watchOutStart + 1)
+                                                .filter((l: string) => l.trim())
+                                                .slice(0, 3)
+                                                .map((l: string, i: number) => (
+                                                  <div key={i} className="text-sm text-gray-700 py-1">
+                                                    {l.replace(/^[•]\s*/, '• ')}
+                                                  </div>
+                                                ))
+                                              }
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     )
