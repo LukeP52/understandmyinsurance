@@ -1,6 +1,6 @@
 import { storage, db } from './firebase'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
+import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 
 interface UploadResult {
   id: string
@@ -61,8 +61,7 @@ export async function uploadDocuments(
       }
 
       // Update document with file info
-      await addDoc(collection(db, 'documents'), {
-        ...docData,
+      await updateDoc(doc(db, 'documents', docRef.id), {
         file: uploadedFileData,
         status: 'completed'
       })
@@ -118,8 +117,7 @@ export async function uploadDocuments(
       }
 
       // Update document with all files info
-      await addDoc(collection(db, 'documents'), {
-        ...docData,
+      await updateDoc(doc(db, 'documents', docRef.id), {
         files: uploadedFiles,
         status: 'completed'
       })

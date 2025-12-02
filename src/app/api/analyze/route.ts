@@ -1,9 +1,39 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
-import { getDownloadURL, ref } from 'firebase/storage'
-import { storage } from '@/lib/firebase'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
+const RATE_LIMIT = 10 // requests per minute
+const RATE_WINDOW = 60 * 1000 // 1 minute in ms
+
+function isRateLimited(userId: string): boolean {
+  const now = Date.now()
+  const userLimit = rateLimitMap.get(userId)
+
+  if (!userLimit || now > userLimit.resetTime) {
+    rateLimitMap.set(userId, { count: 1, resetTime: now + RATE_WINDOW })
+    return false
+  }
+
+  if (userLimit.count >= RATE_LIMIT) {
+    return true
+  }
+
+  userLimit.count++
+  return false
+}
+
+// Validate URL is from Firebase Storage
+function isValidStorageUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+    return parsed.hostname === 'firebasestorage.googleapis.com'
+  } catch {
+    return false
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,10 +49,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { fileUrl, fileName, userId, files, mode = 'single' } = body
 
+    // Check rate limit
+    if (!userId || isRateLimited(userId)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait a minute before trying again.' },
+        { status: 429 }
+      )
+    }
+
     if (mode === 'single') {
       if (!fileUrl || !fileName || !userId) {
         return NextResponse.json(
           { error: 'Missing required fields: fileUrl, fileName, userId' },
+          { status: 400 }
+        )
+      }
+      // Validate URL is from Firebase Storage (SSRF protection)
+      if (!isValidStorageUrl(fileUrl)) {
+        return NextResponse.json(
+          { error: 'Invalid file URL' },
           { status: 400 }
         )
       }
@@ -33,6 +78,15 @@ export async function POST(request: NextRequest) {
           { error: 'Missing required fields for comparison: files, userId' },
           { status: 400 }
         )
+      }
+      // Validate all URLs are from Firebase Storage (SSRF protection)
+      for (const file of files) {
+        if (!isValidStorageUrl(file.url)) {
+          return NextResponse.json(
+            { error: 'Invalid file URL' },
+            { status: 400 }
+          )
+        }
       }
       console.log('Starting comparison analysis for', files.length, 'files')
     }
