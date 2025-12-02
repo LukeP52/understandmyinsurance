@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import {
   User,
   signInWithEmailAndPassword,
@@ -26,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const isSigningOut = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -45,6 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(currentUser);
         setLoading(false);
       } else {
+        // Only auto sign-in anonymously if user didn't intentionally sign out
+        if (isSigningOut.current) {
+          isSigningOut.current = false;
+          setUser(null);
+          setLoading(false);
+          return;
+        }
         // No user signed in - sign in anonymously
         try {
           await signInAnonymously(auth);
@@ -72,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    isSigningOut.current = true;
     await firebaseSignOut(auth);
   };
 

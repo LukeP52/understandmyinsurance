@@ -1,5 +1,5 @@
 import { storage, db } from './firebase'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 
 interface UploadResult {
@@ -88,6 +88,13 @@ export async function uploadDocuments(
               text: analysisResult.analysis,
               analyzedAt: analysisResult.analyzedAt
             }
+
+            // Delete PDF from storage after successful analysis
+            try {
+              await deleteObject(storageRef)
+            } catch (deleteError) {
+              console.error('Failed to delete file after analysis:', deleteError)
+            }
           }
         } catch (error) {
           console.error('Analysis failed:', error)
@@ -142,6 +149,17 @@ export async function uploadDocuments(
           analysis = {
             text: analysisResult.analysis,
             analyzedAt: analysisResult.analyzedAt
+          }
+
+          // Delete all PDFs from storage after successful analysis
+          for (let i = 0; i < files.length; i++) {
+            try {
+              const fileName = `${docRef.id}_${i}_${files[i].name}`
+              const fileRef = ref(storage, `users/${userId}/${fileName}`)
+              await deleteObject(fileRef)
+            } catch (deleteError) {
+              console.error('Failed to delete file after analysis:', deleteError)
+            }
           }
         }
       } catch (error) {
