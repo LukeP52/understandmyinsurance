@@ -38,8 +38,9 @@ export default function Home() {
         print-color-adjust: exact !important;
       }
       h1, h2, h3, h4, h5, h6, p, span, div {
-        letter-spacing: normal !important;
-        word-spacing: normal !important;
+        letter-spacing: 0 !important;
+        word-spacing: 0.25em !important;
+        white-space: pre-wrap !important;
       }
       div, table, tr, p, h1, h2, h3, h4, h5, h6 {
         page-break-inside: avoid !important;
