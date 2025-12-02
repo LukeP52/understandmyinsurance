@@ -623,7 +623,7 @@ export default function Home() {
                             // What's Good section
                             if (section.startsWith("WHAT'S GOOD ABOUT THIS PLAN")) {
                               return (
-                                <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     What's Good About This Plan
                                   </h4>
@@ -644,7 +644,7 @@ export default function Home() {
                             // What to Watch Out For section
                             if (section.startsWith('WHAT TO WATCH OUT FOR')) {
                               return (
-                                <div key={index} className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
+                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     What to Watch Out For
                                   </h4>
@@ -683,7 +683,7 @@ export default function Home() {
                               }
                               
                               return (
-                                <div key={index} className="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 shadow-lg">
+                                <div key={index} className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-lg">
                                   <h4 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
                                     Plan Details
                                   </h4>
