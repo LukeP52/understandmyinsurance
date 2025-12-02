@@ -138,7 +138,19 @@ Pediatric Dental & Vision: [Included/Not included for kids under 19]
 Adult Dental & Vision: [Add-on options available/costs]
 
 REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
-A real world care scenario with 3 to 5 bullets that shows a simple patient journey with specific costs. Include dollar amounts for key steps and have the last bullet be a summary of total costs from the example.
+Create a realistic patient journey that shows how costs accumulate. Use this format as a guide:
+
+• Sarah has met $200 of her $1,500 deductible so far this year. She visits her doctor for persistent headaches and pays her $25 primary care copay.
+
+• Her doctor orders an MRI ($800 billed). Since Sarah has $1,300 remaining on her deductible, she pays the full $800. Her deductible is now $500 away from being met.
+
+• The MRI reveals a minor issue requiring a specialist. Sarah sees a neurologist and pays her $50 specialist copay. The specialist prescribes medication.
+
+• At the pharmacy, her Tier 2 brand-name medication costs $45 copay per month.
+
+• SUMMARY: Sarah paid $920 total ($25 + $800 + $50 + $45). She still has $500 left on her deductible before her plan starts covering 80% of costs. Her monthly prescriptions will continue at $45 until she hits her $6,000 out-of-pocket maximum.
+
+Adapt this style using the ACTUAL numbers and features from this specific plan. Show where the patient starts financially, explain why they pay what they pay at each step, track their deductible progress, and end with a summary of total paid plus what happens going forward.
 
 IMPORTANT: Keep ALL sentences to 40 words or less. Use simple language and define insurance terms in parentheses. NEVER use asterisks (*) anywhere in your response. Use bullet points (•) for all sections. Each bullet point must cover a DIFFERENT topic - no repetition.
 `
