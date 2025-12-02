@@ -146,12 +146,12 @@ REAL-WORLD SCENARIO: HOW THIS PLAN WORKS
 Create a realistic patient journey showing how costs accumulate, using ONLY values from this document.
 
 Structure your scenario like this:
-• Start with a patient who has met some of their deductible (use the document's actual deductible amount)
-• Show a primary care visit (use the document's actual copay)
+• Start with Sarah, who has already met $X of her $Y deductible (use the document's actual deductible amount)
+• Show Sarah's primary care visit (use the document's actual copay)
 • Show a procedure/test that applies to the deductible (use actual coinsurance if listed)
-• Show a specialist visit (use actual specialist copay)
+• Show Sarah's specialist visit (use actual specialist copay)
 • Show a prescription (use actual drug tier costs)
-• End with a SUMMARY totaling what the patient paid
+• End with a SUMMARY totaling what Sarah paid
 
 IMPORTANT: Only include steps where you have real numbers from the document. Skip any step where the cost isn't specified - don't write "not listed" in the middle of the scenario. If most costs are missing, write a shorter scenario using only what's available. NEVER invent or estimate dollar amounts.
 

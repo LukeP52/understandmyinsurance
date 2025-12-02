@@ -764,26 +764,31 @@ export default function Home() {
                             if (section.startsWith('REAL-WORLD SCENARIO')) {
                               // Remove the header and get the content
                               const content = section.replace(/^REAL-WORLD SCENARIO[^\n]*\n?/, '').trim()
-                              
+                              const steps = content.split('\n').filter((line: string) => line.trim())
+
                               return (
-                                <div key={index} className="mb-8">
-                                  <h4 className="text-xl font-bold text-gray-900 mb-4">
+                                <div key={index} className="bg-white border-l-4 border-l-black border border-gray-200 rounded-lg p-6 shadow-md">
+                                  <h4 className="text-2xl font-black tracking-tight text-gray-900 mb-4 pb-3 border-b-2 border-black">
                                     Real-World Scenario
                                   </h4>
-                                  <div className="text-gray-700 leading-relaxed space-y-2">
-                                    {content.split('\n').map((line: string, lineIndex: number) => {
-                                      const trimmedLine = line.trim()
+                                  <div className="space-y-1">
+                                    {steps.map((line: string, stepIndex: number) => {
+                                      const trimmedLine = line.trim().replace(/^•\s*/, '')
                                       if (!trimmedLine) return null
-                                      
+                                      const isSummary = trimmedLine.toLowerCase().startsWith('summary')
+                                      const isLastStep = stepIndex === steps.length - 1
+
                                       return (
-                                        <div key={lineIndex}>
-                                          {trimmedLine.startsWith('•') ? (
-                                            <div className="flex items-start mb-2">
-                                              <span className="text-gray-600 mr-3 mt-1">•</span>
-                                              <span>{trimmedLine.replace('• ', '')}</span>
+                                        <div key={stepIndex}>
+                                          <div className={`p-4 rounded-lg ${isSummary ? 'bg-green-50 border border-green-200' : 'bg-gray-50'}`}>
+                                            <p className={`text-gray-700 ${isSummary ? 'font-semibold' : ''}`}>
+                                              {trimmedLine}
+                                            </p>
+                                          </div>
+                                          {!isLastStep && (
+                                            <div className="flex justify-center py-1">
+                                              <span className="text-gray-400 text-xl">↓</span>
                                             </div>
-                                          ) : (
-                                            <div className="mb-2">{trimmedLine}</div>
                                           )}
                                         </div>
                                       )
