@@ -264,10 +264,11 @@ export default function Home() {
       <Navigation onAuthClick={() => setShowAuthModal(true)} />
 
       {/* Insurance Type Tabs */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="container mx-auto px-4 py-3">
+      <div className="bg-gray-50 border-b-2 border-gray-200">
+        <div className="container mx-auto px-4 py-4">
+          <p className="text-center text-sm text-gray-500 mb-3 font-medium">Select your insurance type</p>
           <div className="flex justify-center">
-            <div className="bg-gray-100 rounded-lg p-1 inline-flex flex-wrap justify-center gap-1">
+            <div className="bg-white rounded-xl p-2 inline-flex flex-wrap justify-center gap-2 shadow-sm border border-gray-200">
               {[
                 { id: 'health', label: 'Health' },
                 { id: 'auto', label: 'Auto' },
@@ -278,10 +279,10 @@ export default function Home() {
                 <button
                   key={type.id}
                   onClick={() => setInsuranceType(type.id as InsuranceType)}
-                  className={`px-4 py-2 rounded-md font-medium transition-all duration-200 text-sm md:text-base ${
+                  className={`px-6 py-3 rounded-lg font-bold transition-all duration-200 text-base md:text-lg ${
                     insuranceType === type.id
-                      ? 'bg-black text-white shadow-md'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                      ? 'bg-black text-white shadow-lg scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:text-black hover:bg-gray-200 hover:scale-102'
                   }`}
                 >
                   {type.label}

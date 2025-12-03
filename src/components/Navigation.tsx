@@ -25,9 +25,24 @@ export default function Navigation({ onAuthClick }: NavigationProps) {
   return (
     <nav className="bg-white shadow-sm relative">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold text-black hover:text-gray-700 transition-colors">
-          Understand My Insurance
-        </Link>
+        <div className="flex items-center space-x-4">
+          {/* Hamburger menu button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            <div className="w-6 h-5 flex flex-col justify-between">
+              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </div>
+          </button>
+
+          <Link href="/" className="text-xl font-bold text-black hover:text-gray-700 transition-colors">
+            Understand My Insurance
+          </Link>
+        </div>
 
         <div className="flex items-center space-x-4">
           {/* Auth buttons */}
@@ -57,25 +72,12 @@ export default function Navigation({ onAuthClick }: NavigationProps) {
               </button>
             </div>
           )}
-
-          {/* Hamburger menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Toggle menu"
-          >
-            <div className="w-6 h-5 flex flex-col justify-between">
-              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></span>
-              <span className={`block h-0.5 w-6 bg-black transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-            </div>
-          </button>
         </div>
       </div>
 
       {/* Dropdown menu */}
       {isMenuOpen && (
-        <div className="absolute top-full right-0 w-64 bg-white shadow-lg border border-gray-200 rounded-b-lg z-50">
+        <div className="absolute top-full left-0 w-64 bg-white shadow-lg border border-gray-200 rounded-b-lg z-50">
           <div className="py-2">
             {menuLinks.map((link) => (
               <Link
