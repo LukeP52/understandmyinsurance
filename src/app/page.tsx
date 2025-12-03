@@ -295,11 +295,11 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-7xl font-black font-display text-black mb-6 tracking-tight">
-            UNDERSTAND<br />MY INSURANCE
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black font-display text-black mb-4 tracking-tight whitespace-nowrap">
+            UNDERSTAND MY INSURANCE
           </h1>
-          <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-gray-800 max-w-2xl mx-auto leading-relaxed">
             Upload your insurance documents or paste a link, and get a clear, plain-English breakdown of your coverage, costs, and what to watch out for.
           </p>
         </div>
