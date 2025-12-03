@@ -19,6 +19,7 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'single' | 'compare'>('single')
   const [insuranceType, setInsuranceType] = useState<InsuranceType>('health')
+  const [inputMode, setInputMode] = useState<'pdf' | 'url'>('pdf')
   const resultsRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
   const { user, loading } = useAuth()
@@ -335,53 +336,65 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Upload Instructions */}
-            <div className="text-center mb-6">
-              <p className="text-gray-600">
-                {analysisMode === 'single'
-                  ? 'Upload a PDF or paste a URL to get a detailed analysis of your insurance plan'
-                  : 'Upload 2-5 PDFs or URLs to compare different insurance plans side by side'
-                }
-              </p>
-            </div>
-
-            <div className="mb-6">
-              <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
-            </div>
-
-            {/* URL Input Section */}
-            <div className="mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">or paste a URL</span>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <input
-                  type="url"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
-                  onPaste={handleUrlPaste}
-                  placeholder="https://example.com/insurance-plan-details"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                />
+            {/* Input Mode Toggle */}
+            <div className="flex justify-center mb-6">
+              <div className="bg-gray-100 rounded-lg p-1 inline-flex">
                 <button
-                  onClick={() => handleAddUrl()}
-                  disabled={!urlInput.trim()}
-                  className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setInputMode('pdf')}
+                  className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                    inputMode === 'pdf'
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
                 >
-                  Add
+                  Upload PDF
+                </button>
+                <button
+                  onClick={() => setInputMode('url')}
+                  className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                    inputMode === 'url'
+                      ? 'bg-black text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Paste URL
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Paste a link to your insurance plan's Summary of Benefits page
-              </p>
             </div>
+
+            {/* PDF Upload Section */}
+            {inputMode === 'pdf' && (
+              <div className="mb-6">
+                <FileUpload onFileUpload={handleFileUpload} onAuthRequired={() => setShowAuthModal(true)} />
+              </div>
+            )}
+
+            {/* URL Input Section */}
+            {inputMode === 'url' && (
+              <div className="mb-6">
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddUrl()}
+                    onPaste={handleUrlPaste}
+                    placeholder="https://example.com/insurance-plan-details"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  />
+                  <button
+                    onClick={() => handleAddUrl()}
+                    disabled={!urlInput.trim()}
+                    className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Paste a link to your insurance plan's Summary of Benefits page
+                </p>
+              </div>
+            )}
 
             {/* Uploaded Files & URLs Summary */}
             {(uploadedFiles.length > 0 || addedUrls.length > 0) && (
