@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { uploadDocuments } from '@/lib/uploadService'
 import FileUpload from './components/FileUpload'
 import AuthModal from './components/Auth/AuthModal'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 import { InsuranceType } from '@/lib/prompts'
 
 export default function Home() {
@@ -19,7 +21,7 @@ export default function Home() {
   const [insuranceType, setInsuranceType] = useState<InsuranceType>('health')
   const resultsRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
-  const { user, loading, signOut } = useAuth()
+  const { user, loading } = useAuth()
 
   const handleDownloadPDF = async () => {
     if (!resultsRef.current || !uploadResults) return
@@ -258,41 +260,8 @@ export default function Home() {
   const canUpload = uploadedFiles.length > 0 || addedUrls.length > 0
 
   return (
-    <div className="min-h-screen bg-beige-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-black">Understand My Insurance</h1>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <span className="text-sm text-gray-600">Welcome, {user.email}</span>
-                <button 
-                  onClick={signOut}
-                  className="text-sm text-red-600 hover:text-red-800"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <div className="space-x-4">
-                <button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  Sign In
-                </button>
-                <button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                >
-                  Sign Up
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-beige-100 flex flex-col">
+      <Navigation onAuthClick={() => setShowAuthModal(true)} />
 
       {/* Insurance Type Tabs */}
       <div className="bg-gray-50 border-b border-gray-200">
@@ -884,10 +853,12 @@ export default function Home() {
         </div>
       </div>
 
+      <Footer />
+
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
       />
     </div>
   )
