@@ -297,7 +297,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black font-display text-black mb-4 tracking-tight whitespace-nowrap">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-black font-display text-black mb-4 tracking-tight md:whitespace-nowrap">
             UNDERSTAND MY INSURANCE
           </h1>
           <p className="text-base md:text-lg text-gray-800 max-w-2xl mx-auto leading-relaxed">
